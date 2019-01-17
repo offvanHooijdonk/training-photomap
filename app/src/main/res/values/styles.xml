@@ -16,4 +16,10 @@
         <item name="android:windowBackground">@drawable/splash_back</item>
     </style>
 
+    <style name="LoginButton" parent="Widget.AppCompat.Button.Borderless.Colored">
+        <item name="android:textColor">@color/splashLayoutAccent</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
+
 </resources>

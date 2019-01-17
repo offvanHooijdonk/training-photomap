@@ -2,4 +2,5 @@
 <resources>
     <color name="splashBackground">@color/colorAccent</color>
     <color name="splash_logo">#FFFFFFFF</color>
+    <color name="splashLayoutAccent">#FFFFFF</color>
 </resources>

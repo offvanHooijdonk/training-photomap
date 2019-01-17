@@ -1,21 +1,53 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <android.support.constraint.Guideline
+        android:id="@+id/guideVerticalHalf"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.5" />
+
+    <android.support.constraint.Guideline
+        android:id="@+id/guideHorizontalButtons"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_end="140dp" />
+
+    <Button
+        android:id="@+id/btnLogin"
+        style="@style/LoginButton"
+        android:layout_marginEnd="@dimen/login_btn_margin"
+        android:text="@string/login_btn"
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@id/guideHorizontalButtons"
+        app:layout_constraintEnd_toStartOf="@id/guideVerticalHalf"
+        tools:visibility="visible" />
+
+    <Button
+        style="@style/LoginButton"
+        android:layout_marginStart="@dimen/login_btn_margin"
+        android:text="@string/register_btn"
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@id/guideHorizontalButtons"
+        app:layout_constraintStart_toEndOf="@id/guideVerticalHalf"
+        tools:visibility="visible" />
 
     <ProgressBar
-            android:id="@+id/progressLogin"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/progress_login_bottom_margin"
-            android:visibility="gone"
-            android:indeterminateTint="#ffffff"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            tools:visibility="visible"/>
+        android:id="@+id/progressLogin"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/progress_login_bottom_margin"
+        android:indeterminateTint="@color/splashLayoutAccent"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:visibility="visible" />
 
 </android.support.constraint.ConstraintLayout>
