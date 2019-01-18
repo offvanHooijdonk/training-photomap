@@ -31,6 +31,7 @@
 
     <Button
         style="@style/LoginButton"
+        android:id="@+id/btnRegister"
         android:layout_marginStart="@dimen/login_btn_margin"
         android:text="@string/register_btn"
         android:visibility="gone"

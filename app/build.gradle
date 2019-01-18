@@ -23,13 +23,22 @@ android {
 }
 
 dependencies {
+    implementation project(":model")
     implementation project(":core_ui")
+    implementation project(":core_utils")
+    implementation project(":storage_parse_api")
+    implementation project(":storage_parse_impl")
 
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation "com.android.support:appcompat-v7:$support_v7_version"
     implementation "com.android.support.constraint:constraint-layout:$constraint_version"
+
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutines_version"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutines_version"
+
+    implementation "com.github.parse-community.Parse-SDK-Android:parse:$parse_version"
 
     implementation 'com.google.android.gms:play-services-maps:16.0.0'
 
