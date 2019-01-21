@@ -10,4 +10,4 @@ data class PhotoInfo(
     val category: CategoryInfo,
     val latitude: Float,
     val longitude: Float
-)
+) : DataObject

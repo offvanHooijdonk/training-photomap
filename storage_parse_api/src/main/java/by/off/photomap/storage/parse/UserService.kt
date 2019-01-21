@@ -4,9 +4,15 @@ import android.arch.lifecycle.LiveData
 import by.off.photomap.model.UserInfo
 
 interface UserService {
-    fun authenticate(userName: String, pwd: String): LiveData<UserInfo?>
+    /**
+     * @throws AuthenticationFailedException
+     */
+    fun authenticate(userName: String, pwd: String): LiveData<Response<UserInfo>>
 
-    fun register(user: UserInfo) : UserInfo
+    fun register(user: UserInfo): UserInfo
 
-    fun getById(id: String) : LiveData<UserInfo?>
+    /**
+     * @throws UserNotFoundException
+     */
+    fun getById(id: String): LiveData<Response<UserInfo>>
 }

@@ -2,10 +2,12 @@ package by.off.photomap.storage.parse.impl
 
 import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.MutableLiveData
-import android.util.Log
-import by.off.photomap.core.utils.LOGCAT
 import by.off.photomap.model.UserInfo
+import by.off.photomap.storage.parse.AuthenticationFailedException
+import by.off.photomap.storage.parse.Response
+import by.off.photomap.storage.parse.UserNotFoundException
 import by.off.photomap.storage.parse.UserService
+import com.parse.ParseException
 import com.parse.ParseObject
 import com.parse.ParseQuery
 import com.parse.ParseUser
@@ -19,53 +21,44 @@ class UserServiceImpl @Inject constructor() : UserService {
         return UserInfo("", "", "")
     }
 
-    override fun getById(id: String): LiveData<UserInfo?> {
-        val liveData = MutableLiveData<UserInfo?>()
-        var user: UserInfo? = null
-        CoroutineScope(Dispatchers.Main).launch {
-            launch(Dispatchers.IO) {
-                val query: ParseQuery<ParseObject> = ParseQuery.getQuery(UserInfo.TABLE)
-                val obj = try {
-                    query.get(id)
-                } catch (th: Throwable) {
-                    Log.e("PHOTOMAPAPP", "Error getting the user $id", th) // TODO throw exceptions
-                    null
+    override fun getById(id: String): LiveData<Response<UserInfo>> {
+        val liveData = MutableLiveData<Response<UserInfo>>()
+        CoroutineScope(Dispatchers.IO).launch {
+            val query: ParseQuery<ParseObject> = ParseQuery.getQuery(UserInfo.TABLE)
+            val response = try {
+                Response(convert(query.get(id)))
+            } catch (e: ParseException) {
+                val error = when {
+                    e.code == ParseException.OBJECT_NOT_FOUND -> UserNotFoundException(id)
+                    else -> e
                 }
-                user = obj?.let { convert(obj) }
-                liveData.postValue(user)
+                Response<UserInfo>(error = error)
             }
+
+            liveData.postValue(response)
         }
         return liveData
     }
 
-    override fun authenticate(userName: String, pwd: String): LiveData<UserInfo?> {
-        val liveData = MutableLiveData<UserInfo?>()
-        CoroutineScope(Dispatchers.Main).launch {
-            launch(Dispatchers.IO) {
-                // todo need Dispatchers.Main ???
-                val parseUser = try {
-                    ParseUser.logIn(userName, pwd)
-                } catch (e: Throwable) {
-                    Log.e(LOGCAT, "Error logging in the user $userName", e)
-                    // TODO introduce custom exceptions and throw
-                    null
-                }
-
-                val user = when (parseUser) {
-                    null -> null
-                    else -> UserInfo(parseUser.objectId, parseUser.username, parseUser.email)
-                }
-                liveData.postValue(user)
-
+    override fun authenticate(userName: String, pwd: String): LiveData<Response<UserInfo>> {
+        val liveData = MutableLiveData<Response<UserInfo>>()
+        CoroutineScope(Dispatchers.IO).launch {
+            val response = try {
+                val parseUser = ParseUser.logIn(userName, pwd)
+                Response(UserInfo(parseUser.objectId, parseUser.username, parseUser.email))
+            } catch (e: Exception) {
+                Response<UserInfo>(error = AuthenticationFailedException(userName, e))
             }
+
+            liveData.postValue(response)
         }
         return liveData
     }
 
     private fun convert(obj: ParseObject): UserInfo =
         UserInfo(
-            obj.objectId, // TODO customize exceptions & handle them
-            obj.getString(UserInfo.PROP_EMAIL) ?: throw Exception("email empty"),
-            obj.getString(UserInfo.PROP_USER_NAME) ?: throw Exception("user name empty")
+            obj.objectId, // TODO implement better?
+            obj.getString(UserInfo.PROP_EMAIL) ?: UserInfo.ERROR_MISSING,
+            obj.getString(UserInfo.PROP_USER_NAME) ?: UserInfo.ERROR_MISSING
         )
 }

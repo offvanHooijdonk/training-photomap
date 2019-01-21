@@ -13,6 +13,8 @@ import by.off.photomap.core.ui.show
 import by.off.photomap.core.utils.LOGCAT
 import by.off.photomap.core.utils.di.ViewModelFactory
 import by.off.photomap.di.LoginScreenComponent
+import by.off.photomap.storage.parse.AuthenticationFailedException
+import by.off.photomap.storage.parse.UserNotFoundException
 import com.parse.ParseUser
 import kotlinx.android.synthetic.main.dialog_login.view.*
 import kotlinx.android.synthetic.main.screen_splash.*
@@ -46,13 +48,13 @@ class SplashActivity : AppCompatActivity() {
         } else {
             Log.i(LOGCAT, "Logged User - ${parseUser.objectId} , ${parseUser.username}")
             // TODO move to utils
-            getViewModel().getUser(parseUser.objectId).observe(this, Observer { user ->
-                // todo store in session object
-                if (user != null) {
-                    onUserLogged()
-                } else {
+            getViewModel().getUser(parseUser.objectId).observe(this, Observer { response ->
+                if (response?.error != null) {
+                    Log.w(LOGCAT, "User not found", response.error)
                     showError(true, "The logged in user '${parseUser.username}' does not exist")
                     showLoginButtons(true)
+                } else {
+                    onUserLogged() // todo store in session object
                 }
             })
         }
@@ -65,31 +67,31 @@ class SplashActivity : AppCompatActivity() {
     private fun authenticate(userName: String, pwd: String) {
         showProgress(true)
         showLoginButtons(false)
+        showError(false)
 
-        getViewModel().authenticate(userName, pwd).observe(this, Observer { user ->
-            if (user != null) {
-                Log.i(LOGCAT, "User found! ${user.userName} , ${user.email}")
-                onUserLogged()
-            } else {
-                Log.w(LOGCAT, "User was not authenticated")
-                showError(true, "Could not authenticate user")
+        getViewModel().authenticate(userName, pwd).observe(this, Observer { response ->
+            if (response?.error != null) {
+                Log.w(LOGCAT, "User was not authenticated", response.error)
+                showError(true, "Could not authenticate user $userName")
                 showLoginButtons(true)
+            } else {
+                Log.i(LOGCAT, "User found! ${response!!.data!!.userName} , ${response.data!!.email}")
+                showProgress(false)
+                onUserLogged()
             }
-            showProgress(false)
         })
-
     }
-
 
     private fun startLoginDialog() {
         val viewDialog = LayoutInflater.from(this).inflate(R.layout.dialog_login, null)
         AlertDialog.Builder(this)
+            .setTitle(R.string.login_btn)
             .setView(viewDialog)
             .setPositiveButton(android.R.string.ok) { dialog, which ->
                 showLoginButtons(false)
                 authenticate(viewDialog.inputUserName.text.toString(), viewDialog.inputPwd.text.toString())
             }
-            .setNegativeButton(android.R.string.cancel, null) // TODO can remove?
+            .setNegativeButton(android.R.string.cancel, null)
             .show()
     }
 
