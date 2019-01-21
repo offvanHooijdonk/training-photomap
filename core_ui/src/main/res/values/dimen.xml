@@ -2,4 +2,5 @@
 <resources>
     <dimen name="activity_margin_vertical">16dp</dimen>
     <dimen name="activity_margin_horizontal">16dp</dimen>
+    <dimen name="error_icon_text_padding">8dp</dimen>
 </resources>
