@@ -17,6 +17,19 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class UserServiceImpl @Inject constructor() : UserService {
+
+    override fun logIn(): LiveData<Response<UserInfo>> {
+        val parseUser: ParseUser? = ParseUser.getCurrentUser()
+
+        return if (parseUser == null) {
+            MutableLiveData<Response<UserInfo>>().apply {
+                postValue(Response(null, null))
+            }
+        } else {
+            getById(parseUser.objectId)
+        }
+    }
+
     override fun register(user: UserInfo): UserInfo { // TODO
         return UserInfo("", "", "")
     }

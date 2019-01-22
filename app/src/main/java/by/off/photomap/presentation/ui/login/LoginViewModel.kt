@@ -9,6 +9,8 @@ import javax.inject.Inject
 
 class LoginViewModel @Inject constructor(private val userService: UserService) : ViewModel() {
 
+    fun logIn(): LiveData<Response<UserInfo>> = userService.logIn()
+
     fun authenticate(userName: String, pwd: String): LiveData<Response<UserInfo>> = userService.authenticate(userName, pwd)
 
     fun getUser(id: String): LiveData<Response<UserInfo>> = userService.getById(id)

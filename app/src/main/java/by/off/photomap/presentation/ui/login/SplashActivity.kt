@@ -12,7 +12,9 @@ import by.off.photomap.core.ui.hide
 import by.off.photomap.core.ui.show
 import by.off.photomap.core.utils.LOGCAT
 import by.off.photomap.core.utils.di.ViewModelFactory
+import by.off.photomap.core.utils.session.Session
 import by.off.photomap.di.LoginScreenComponent
+import by.off.photomap.model.UserInfo
 import by.off.photomap.storage.parse.AuthenticationFailedException
 import by.off.photomap.storage.parse.UserNotFoundException
 import com.parse.ParseUser
@@ -24,43 +26,37 @@ class SplashActivity : AppCompatActivity() {
     @Inject
     lateinit var viewModelFactory: ViewModelFactory
 
+    private val viewModel: LoginViewModel
+        get() = viewModelFactory.create(LoginViewModel::class.java)
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.screen_splash)
 
         LoginScreenComponent.get(this).inject(this)
-    }
 
-    override fun onStart() {
-        super.onStart()
+        btnLogin.setOnClickListener { startLoginDialog() }
+        btnRegister.setOnClickListener { }
 
-        // todo move to utils: return null if not logged, throw exception if logged but not found
-        val parseUser: ParseUser? = ParseUser.getCurrentUser()
-        if (parseUser == null) {
-            Log.i(LOGCAT, "No logged user")
-            showLoginButtons(true)
-            btnLogin.setOnClickListener {
-                startLoginDialog()
-            }
-            btnRegister.setOnClickListener {
-
-            }
-        } else {
-            Log.i(LOGCAT, "Logged User - ${parseUser.objectId} , ${parseUser.username}")
-            // TODO move to utils
-            getViewModel().getUser(parseUser.objectId).observe(this, Observer { response ->
-                if (response?.error != null) {
-                    Log.w(LOGCAT, "User not found", response.error)
-                    showError(true, "The logged in user '${parseUser.username}' does not exist")
+        viewModel.logIn().observe(this, Observer { response ->
+            val user = response?.data
+            when {
+                response?.error != null -> {
+                    showError(true, "Error logging in with the current user")
                     showLoginButtons(true)
-                } else {
-                    onUserLogged() // todo store in session object
                 }
-            })
-        }
+                user == null -> {
+                    showLoginButtons(true)
+                }
+                else -> {
+                    onUserLogged(user)
+                }
+            }
+        })
     }
 
-    private fun onUserLogged() {
+    private fun onUserLogged(user: UserInfo) {
+        Session.user = user
         startActivity(Intent(this, MainActivity::class.java))
     }
 
@@ -69,7 +65,7 @@ class SplashActivity : AppCompatActivity() {
         showLoginButtons(false)
         showError(false)
 
-        getViewModel().authenticate(userName, pwd).observe(this, Observer { response ->
+        viewModel.authenticate(userName, pwd).observe(this, Observer { response ->
             if (response?.error != null) {
                 Log.w(LOGCAT, "User was not authenticated", response.error)
                 showError(true, "Could not authenticate user $userName")
@@ -77,7 +73,7 @@ class SplashActivity : AppCompatActivity() {
             } else {
                 Log.i(LOGCAT, "User found! ${response!!.data!!.userName} , ${response.data!!.email}")
                 showProgress(false)
-                onUserLogged()
+                onUserLogged(response.data!!)
             }
         })
     }
@@ -87,7 +83,7 @@ class SplashActivity : AppCompatActivity() {
         AlertDialog.Builder(this)
             .setTitle(R.string.login_btn)
             .setView(viewDialog)
-            .setPositiveButton(android.R.string.ok) { dialog, which ->
+            .setPositiveButton(android.R.string.ok) { _, _ ->
                 showLoginButtons(false)
                 authenticate(viewDialog.inputUserName.text.toString(), viewDialog.inputPwd.text.toString())
             }
@@ -121,9 +117,6 @@ class SplashActivity : AppCompatActivity() {
         } else {
             txtError.hide()
         }
-
     }
-
-    private fun getViewModel() = viewModelFactory.create(LoginViewModel::class.java)
 
 }
