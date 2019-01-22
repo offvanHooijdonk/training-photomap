@@ -13,5 +13,5 @@ class LoginViewModel @Inject constructor(private val userService: UserService) :
 
     fun authenticate(userName: String, pwd: String): LiveData<Response<UserInfo>> = userService.authenticate(userName, pwd)
 
-    fun getUser(id: String): LiveData<Response<UserInfo>> = userService.getById(id)
+    fun registerAndLogin(userInfo: UserInfo, pwd: String): LiveData<Response<UserInfo>> = userService.registerAndLogin(userInfo, pwd)
 }

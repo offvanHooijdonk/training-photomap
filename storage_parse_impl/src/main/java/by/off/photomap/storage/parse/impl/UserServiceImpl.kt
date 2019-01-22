@@ -2,15 +2,10 @@ package by.off.photomap.storage.parse.impl
 
 import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.MutableLiveData
+import android.arch.lifecycle.Transformations
 import by.off.photomap.model.UserInfo
-import by.off.photomap.storage.parse.AuthenticationFailedException
-import by.off.photomap.storage.parse.Response
-import by.off.photomap.storage.parse.UserNotFoundException
-import by.off.photomap.storage.parse.UserService
-import com.parse.ParseException
-import com.parse.ParseObject
-import com.parse.ParseQuery
-import com.parse.ParseUser
+import by.off.photomap.storage.parse.*
+import com.parse.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -30,8 +25,36 @@ class UserServiceImpl @Inject constructor() : UserService {
         }
     }
 
-    override fun register(user: UserInfo): UserInfo { // TODO
-        return UserInfo("", "", "")
+    override fun registerAndLogin(user: UserInfo, pwd: String): LiveData<Response<UserInfo>> { // TODO
+        val liveData = MutableLiveData<Response<UserInfo>>()
+
+        CoroutineScope(Dispatchers.IO).launch {
+            val parseUser = ParseUser()
+            parseUser.username = user.userName
+            parseUser.email = user.email
+            parseUser.setPassword(pwd)
+
+            val response = try {
+                parseUser.signUp()
+                authSync(user.userName, pwd)
+            } catch (e: Exception) {
+                when (e) {
+                    is ParseException -> {
+                        when {
+                            e.code == ParseException.USERNAME_TAKEN ->
+                                Response<UserInfo>(error = RegistrationFailedException(RegistrationFailedException.Field.USER_NAME, user.userName))
+                            e.code == ParseException.EMAIL_TAKEN ->
+                                Response(error = RegistrationFailedException(RegistrationFailedException.Field.EMAIL, user.email))
+                            else -> Response(error = e)
+                        }
+                    }
+                    else -> Response(error = e)
+                }
+            }
+            liveData.postValue(response)
+        }
+
+        return liveData
     }
 
     override fun getById(id: String): LiveData<Response<UserInfo>> {
@@ -56,17 +79,20 @@ class UserServiceImpl @Inject constructor() : UserService {
     override fun authenticate(userName: String, pwd: String): LiveData<Response<UserInfo>> {
         val liveData = MutableLiveData<Response<UserInfo>>()
         CoroutineScope(Dispatchers.IO).launch {
-            val response = try {
-                val parseUser = ParseUser.logIn(userName, pwd)
-                Response(UserInfo(parseUser.objectId, parseUser.username, parseUser.email))
-            } catch (e: Exception) {
-                Response<UserInfo>(error = AuthenticationFailedException(userName, e))
-            }
+            val response = authSync(userName, pwd)
 
             liveData.postValue(response)
         }
         return liveData
     }
+
+    private fun authSync(userName: String, pwd: String): Response<UserInfo> =
+        try {
+            val parseUser = ParseUser.logIn(userName, pwd)
+            Response(UserInfo(parseUser.objectId, parseUser.username, parseUser.email))
+        } catch (e: Exception) {
+            Response(error = AuthenticationFailedException(userName, e))
+        }
 
     private fun convert(obj: ParseObject): UserInfo =
         UserInfo(

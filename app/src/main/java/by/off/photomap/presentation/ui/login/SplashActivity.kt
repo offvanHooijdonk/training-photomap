@@ -15,14 +15,16 @@ import by.off.photomap.core.utils.di.ViewModelFactory
 import by.off.photomap.core.utils.session.Session
 import by.off.photomap.di.LoginScreenComponent
 import by.off.photomap.model.UserInfo
-import by.off.photomap.storage.parse.AuthenticationFailedException
-import by.off.photomap.storage.parse.UserNotFoundException
-import com.parse.ParseUser
+import by.off.photomap.storage.parse.RegistrationFailedException
 import kotlinx.android.synthetic.main.dialog_login.view.*
 import kotlinx.android.synthetic.main.screen_splash.*
 import javax.inject.Inject
 
 class SplashActivity : AppCompatActivity() {
+    companion object {
+        private const val TAG_DIALOG_REGISTER = "tag_dialog_register"
+    }
+
     @Inject
     lateinit var viewModelFactory: ViewModelFactory
 
@@ -36,7 +38,7 @@ class SplashActivity : AppCompatActivity() {
         LoginScreenComponent.get(this).inject(this)
 
         btnLogin.setOnClickListener { startLoginDialog() }
-        btnRegister.setOnClickListener { }
+        btnRegister.setOnClickListener { startRegisterDialog() }
 
         viewModel.logIn().observe(this, Observer { response ->
             val user = response?.data
@@ -78,10 +80,26 @@ class SplashActivity : AppCompatActivity() {
         })
     }
 
+    private fun registerUser(user: UserInfo, pwd: String) { // TODO enable to edit previous input if registration failed
+        showProgress(true)
+        showLoginButtons(false)
+        viewModel.registerAndLogin(user, pwd).observe(this, Observer { response ->
+            if (response?.error != null) {
+                Log.e(LOGCAT, "User was not registered", response.error)
+                showError(true, composeRegisterError(response.error!!))
+                showLoginButtons(true)
+            } else {
+                Log.i(LOGCAT, "Registered successfully! ${response!!.data!!.userName} , ${response.data!!.email}")
+                showProgress(false)
+                onUserLogged(response.data!!)
+            }
+        })
+    }
+
     private fun startLoginDialog() {
         val viewDialog = LayoutInflater.from(this).inflate(R.layout.dialog_login, null)
         AlertDialog.Builder(this)
-            .setTitle(R.string.login_btn)
+            .setTitle(R.string.btn_login)
             .setView(viewDialog)
             .setPositiveButton(android.R.string.ok) { _, _ ->
                 showLoginButtons(false)
@@ -89,6 +107,14 @@ class SplashActivity : AppCompatActivity() {
             }
             .setNegativeButton(android.R.string.cancel, null)
             .show()
+    }
+
+    private fun startRegisterDialog() {
+        val dialog = RegisterDialogFragment()
+        dialog.submitListener = { userInfo, pwd ->
+            registerUser(userInfo, pwd)
+        }
+        dialog.show(supportFragmentManager, TAG_DIALOG_REGISTER)
     }
 
     private fun showLoginButtons(isShow: Boolean) {
@@ -118,5 +144,16 @@ class SplashActivity : AppCompatActivity() {
             txtError.hide()
         }
     }
+
+    private fun composeRegisterError(e: Exception) =
+        when (e) {
+            is RegistrationFailedException -> {
+                when (e.fieldDuplicated) {
+                    RegistrationFailedException.Field.USER_NAME -> "User name ${e.value} is already used"
+                    RegistrationFailedException.Field.EMAIL -> "Email ${e.value} is already used"
+                }
+            }
+            else -> "Unknown error during registration"
+        }
 
 }

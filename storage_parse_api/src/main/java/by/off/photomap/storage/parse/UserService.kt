@@ -15,7 +15,10 @@ interface UserService {
      */
     fun authenticate(userName: String, pwd: String): LiveData<Response<UserInfo>>
 
-    fun register(user: UserInfo): UserInfo
+    /**
+     * @return
+     */
+    fun registerAndLogin(user: UserInfo, pwd: String): LiveData<Response<UserInfo>>
 
     /**
      * @throws UserNotFoundException
