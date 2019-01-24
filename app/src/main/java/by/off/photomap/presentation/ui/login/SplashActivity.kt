@@ -15,6 +15,8 @@ import by.off.photomap.core.utils.di.ViewModelFactory
 import by.off.photomap.databinding.ScreenSplashBinding
 import by.off.photomap.di.LoginScreenComponent
 import by.off.photomap.model.UserInfo
+import by.off.photomap.presentation.ui.MainActivity
+import by.off.photomap.presentation.viewmodel.login.LoginViewModel
 import by.off.photomap.storage.parse.AuthenticationFailedException
 import by.off.photomap.storage.parse.RegistrationFailedException
 import by.off.photomap.storage.parse.RegistrationFailedException.Field

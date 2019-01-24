@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#664cb5a6"><!-- fixme temp color till maps are implemented -->
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fabAddPhoto"
+        style="@style/FABInverse"
+        android:layout_marginBottom="88dp"
+        android:src="@drawable/ic_camera_24" />
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fabLocation"
+        style="@style/FABBasic"
+        android:src="@drawable/ic_navigation_24" />
+</android.support.design.widget.CoordinatorLayout>

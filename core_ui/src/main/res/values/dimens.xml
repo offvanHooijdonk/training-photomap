@@ -6,4 +6,7 @@
     <dimen name="dialog_margin_top">16dp</dimen>
     <dimen name="dialog_margin_buttons_bottom">4dp</dimen>
     <dimen name="error_icon_text_padding">8dp</dimen>
+
+    <dimen name="fab_margin">16dp</dimen>
+    <dimen name="fab_margin_second_bottomß">88dp</dimen>
 </resources>

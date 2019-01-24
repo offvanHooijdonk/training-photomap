@@ -5,7 +5,6 @@
     <string name="btn_register">Register</string>
     <string name="hint_user_name">User Name</string>
     <string name="hint_password">Password</string>
-    <string name="log_out">Log Out</string>
     <string name="hint_reg_user_name">Enter User Name</string>
     <string name="hint_reg_email">Enter Your Email</string>
     <string name="hint_reg_pwd">Create a password</string>
