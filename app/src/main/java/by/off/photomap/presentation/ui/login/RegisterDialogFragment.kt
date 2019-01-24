@@ -1,8 +1,10 @@
 package by.off.photomap.presentation.ui.login
 
+import android.app.AlertDialog
 import android.content.Context
 import android.os.Bundle
 import android.support.design.widget.Snackbar
+import android.support.design.widget.TextInputLayout
 import android.support.v4.app.DialogFragment
 import android.view.LayoutInflater
 import android.view.View
@@ -13,7 +15,6 @@ import by.off.photomap.R
 import by.off.photomap.core.ui.colorError
 import by.off.photomap.model.UserInfo
 import kotlinx.android.synthetic.main.dialog_register.*
-import kotlinx.android.synthetic.main.dialog_register.view.*
 
 class RegisterDialogFragment : DialogFragment() {
     var submitListener: ((UserInfo, String) -> Unit)? = null
@@ -38,38 +39,26 @@ class RegisterDialogFragment : DialogFragment() {
         minPwd = ctx.resources.getInteger(R.integer.min_pwd)
         maxPwd = ctx.resources.getInteger(R.integer.max_pwd)
 
+        // @formatter:off
         validators = mutableListOf(
-            RegexValidator(
-                inputUserName,
-                ctx.getString(R.string.pattern_username, minUserName, maxUserName),
-                ctx.getString(R.string.pattern_username_error, minUserName, maxUserName)
-            ),
-            RegexValidator(inputEmail, ctx.getString(R.string.pattern_email), ctx.getString(R.string.pattern_email_error)),
-            RegexValidator(inputPwd, ctx.getString(R.string.pattern_pwd, minPwd, maxPwd), ctx.getString(R.string.pattern_pwd_error, minPwd, maxPwd)),
-            RegexValidator(inputPwdCheck, ctx.getString(R.string.pattern_pwd, minPwd, maxPwd), ctx.getString(R.string.pattern_pwd_error, minPwd, maxPwd))
+            RegexValidator(inputUserName, ctx.getString(R.string.pattern_username, minUserName, maxUserName), ctx.getString(R.string.pattern_username_error, minUserName, maxUserName), tilUserName),
+            RegexValidator(inputEmail, ctx.getString(R.string.pattern_email), ctx.getString(R.string.pattern_email_error), tilEmail),
+            RegexValidator(inputPwd, ctx.getString(R.string.pattern_pwd, minPwd, maxPwd), ctx.getString(R.string.pattern_pwd_error, minPwd, maxPwd), tilPwd),
+            RegexValidator(inputPwdCheck, ctx.getString(R.string.pattern_pwd, minPwd, maxPwd), ctx.getString(R.string.pattern_pwd_error, minPwd, maxPwd), tilPwdCheck)
         )
-
-        /*view.inputUserName.apply {
-            onFocusChangeListener =
-                    RegexValidator(this, ctx.getString(R.string.pattern_username, minUserName, maxUserName), ctx.getString(R.string.pattern_username_error))
-
-        }
-        view.inputEmail.apply {
-            onFocusChangeListener =
-                    RegexValidator(this, ctx.getString(R.string.pattern_email), ctx.getString(R.string.pattern_email_error))
-
-        }
-        view.inputPwd.apply {
-            onFocusChangeListener =
-                    RegexValidator(this, ctx.getString(R.string.pattern_pwd, minPwd, maxPwd), ctx.getString(R.string.pattern_pwd_error))
-        }
-        view.inputPwdCheck.apply {
-            onFocusChangeListener =
-                    RegexValidator(this, ctx.getString(R.string.pattern_pwd, minPwd, maxPwd), ctx.getString(R.string.pattern_pwd_error))
-        }*/
+        // @formatter:on
 
         btnRegister.setOnClickListener { validateAndReturn() }
-        btnCancel.setOnClickListener { dismiss() }
+        btnCancel.setOnClickListener {
+            if (shouldConfirm())
+                AlertDialog.Builder(ctx)
+                    .setCancelable(false)
+                    .setTitle("Confirm")
+                    .setMessage("Are you sure you want to discard input and leave?")
+                    .setNegativeButton(android.R.string.no, null)
+                    .setPositiveButton(android.R.string.yes) { dialog, _ -> dialog.dismiss(); this@RegisterDialogFragment.dismiss() }
+                    .create().show()
+        }
     }
 
     override fun onStart() {
@@ -99,26 +88,15 @@ class RegisterDialogFragment : DialogFragment() {
         Snackbar.make(inputUserName, text, Snackbar.LENGTH_LONG).colorError().show()
     }
 
-    private class RegexValidator(private val editText: EditText, regexString: String, private val errorMessage: String) /*: View.OnFocusChangeListener,
-        TextWatcher*/ {
-        private val regex = Regex(regexString)
-/*
-        override fun onFocusChange(v: View?, hasFocus: Boolean) {
-            if (!hasFocus) {
-                editText.error = if (!regex.matches(editText.text)) errorMessage else null
-                Log.i(LOGCAT, "FOCUS LOST")
-            }
-        }
+    private fun shouldConfirm(): Boolean =
+        !inputUserName.text.isEmpty() || !inputEmail.text.isEmpty() || !inputPwd.text.isEmpty() || !inputPwdCheck.text.isEmpty()
 
-        override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}*/
+    private class RegexValidator(private val editText: EditText, regexString: String, private val errorMessage: String, private val target: TextInputLayout) {
+        private val regex = Regex(regexString)
 
         fun validate(): Boolean {
-            editText.error = if (!regex.matches(editText.text)) errorMessage else null
-            return editText.error == null
+            target.error = if (!regex.matches(editText.text)) errorMessage else null
+            return target.error == null
         }
-
-        /*      override fun afterTextChanged(s: Editable?) {}
-
-              override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}*/
     }
 }

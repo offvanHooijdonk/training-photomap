@@ -36,6 +36,8 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation "com.android.support:appcompat-v7:$support_v7_version"
 
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutines_version"
+
     implementation "com.google.dagger:dagger:$dagger_version"
 
     testImplementation 'junit:junit:4.12'

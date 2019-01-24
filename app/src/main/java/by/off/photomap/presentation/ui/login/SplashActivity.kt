@@ -2,25 +2,27 @@ package by.off.photomap.presentation.ui.login
 
 import android.arch.lifecycle.Observer
 import android.content.Intent
+import android.databinding.BindingAdapter
+import android.databinding.DataBindingUtil
 import android.os.Bundle
 import android.support.v7.app.AlertDialog
-import android.support.v7.app.AppCompatActivity
-import android.util.Log
 import android.view.LayoutInflater
+import android.widget.TextView
 import by.off.photomap.R
-import by.off.photomap.core.ui.hide
-import by.off.photomap.core.ui.show
-import by.off.photomap.core.utils.LOGCAT
+import by.off.photomap.core.ui.BaseActivity
 import by.off.photomap.core.utils.di.ViewModelFactory
-import by.off.photomap.core.utils.session.Session
+import by.off.photomap.databinding.ScreenSplashBinding
 import by.off.photomap.di.LoginScreenComponent
 import by.off.photomap.model.UserInfo
+import by.off.photomap.storage.parse.AuthenticationFailedException
 import by.off.photomap.storage.parse.RegistrationFailedException
+import by.off.photomap.storage.parse.RegistrationFailedException.Field
+import by.off.photomap.storage.parse.UserNotFoundException
 import kotlinx.android.synthetic.main.dialog_login.view.*
 import kotlinx.android.synthetic.main.screen_splash.*
 import javax.inject.Inject
 
-class SplashActivity : AppCompatActivity() {
+class SplashActivity : BaseActivity() {
     companion object {
         private const val TAG_DIALOG_REGISTER = "tag_dialog_register"
     }
@@ -28,72 +30,43 @@ class SplashActivity : AppCompatActivity() {
     @Inject
     lateinit var viewModelFactory: ViewModelFactory
 
-    private val viewModel: LoginViewModel
+    private val viewModel
         get() = viewModelFactory.create(LoginViewModel::class.java)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.screen_splash)
 
         LoginScreenComponent.get(this).inject(this)
+
+        val binding = DataBindingUtil.setContentView<ScreenSplashBinding>(this, R.layout.screen_splash)
+        binding.model = viewModel
+
+        viewModel.liveData.observe(this, Observer { response ->
+            if (response?.data != null)
+                onUserLogged()
+        })
 
         btnLogin.setOnClickListener { startLoginDialog() }
         btnRegister.setOnClickListener { startRegisterDialog() }
 
-        viewModel.logIn().observe(this, Observer { response ->
-            val user = response?.data
-            when {
-                response?.error != null -> {
-                    showError(true, "Error logging in with the current user")
-                    showLoginButtons(true)
-                }
-                user == null -> {
-                    showLoginButtons(true)
-                }
-                else -> {
-                    onUserLogged(user)
-                }
-            }
-        })
     }
 
-    private fun onUserLogged(user: UserInfo) {
-        Session.user = user
+    override fun onStart() {
+        super.onStart()
+
+        viewModel.logIn()
+    }
+
+    private fun onUserLogged() {
         startActivity(Intent(this, MainActivity::class.java))
     }
 
     private fun authenticate(userName: String, pwd: String) {
-        showProgress(true)
-        showLoginButtons(false)
-        showError(false)
-
-        viewModel.authenticate(userName, pwd).observe(this, Observer { response ->
-            if (response?.error != null) {
-                Log.w(LOGCAT, "User was not authenticated", response.error)
-                showError(true, "Could not authenticate user $userName")
-                showLoginButtons(true)
-            } else {
-                Log.i(LOGCAT, "User found! ${response!!.data!!.userName} , ${response.data!!.email}")
-                showProgress(false)
-                onUserLogged(response.data!!)
-            }
-        })
+        viewModel.authenticate(userName, pwd)
     }
 
     private fun registerUser(user: UserInfo, pwd: String) { // TODO enable to edit previous input if registration failed
-        showProgress(true)
-        showLoginButtons(false)
-        viewModel.registerAndLogin(user, pwd).observe(this, Observer { response ->
-            if (response?.error != null) {
-                Log.e(LOGCAT, "User was not registered", response.error)
-                showError(true, composeRegisterError(response.error!!))
-                showLoginButtons(true)
-            } else {
-                Log.i(LOGCAT, "Registered successfully! ${response!!.data!!.userName} , ${response.data!!.email}")
-                showProgress(false)
-                onUserLogged(response.data!!)
-            }
-        })
+        viewModel.registerAndLogin(user, pwd)
     }
 
     private fun startLoginDialog() {
@@ -102,7 +75,6 @@ class SplashActivity : AppCompatActivity() {
             .setTitle(R.string.btn_login)
             .setView(viewDialog)
             .setPositiveButton(android.R.string.ok) { _, _ ->
-                showLoginButtons(false)
                 authenticate(viewDialog.inputUserName.text.toString(), viewDialog.inputPwd.text.toString())
             }
             .setNegativeButton(android.R.string.cancel, null)
@@ -117,43 +89,22 @@ class SplashActivity : AppCompatActivity() {
         dialog.show(supportFragmentManager, TAG_DIALOG_REGISTER)
     }
 
-    private fun showLoginButtons(isShow: Boolean) {
-        if (isShow) {
-            btnLogin.show()
-            btnRegister.show()
-        } else {
-            btnLogin.hide()
-            btnRegister.hide()
-        }
-    }
+}
 
-    private fun showProgress(isShow: Boolean) {
-        if (isShow) {
-            progressLogin.show()
-        } else {
-            progressLogin.hide()
-        }
-    }
-
-    private fun showError(isShow: Boolean, text: String = "") {
-        if (isShow) {
-            showProgress(false)
-            txtError.text = text
-            txtError.show()
-        } else {
-            txtError.hide()
-        }
-    }
-
-    private fun composeRegisterError(e: Exception) =
-        when (e) {
-            is RegistrationFailedException -> {
-                when (e.fieldDuplicated) {
-                    RegistrationFailedException.Field.USER_NAME -> "User name ${e.value} is already used"
-                    RegistrationFailedException.Field.EMAIL -> "Email ${e.value} is already used"
-                }
+@BindingAdapter("android:text") // TODO move to core_ui?
+fun setErrorMessage(textView: TextView, e: Exception?) {
+    val ctx = textView.context
+    val errorMsg = when (e) {
+        null -> null
+        is AuthenticationFailedException -> ctx.getString(R.string.error_auth_failed, e.userName)
+        is UserNotFoundException -> ctx.getString(R.string.error_user_not_found, e.id)
+        is RegistrationFailedException ->
+            when (e.fieldDuplicated) {
+                Field.EMAIL -> ctx.getString(R.string.error_registration_failed_by_email, e.value)
+                Field.USER_NAME -> ctx.getString(R.string.error_registration_failed_by_name, e.value)
             }
-            else -> "Unknown error during registration"
-        }
+        else -> ctx.getString(R.string.error_default_auth)
+    }
 
+    textView.text = errorMsg
 }

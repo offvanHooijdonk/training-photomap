@@ -1,70 +1,86 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:padding="@dimen/activity_margin_horizontal">
+<layout>
 
-    <android.support.constraint.Guideline
-        android:id="@+id/guideVerticalHalf"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        app:layout_constraintGuide_percent="0.5" />
+    <data>
 
-    <android.support.constraint.Guideline
-        android:id="@+id/guideHorizontalButtons"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_end="140dp" />
+        <import type="android.view.View" />
 
-    <Button
-        android:id="@+id/btnLogin"
-        style="@style/LoginButton"
-        android:layout_marginEnd="@dimen/login_btn_margin"
-        android:text="@string/btn_login"
-        android:visibility="gone"
-        app:layout_constraintBottom_toTopOf="@id/guideHorizontalButtons"
-        app:layout_constraintEnd_toStartOf="@id/guideVerticalHalf"
-        tools:visibility="visible" />
+        <variable
+            name="model"
+            type="by.off.photomap.presentation.ui.login.LoginViewModel" />
 
-    <Button
-        android:id="@+id/btnRegister"
-        style="@style/LoginButton"
-        android:layout_marginStart="@dimen/login_btn_margin"
-        android:text="@string/btn_register"
-        android:visibility="gone"
-        app:layout_constraintBottom_toTopOf="@id/guideHorizontalButtons"
-        app:layout_constraintStart_toEndOf="@id/guideVerticalHalf"
-        tools:visibility="visible" />
+    </data>
 
-    <TextView
-        android:id="@+id/txtError"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:drawableStart="@drawable/ic_error_24"
-        android:drawablePadding="@dimen/error_icon_text_padding"
-        android:textColor="@color/splashLayoutAccent"
-        android:textSize="14sp"
-        android:visibility="gone"
-        app:layout_constraintTop_toTopOf="@id/guideHorizontalButtons"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        tools:text="@string/fish_text_short"
-        tools:visibility="visible" />
+    <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="@dimen/activity_margin_horizontal">
 
-    <ProgressBar
-        android:id="@+id/progressLogin"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="@dimen/progress_login_bottom_margin"
-        android:indeterminateTint="@color/splashLayoutAccent"
-        android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        tools:visibility="visible" />
+        <android.support.constraint.Guideline
+            android:id="@+id/guideVerticalHalf"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.5" />
 
-</android.support.constraint.ConstraintLayout>
+        <android.support.constraint.Guideline
+            android:id="@+id/guideHorizontalButtons"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_end="140dp" />
+
+        <Button
+            android:id="@+id/btnLogin"
+            style="@style/LoginButton"
+            android:layout_marginEnd="@dimen/login_btn_margin"
+            android:onClick="startLoginDialog"
+            android:text="@string/btn_login"
+            android:visibility="@{model.showLoginButtons ? View.VISIBLE : View.GONE}"
+            app:layout_constraintBottom_toTopOf="@id/guideHorizontalButtons"
+            app:layout_constraintEnd_toStartOf="@id/guideVerticalHalf"
+            tools:visibility="visible" />
+
+        <Button
+            android:id="@+id/btnRegister"
+            style="@style/LoginButton"
+            android:layout_marginStart="@dimen/login_btn_margin"
+            android:onClick="startRegisterDialog"
+            android:text="@string/btn_register"
+            android:visibility="@{model.showLoginButtons ? View.VISIBLE : View.GONE}"
+            app:layout_constraintBottom_toTopOf="@id/guideHorizontalButtons"
+            app:layout_constraintStart_toEndOf="@id/guideVerticalHalf"
+            tools:visibility="visible" />
+
+        <TextView
+            android:id="@+id/txtError"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:drawableStart="@drawable/ic_error_24"
+            android:drawablePadding="@dimen/error_icon_text_padding"
+            android:text="@{model.errorObject}"
+            android:textColor="@color/splashLayoutAccent"
+            android:textSize="14sp"
+            android:visibility="@{model.isError ? View.VISIBLE : View.GONE}"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@id/guideHorizontalButtons"
+            tools:text="@string/fish_text_short"
+            tools:visibility="visible" />
+
+        <ProgressBar
+            android:id="@+id/progressLogin"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/progress_login_bottom_margin"
+            android:indeterminateTint="@color/splashLayoutAccent"
+            android:visibility="@{model.isInProgress ? View.VISIBLE : View.GONE}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            tools:visibility="visible" />
+
+    </android.support.constraint.ConstraintLayout>
+</layout>

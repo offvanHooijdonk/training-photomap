@@ -2,33 +2,42 @@ package by.off.photomap.storage.parse.impl
 
 import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.MutableLiveData
-import android.arch.lifecycle.Transformations
+import by.off.photomap.core.utils.launchScopeIO
 import by.off.photomap.model.UserInfo
 import by.off.photomap.storage.parse.*
-import com.parse.*
+import by.off.photomap.storage.parse.RegistrationFailedException.Field.EMAIL
+import by.off.photomap.storage.parse.RegistrationFailedException.Field.USER_NAME
+import com.parse.ParseException
+import com.parse.ParseObject
+import com.parse.ParseQuery
+import com.parse.ParseUser
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+// TODO log errors before returning response
 class UserServiceImpl @Inject constructor() : UserService {
+    override val serviceLiveData: LiveData<Response<UserInfo>>
+        get() = liveData
 
-    override fun logIn(): LiveData<Response<UserInfo>> {
-        val parseUser: ParseUser? = ParseUser.getCurrentUser()
+    private val liveData = MutableLiveData<Response<UserInfo>>()
 
-        return if (parseUser == null) {
-            MutableLiveData<Response<UserInfo>>().apply {
-                postValue(Response(null, null))
+    override fun logIn()/*: LiveData<Response<UserInfo>>*/ {
+        launchScopeIO {
+            val parseUser: ParseUser? = ParseUser.getCurrentUser()
+            val response = if (parseUser == null) {
+                Response(null, null)
+            } else {
+                getByIdSync(parseUser.objectId)
             }
-        } else {
-            getById(parseUser.objectId)
+            liveData.postValue(response)
         }
     }
 
-    override fun registerAndLogin(user: UserInfo, pwd: String): LiveData<Response<UserInfo>> { // TODO
-        val liveData = MutableLiveData<Response<UserInfo>>()
-
-        CoroutineScope(Dispatchers.IO).launch {
+    override fun registerAndLogin(user: UserInfo, pwd: String) {
+        launchScopeIO {
             val parseUser = ParseUser()
             parseUser.username = user.userName
             parseUser.email = user.email
@@ -42,9 +51,9 @@ class UserServiceImpl @Inject constructor() : UserService {
                     is ParseException -> {
                         when {
                             e.code == ParseException.USERNAME_TAKEN ->
-                                Response<UserInfo>(error = RegistrationFailedException(RegistrationFailedException.Field.USER_NAME, user.userName))
+                                Response<UserInfo>(error = RegistrationFailedException(USER_NAME, user.userName))
                             e.code == ParseException.EMAIL_TAKEN ->
-                                Response(error = RegistrationFailedException(RegistrationFailedException.Field.EMAIL, user.email))
+                                Response(error = RegistrationFailedException(EMAIL, user.email))
                             else -> Response(error = e)
                         }
                     }
@@ -53,45 +62,45 @@ class UserServiceImpl @Inject constructor() : UserService {
             }
             liveData.postValue(response)
         }
-
-        return liveData
     }
 
     override fun getById(id: String): LiveData<Response<UserInfo>> {
         val liveData = MutableLiveData<Response<UserInfo>>()
         CoroutineScope(Dispatchers.IO).launch {
-            val query: ParseQuery<ParseObject> = ParseQuery.getQuery(UserInfo.TABLE)
-            val response = try {
-                Response(convert(query.get(id)))
-            } catch (e: ParseException) {
-                val error = when {
-                    e.code == ParseException.OBJECT_NOT_FOUND -> UserNotFoundException(id)
-                    else -> e
-                }
-                Response<UserInfo>(error = error)
-            }
+            val response = getByIdSync(id)
 
             liveData.postValue(response)
         }
         return liveData
     }
 
-    override fun authenticate(userName: String, pwd: String): LiveData<Response<UserInfo>> {
-        val liveData = MutableLiveData<Response<UserInfo>>()
-        CoroutineScope(Dispatchers.IO).launch {
+    override fun authenticate(userName: String, pwd: String) {
+        launchScopeIO {
             val response = authSync(userName, pwd)
 
             liveData.postValue(response)
         }
-        return liveData
     }
 
+    // TODO move to a separate UserParseService ?
     private fun authSync(userName: String, pwd: String): Response<UserInfo> =
         try {
             val parseUser = ParseUser.logIn(userName, pwd)
             Response(UserInfo(parseUser.objectId, parseUser.username, parseUser.email))
         } catch (e: Exception) {
             Response(error = AuthenticationFailedException(userName, e))
+        }
+
+    private fun getByIdSync(id: String) =
+        try {
+            val query: ParseQuery<ParseObject> = ParseQuery.getQuery(UserInfo.TABLE)
+            Response(convert(query.get(id)), null)
+        } catch (e: ParseException) {
+            val error = when {
+                e.code == ParseException.OBJECT_NOT_FOUND -> UserNotFoundException(id)
+                else -> e
+            }
+            Response<UserInfo>(null, error)
         }
 
     private fun convert(obj: ParseObject): UserInfo =

@@ -4,24 +4,30 @@ import android.arch.lifecycle.LiveData
 import by.off.photomap.model.UserInfo
 
 interface UserService {
-    /**
-     * @throws UserNotFoundException
-     * @return Response - user is null if no one logged in
-     */
-    fun logIn(): LiveData<Response<UserInfo>>
+    val serviceLiveData: LiveData<Response<UserInfo>>
 
     /**
-     * @throws AuthenticationFailedException
+     * Works with [serviceLiveData]. Posts <code>null</code> if nobody is logged in
+     * @exception UserNotFoundException Produced when the locally logged user is not found
      */
-    fun authenticate(userName: String, pwd: String): LiveData<Response<UserInfo>>
+    fun logIn()
 
     /**
-     * @return
+     * Works with [serviceLiveData].
+     * @exception AuthenticationFailedException Produced when no user with such credentials found
      */
-    fun registerAndLogin(user: UserInfo, pwd: String): LiveData<Response<UserInfo>>
+    fun authenticate(userName: String, pwd: String)
 
     /**
-     * @throws UserNotFoundException
+     * Works with [serviceLiveData]. Creates a user with the data provided and logs the user in
+     * @exception RegistrationFailedException Produced if the name/email provided already taken
+     */
+    fun registerAndLogin(user: UserInfo, pwd: String)
+
+    /**
+     * Works with [serviceLiveData]
+     * @param id objectID of the user
+     * @exception UserNotFoundException Can produce when no user with such id found
      */
     fun getById(id: String): LiveData<Response<UserInfo>>
 }
