@@ -58,6 +58,8 @@ class RegisterDialogFragment : DialogFragment() {
                     .setNegativeButton(android.R.string.no, null)
                     .setPositiveButton(android.R.string.yes) { dialog, _ -> dialog.dismiss(); this@RegisterDialogFragment.dismiss() }
                     .create().show()
+            else
+                this.dismiss()
         }
     }
 

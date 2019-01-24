@@ -7,6 +7,7 @@ import android.databinding.DataBindingUtil
 import android.os.Bundle
 import android.support.v7.app.AlertDialog
 import android.view.LayoutInflater
+import android.view.View
 import android.widget.TextView
 import by.off.photomap.R
 import by.off.photomap.core.ui.BaseActivity
@@ -19,7 +20,6 @@ import by.off.photomap.storage.parse.RegistrationFailedException
 import by.off.photomap.storage.parse.RegistrationFailedException.Field
 import by.off.photomap.storage.parse.UserNotFoundException
 import kotlinx.android.synthetic.main.dialog_login.view.*
-import kotlinx.android.synthetic.main.screen_splash.*
 import javax.inject.Inject
 
 class SplashActivity : BaseActivity() {
@@ -45,10 +45,6 @@ class SplashActivity : BaseActivity() {
             if (response?.data != null)
                 onUserLogged()
         })
-
-        btnLogin.setOnClickListener { startLoginDialog() }
-        btnRegister.setOnClickListener { startRegisterDialog() }
-
     }
 
     override fun onStart() {
@@ -69,7 +65,7 @@ class SplashActivity : BaseActivity() {
         viewModel.registerAndLogin(user, pwd)
     }
 
-    private fun startLoginDialog() {
+    fun startLoginDialog(v: View) {
         val viewDialog = LayoutInflater.from(this).inflate(R.layout.dialog_login, null)
         AlertDialog.Builder(this)
             .setTitle(R.string.btn_login)
@@ -81,7 +77,7 @@ class SplashActivity : BaseActivity() {
             .show()
     }
 
-    private fun startRegisterDialog() {
+    fun startRegisterDialog(v: View) {
         val dialog = RegisterDialogFragment()
         dialog.submitListener = { userInfo, pwd ->
             registerUser(userInfo, pwd)
