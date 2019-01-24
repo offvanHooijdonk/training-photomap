@@ -32,11 +32,13 @@ android {
 dependencies {
     implementation project(":model")
     implementation project(":core_ui")
+    implementation project(":core_utils")
     implementation project(":storage_parse_api")
 
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    implementation "com.android.support:support-v4:$support_v7_version"
     implementation "com.android.support:appcompat-v7:$support_v7_version"
     implementation "com.android.support.constraint:constraint-layout:$constraint_version"
     implementation "com.android.support:design:$support_v7_version"
@@ -44,7 +46,7 @@ dependencies {
     implementation "com.google.dagger:dagger:$dagger_version"
     kapt "com.google.dagger:dagger-compiler:$dagger_version"
 
-    implementation 'com.google.android.gms:play-services-maps:16.0.0'
+    //implementation 'com.google.android.gms:play-services-maps:16.0.0'
 
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
