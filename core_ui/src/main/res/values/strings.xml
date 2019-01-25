@@ -1,3 +1,8 @@
 <resources>
+    <string name="label_category_default">Default</string>
+    <string name="label_category_nature">Nature</string>
+    <string name="label_category_friends">Friends</string>
 
+    <string name="fish_text">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</string>
+    <string name="fish_text_short">Lorem ipsum dolor sit amet</string>
 </resources>

@@ -6,4 +6,12 @@
     <color name="colorAccent">#ff6f61</color>
     <color name="colorAccentLight">#ffa18f</color>
     <color name="colorAccentDark">#c63d37</color>
+
+    <color name="firm_blue">#1976D2</color>
+
+    <color name="label_category_friends">@color/colorAccentDark</color>
+    <color name="label_category_nature">@color/colorPrimaryDark</color>
+    <color name="label_category_default">@color/firm_blue</color>
+
+    <color name="snackbar_error_text">@color/colorAccent</color>
 </resources>

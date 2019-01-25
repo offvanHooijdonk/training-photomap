@@ -1,6 +1,32 @@
 <resources>
     <string name="app_name">Photo Map</string>
     <string name="title_activity_maps">Map</string>
-    <string name="login_btn">Login</string>
-    <string name="register_btn">Register</string>
+    <string name="btn_login">Login</string>
+    <string name="btn_register">Register</string>
+    <string name="hint_user_name">User Name</string>
+    <string name="hint_password">Password</string>
+    <string name="log_out">Log Out</string>
+    <string name="hint_reg_user_name">Enter User Name</string>
+    <string name="hint_reg_email">Enter Your Email</string>
+    <string name="hint_reg_pwd">Create a password</string>
+    <string name="hint_reg_pwd_check">Confirm the password</string>
+
+    <string name="pattern_username" translatable="false">[A-Za-z0-9]{%1$d,%2$d}</string>
+    <string name="pattern_username_error">User name must be of letters and numbers and be %1$d to %2$d long</string>
+    <integer name="min_user_name">5</integer>
+    <integer name="max_user_name">25</integer>
+    <string name="pattern_email" translatable="false">[A-Za-z0-9\._%-]+@[A-Za-z0-9\.-]+\.[A-Za-z]{2,6}</string>
+    <string name="pattern_email_error">Please enter a valid email</string>
+    <string name="pattern_pwd" translatable="false">[A-Za-z0-9]{%1$d,%2$d}</string>
+    <string name="pattern_pwd_error" translatable="false">Password must be of letters and numbers and be %1$d to %2$d long</string>
+    <string name="pattern_pwd_not_match">The passwords do not match!</string>
+    <string name="btn_dialog_register">Register</string>
+    <integer name="min_pwd">@integer/min_user_name</integer>
+    <integer name="max_pwd">@integer/max_user_name</integer>
+
+    <string name="error_auth_failed">Could not authenticate user with name \'%1$s\'</string>
+    <string name="error_user_not_found">User with id %1$s not found</string>
+    <string name="error_registration_failed_by_name">Sorry, the user name \'%1$s\' is already taken</string>
+    <string name="error_registration_failed_by_email">Sorry, the email \'%1$s\' is already taken</string>
+    <string name="error_default_auth">Unknown error occurred</string>
 </resources>
