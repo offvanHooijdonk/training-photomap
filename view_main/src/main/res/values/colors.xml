@@ -4,4 +4,6 @@
     <color name="tabs_indicator">#ffffff</color>
     <color name="tabs_text">#ffffff</color>
     <color name="tabs_selected_text">#ccffffff</color>
+
+    <color name="icon_for_text">#1F000000</color>
 </resources>

@@ -11,12 +11,13 @@ import android.util.Log
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
+import by.off.photomap.core.ui.BaseActivity
 import by.off.photomap.core.utils.LOGCAT
 import by.off.photomap.presentation.ui.map.MapFragment
 import by.off.photomap.presentation.ui.timeline.TimelineFragment
 import kotlinx.android.synthetic.main.act_main.*
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : /*BaseActivity*/AppCompatActivity() {
     companion object {
         const val TAB_INDEX_MAP = 0
         const val TAB_INDEX_TIMELINE = 1

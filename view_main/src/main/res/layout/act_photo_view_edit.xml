@@ -1,0 +1,218 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout>
+
+    <data>
+
+        <import type="android.net.Uri" />
+
+        <import type="android.view.View" />
+
+        <import type="java.util.Date" />
+
+        <import type="by.off.photomap.model.PhotoInfo" />
+
+        <variable
+            name="model"
+            type="by.off.photomap.presentation.viewmodel.photo.PhotoViewModel" />
+    </data>
+
+    <android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <!-- TODO make height somewhat dynamic -->
+        <android.support.design.widget.AppBarLayout
+            android:id="@+id/app_bar_layout"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:fitsSystemWindows="true"
+            android:theme="@style/AppTheme.AppBarOverlay">
+
+            <android.support.design.widget.CollapsingToolbarLayout
+                android:id="@+id/collapsing_toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fitsSystemWindows="true"
+                app:contentScrim="?attr/colorPrimary"
+                app:layout_scrollFlags="scroll|exitUntilCollapsed">
+
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:fitsSystemWindows="true"
+                    app:layout_collapseMode="parallax">
+
+                    <ImageView
+                        android:id="@+id/imgPhoto"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:scaleType="centerCrop"
+                        android:src="@{model.imageUri}" />
+                </FrameLayout>
+
+                <android.support.v7.widget.Toolbar
+                    android:id="@+id/toolbar"
+                    android:layout_width="match_parent"
+                    android:layout_height="?attr/actionBarSize"
+                    android:background="#00000000"
+                    app:layout_collapseMode="pin"
+                    app:layout_scrollFlags="scroll|enterAlways"
+                    app:popupTheme="@style/AppTheme.PopupOverlay" />
+            </android.support.design.widget.CollapsingToolbarLayout>
+        </android.support.design.widget.AppBarLayout>
+
+        <android.support.v4.widget.NestedScrollView
+            android:id="@+id/scroll"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clipToPadding="false"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+            <android.support.constraint.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/progress_linear_height"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <ProgressBar
+                        android:id="@+id/progressSaving"
+                        style="?android:attr/progressBarStyleHorizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:indeterminate="@{model.progressIndeterminate}"
+                        android:progress="@{model.progressPerCent}"
+                        android:visibility="@{model.inProgress ? View.VISIBLE : View.GONE}"
+                        tools:progress="25"
+                        tools:visibility="visible" />
+                </FrameLayout>
+
+                <android.support.constraint.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:padding="@dimen/activity_margin_horizontal">
+
+                    <android.support.constraint.Guideline
+                        android:id="@+id/guideIcons"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        app:layout_constraintGuide_begin="0dp" />
+
+                    <android.support.constraint.Guideline
+                        android:id="@+id/guideParameters"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        app:layout_constraintGuide_begin="56dp" />
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:alpha="0.8"
+                        android:src="@drawable/ic_time_24"
+                        android:tint="@color/colorAccent"
+                        app:layout_constraintStart_toStartOf="@id/guideIcons"
+                        app:layout_constraintTop_toTopOf="@id/txtPhotoTimestamp" />
+
+                    <TextView
+                        android:id="@+id/txtPhotoTimestamp"
+                        style="@style/TextPhotoAttributes"
+                        android:layout_marginTop="8dp"
+                        android:text="@{model.photoInfo.shotTimestamp}"
+                        app:layout_constraintStart_toStartOf="@id/guideParameters"
+                        app:layout_constraintTop_toTopOf="parent"
+                        tools:text="@string/fish_date_full" />
+
+                    <View
+                        style="@style/DividerHorizontal"
+                        android:layout_marginTop="@dimen/photo_attr_divider_margin_top"
+                        app:layout_constraintStart_toStartOf="@id/txtPhotoTimestamp"
+                        app:layout_constraintTop_toBottomOf="@id/txtPhotoTimestamp" />
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:alpha="0.8"
+                        android:src="@drawable/ic_category_24"
+                        android:tint="@color/colorAccent"
+                        app:layout_constraintStart_toStartOf="@id/guideIcons"
+                        app:layout_constraintTop_toTopOf="@id/txtPhotoCategory" />
+
+                    <Spinner
+                        android:id="@+id/spinnerCategories"
+                        style="@style/TextPhotoAttributes"
+                        android:visibility="gone"
+                        app:layout_constraintStart_toStartOf="@id/guideParameters"
+                        app:layout_constraintTop_toBottomOf="@id/txtPhotoTimestamp"
+                        tools:entries="@array/categories" />
+
+                    <TextView
+                        android:id="@+id/txtPhotoCategory"
+                        style="@style/TextPhotoAttributes"
+                        android:visibility="invisible"
+                        app:layout_constraintStart_toStartOf="@id/guideParameters"
+                        app:layout_constraintTop_toBottomOf="@id/txtPhotoTimestamp"
+                        tools:text="@string/fish_text_short" />
+
+                    <View
+                        style="@style/DividerHorizontal"
+                        android:layout_marginTop="@dimen/photo_attr_divider_margin_top"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="@id/txtPhotoCategory"
+                        app:layout_constraintTop_toBottomOf="@id/txtPhotoCategory" />
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:alpha="0.8"
+                        android:src="@drawable/ic_description_24"
+                        android:tint="@color/colorAccent"
+                        app:layout_constraintStart_toStartOf="@id/guideIcons"
+                        app:layout_constraintTop_toTopOf="@id/txtPhotoDescription" />
+
+                    <EditText
+                        android:id="@+id/inputPhotoDescription"
+                        style="@style/TextPhotoAttributes"
+                        android:text="@{model.photoInfo.description}"
+                        android:visibility="gone"
+                        app:layout_constraintStart_toStartOf="@id/guideParameters"
+                        app:layout_constraintTop_toBottomOf="@id/txtPhotoCategory"
+                        tools:text="@string/fish_text" />
+
+                    <TextView
+                        android:id="@+id/txtPhotoDescription"
+                        style="@style/TextPhotoAttributes"
+                        android:text="@{model.photoInfo.description}"
+                        android:visibility="invisible"
+                        app:layout_constraintStart_toStartOf="@id/guideParameters"
+                        app:layout_constraintTop_toBottomOf="@id/txtPhotoCategory"
+                        app:layout_goneMarginTop="@dimen/photo_attr_margin_top"
+                        tools:text="@string/fish_text" />
+
+                    <View
+                        style="@style/DividerHorizontal"
+                        android:layout_marginTop="@dimen/photo_attr_divider_margin_top"
+                        app:layout_constraintStart_toStartOf="@id/txtPhotoDescription"
+                        app:layout_constraintTop_toBottomOf="@id/txtPhotoDescription" />
+
+                    <android.support.constraint.Group
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:visibility="@{model.editMode ? View.VISIBLE : View.GONE}"
+                        app:constraint_referenced_ids="inputPhotoDescription, spinnerCategories" />
+
+                    <android.support.constraint.Group
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:visibility="@{model.editMode ? View.INVISIBLE : View.VISIBLE}"
+                        app:constraint_referenced_ids="txtPhotoDescription, txtPhotoCategory" />
+                </android.support.constraint.ConstraintLayout>
+            </android.support.constraint.ConstraintLayout>
+        </android.support.v4.widget.NestedScrollView>
+    </android.support.design.widget.CoordinatorLayout>
+</layout>

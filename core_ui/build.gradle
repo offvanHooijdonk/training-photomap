@@ -24,10 +24,14 @@ android {
         }
     }
 
+    dataBinding {
+        enabled = true
+    }
 }
 
 dependencies {
     implementation project(":model")
+    implementation project(":storage_parse_api")
 
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 

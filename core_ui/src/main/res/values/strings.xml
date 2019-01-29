@@ -2,7 +2,19 @@
     <string name="label_category_default">Default</string>
     <string name="label_category_nature">Nature</string>
     <string name="label_category_friends">Friends</string>
+    <string-array name="categories">
+        <item>@string/label_category_default</item>
+        <item>@string/label_category_nature</item>
+        <item>@string/label_category_friends</item>
+    </string-array>
 
     <string name="fish_text">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</string>
     <string name="fish_text_short">Lorem ipsum dolor sit amet</string>
+    <string name="fish_date_full">January 25th, 2018 - 5:28 PM</string>
+
+    <string name="error_auth_failed">Could not authenticate user with name \'%1$s\'</string>
+    <string name="error_user_not_found">User with id %1$s not found</string>
+    <string name="error_registration_failed_by_name">Sorry, the user name \'%1$s\' is already taken</string>
+    <string name="error_registration_failed_by_email">Sorry, the email \'%1$s\' is already taken</string>
+    <string name="error_default_auth">Unknown error occurred</string>
 </resources>

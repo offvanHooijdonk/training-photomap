@@ -26,10 +26,10 @@ android {
 }
 
 dependencies {
-    implementation project(":view_main")
     implementation project(":model")
     implementation project(":core_ui")
     implementation project(":core_utils")
+    implementation project(":view_main")
     implementation project(":storage_parse_api")
     implementation project(":storage_parse_impl")
 

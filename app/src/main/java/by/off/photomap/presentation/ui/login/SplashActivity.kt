@@ -24,7 +24,7 @@ import by.off.photomap.storage.parse.UserNotFoundException
 import kotlinx.android.synthetic.main.dialog_login.view.*
 import javax.inject.Inject
 
-class SplashActivity : BaseActivity() {
+class SplashActivity : BaseActivity<ScreenSplashBinding>() {
     companion object {
         private const val TAG_DIALOG_REGISTER = "tag_dialog_register"
     }
@@ -89,19 +89,19 @@ class SplashActivity : BaseActivity() {
 
 }
 
-@BindingAdapter("android:text") // TODO move to core_ui?
+@BindingAdapter("android:text") // TODO make a separate class that just creates string from exception
 fun setErrorMessage(textView: TextView, e: Exception?) {
     val ctx = textView.context
     val errorMsg = when (e) {
         null -> null
-        is AuthenticationFailedException -> ctx.getString(R.string.error_auth_failed, e.userName)
-        is UserNotFoundException -> ctx.getString(R.string.error_user_not_found, e.id)
+        is AuthenticationFailedException -> ctx.getString(by.off.photomap.core.ui.R.string.error_auth_failed, e.userName)
+        is UserNotFoundException -> ctx.getString(by.off.photomap.core.ui.R.string.error_user_not_found, e.id)
         is RegistrationFailedException ->
             when (e.fieldDuplicated) {
-                Field.EMAIL -> ctx.getString(R.string.error_registration_failed_by_email, e.value)
-                Field.USER_NAME -> ctx.getString(R.string.error_registration_failed_by_name, e.value)
+                Field.EMAIL -> ctx.getString(by.off.photomap.core.ui.R.string.error_registration_failed_by_email, e.value)
+                Field.USER_NAME -> ctx.getString(by.off.photomap.core.ui.R.string.error_registration_failed_by_name, e.value)
             }
-        else -> ctx.getString(R.string.error_default_auth)
+        else -> ctx.getString(by.off.photomap.core.ui.R.string.error_default_auth)
     }
 
     textView.text = errorMsg

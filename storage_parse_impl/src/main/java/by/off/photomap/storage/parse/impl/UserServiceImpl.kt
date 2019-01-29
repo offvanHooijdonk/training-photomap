@@ -105,7 +105,7 @@ class UserServiceImpl @Inject constructor() : UserService {
 
     private fun convert(obj: ParseObject): UserInfo =
         UserInfo(
-            obj.objectId, // TODO implement better?
+            obj.objectId,
             obj.getString(UserInfo.PROP_EMAIL) ?: UserInfo.ERROR_MISSING,
             obj.getString(UserInfo.PROP_USER_NAME) ?: UserInfo.ERROR_MISSING
         )
