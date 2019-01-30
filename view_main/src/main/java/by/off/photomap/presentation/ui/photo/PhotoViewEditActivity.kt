@@ -8,13 +8,11 @@ import android.net.Uri
 import android.os.Bundle
 import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.ArrayAdapter
 import android.widget.TextView
 import by.off.photomap.core.ui.dto.CategoryInfo
-import by.off.photomap.core.utils.LOGCAT
 import by.off.photomap.core.utils.di.ViewModelFactory
 import by.off.photomap.di.PhotoScreenComponent
 import by.off.photomap.presentation.ui.R
@@ -28,6 +26,7 @@ import javax.inject.Inject
 class PhotoViewEditActivity : AppCompatActivity() {
     companion object {
         const val EXTRA_IMAGE_URI = "extra_image_uri"
+        const val EXTRA_PHOTO_ID = "extra_photo_id"
     }
 
     @Inject
@@ -39,29 +38,31 @@ class PhotoViewEditActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        ctx = this
 
         PhotoScreenComponent.get(this).inject(this)
         viewModel = viewModelFactory.create(PhotoViewModel::class.java)
+
         val binding = DataBindingUtil.setContentView<ActPhotoViewEditBinding>(this, R.layout.act_photo_view_edit)
         binding.model = viewModel
-        viewModel.liveData.observe(this, Observer { })
+
+        viewModel.liveData.observe(this, Observer { leaveScreen ->
+            leaveScreen?.let { if (it) finish() }
+        })
         viewModel.loadImageLiveData.observe(this, Observer { })
 
-        ctx = this
+
         setSupportActionBar(toolbar)
         title = null
         supportActionBar?.setHomeButtonEnabled(true)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
-
 
         val uri = intent.extras?.getParcelable<Uri>(EXTRA_IMAGE_URI)
         if (uri != null) {
             mode = MODE.CREATE
             spinnerCategories.adapter = ArrayAdapter<String>(ctx, android.R.layout.simple_list_item_1, CategoryInfo.getTitlesOrdered(ctx))
 
-            viewModel.retrieveMeta(uri)
-        } else {
-            txtPhotoTimestamp.text = "No URI provided" // TODO handle
+            viewModel.setupWithUri(uri)
         }
     }
 
@@ -70,7 +71,7 @@ class PhotoViewEditActivity : AppCompatActivity() {
             android.R.id.home -> handleBack()
             R.id.item_save -> {
                 viewModel.save()
-            } // TODO save
+            }
         }
         return true
     }
@@ -87,9 +88,10 @@ class PhotoViewEditActivity : AppCompatActivity() {
     private fun handleBack() {
         if (mode == MODE.CREATE || mode == MODE.EDIT) {
             AlertDialog.Builder(ctx)
-                .setMessage("Are you sure you want to discard all changes?")
-                .setPositiveButton("Yes, discard") { _, _ -> this@PhotoViewEditActivity.finish() }
-                .setNegativeButton("No, stay", null)
+                .setTitle(R.string.dialog_confirm_title)
+                .setMessage(R.string.dialog_confirm_cancel_photo)
+                .setPositiveButton(R.string.dialog_btn_discard) { _, _ -> this@PhotoViewEditActivity.finish() }
+                .setNegativeButton(R.string.dialog_btn_stay, null)
                 .show()
         }
     }
@@ -104,7 +106,7 @@ fun setImageUri(imageView: ImageView, uri: Uri?) {
     uri?.let { imageView.setImageURI(uri) }
 }*/
 
-@BindingAdapter("android:text")
+@BindingAdapter("timestamp")
 fun setPhotoTimestamp(textView: TextView, date: Date?) {
     textView.text = if (date != null) DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.MEDIUM).format(date) else null
 }

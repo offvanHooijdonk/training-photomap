@@ -5,9 +5,9 @@ import java.util.Date
 data class PhotoInfo(
     val id: String,
     val author: UserInfo? = null,
-    val description: String? = null,
+    var description: String? = null,
     val shotTimestamp: Date,
-    val category: Int,
+    var category: Int,
     val latitude: Double? = null,
     val longitude: Double? = null
 ) : DataObject {

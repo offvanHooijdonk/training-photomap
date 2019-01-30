@@ -1,4 +1,10 @@
 <resources>
+    <string name="dialog_confirm_title">Confirm</string>
+    <string name="dialog_confirm_cancel_reg">Are you sure you want to leave?</string>
+    <string name="dialog_confirm_cancel_photo">"Are you sure you want to discard all changes?"</string>
+    <string name="dialog_btn_discard">Discard</string>
+    <string name="dialog_btn_stay">No, stay</string>
+
     <string name="label_category_default">Default</string>
     <string name="label_category_nature">Nature</string>
     <string name="label_category_friends">Friends</string>
@@ -7,10 +13,11 @@
         <item>@string/label_category_nature</item>
         <item>@string/label_category_friends</item>
     </string-array>
+    <string name="label_category_error">-</string>
 
     <string name="fish_text">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</string>
     <string name="fish_text_short">Lorem ipsum dolor sit amet</string>
-    <string name="fish_date_full">January 25th, 2018 - 5:28 PM</string>
+    <string name="fish_date_full">January 25th, 2018 – 5:28 PM</string>
 
     <string name="error_auth_failed">Could not authenticate user with name \'%1$s\'</string>
     <string name="error_user_not_found">User with id %1$s not found</string>

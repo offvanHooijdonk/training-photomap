@@ -89,7 +89,8 @@ class SplashActivity : BaseActivity<ScreenSplashBinding>() {
 
 }
 
-@BindingAdapter("android:text") // TODO make a separate class that just creates string from exception
+
+@BindingAdapter("exception") // TODO make a separate class that just creates string from exception
 fun setErrorMessage(textView: TextView, e: Exception?) {
     val ctx = textView.context
     val errorMsg = when (e) {

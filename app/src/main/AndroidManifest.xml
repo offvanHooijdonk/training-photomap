@@ -48,6 +48,7 @@
 
         <activity
             android:name=".presentation.ui.photo.PhotoViewEditActivity"
+            android:windowSoftInputMode="adjustResize"
             android:theme="@style/AppTheme.ActionBarCollapsible" />
     </application>
 

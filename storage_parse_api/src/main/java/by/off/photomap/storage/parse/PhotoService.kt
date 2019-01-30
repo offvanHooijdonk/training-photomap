@@ -18,4 +18,6 @@ interface PhotoService {
      * Works with [serviceLiveData]
      */
     fun retrieveMetadata(uri: Uri)
+
+    fun list()
 }

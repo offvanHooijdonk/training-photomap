@@ -19,5 +19,7 @@ data class CategoryInfo(val id: Int, @StringRes val labelRes: Int, @ColorRes val
 
         fun getTitlesOrdered(ctx: Context): List<String> =
             categories.toSortedMap().mapTo(mutableListOf<String>()) { entry -> ctx.getString(entry.value.labelRes) }
+
+        fun getTitleRes(id: Int) = categories[id]?.labelRes
     }
 }

@@ -6,6 +6,7 @@ import by.off.photomap.core.utils.di.ViewModelFactory
 import by.off.photomap.core.utils.di.ViewModelKey
 import by.off.photomap.core.utils.di.scopes.PerScreen
 import by.off.photomap.presentation.viewmodel.photo.PhotoViewModel
+import by.off.photomap.presentation.viewmodel.photo.timeline.TimelineViewModel
 import dagger.Binds
 import dagger.Module
 import dagger.multibindings.IntoMap
@@ -21,4 +22,10 @@ abstract class PhotoScreenModule {
     @PerScreen
     @ViewModelKey(PhotoViewModel::class)
     internal abstract fun bindPhotoViewModel(photoViewModel: PhotoViewModel): ViewModel
+
+    @Binds
+    @IntoMap
+    @PerScreen
+    @ViewModelKey(TimelineViewModel::class)
+    internal abstract fun bindTimelineViewModel(timelineViewModel: TimelineViewModel): ViewModel
 }

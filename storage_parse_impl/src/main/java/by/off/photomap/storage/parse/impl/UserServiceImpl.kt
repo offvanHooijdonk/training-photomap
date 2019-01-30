@@ -13,7 +13,6 @@ import com.parse.ParseQuery
 import com.parse.ParseUser
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -94,7 +93,7 @@ class UserServiceImpl @Inject constructor() : UserService {
     private fun getByIdSync(id: String) =
         try {
             val query: ParseQuery<ParseObject> = ParseQuery.getQuery(UserInfo.TABLE)
-            Response(convert(query.get(id)), null)
+            Response(convertToUser(query.get(id)), null)
         } catch (e: ParseException) {
             val error = when {
                 e.code == ParseException.OBJECT_NOT_FOUND -> UserNotFoundException(id)
@@ -102,11 +101,4 @@ class UserServiceImpl @Inject constructor() : UserService {
             }
             Response<UserInfo>(null, error)
         }
-
-    private fun convert(obj: ParseObject): UserInfo =
-        UserInfo(
-            obj.objectId,
-            obj.getString(UserInfo.PROP_EMAIL) ?: UserInfo.ERROR_MISSING,
-            obj.getString(UserInfo.PROP_USER_NAME) ?: UserInfo.ERROR_MISSING
-        )
 }
