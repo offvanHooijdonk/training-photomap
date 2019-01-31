@@ -9,7 +9,7 @@ fun convertToPhoto(parse: ParseObject, userInfo: UserInfo): PhotoInfo =
     PhotoInfo(
         parse.objectId,
         userInfo,
-        parse.getString(PhotoInfo.DESCRIPTION),
+        parse.getString(PhotoInfo.DESCRIPTION) ?: PhotoInfo.EMPTY_VALUE,
         parse.getDate(PhotoInfo.SHOT_TIMESTAMP)!!,
         parse.getInt(PhotoInfo.CATEGORY),
         parse.getParseGeoPoint(PhotoInfo.LOCATION)?.latitude,

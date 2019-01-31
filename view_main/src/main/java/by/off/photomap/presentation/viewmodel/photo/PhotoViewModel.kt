@@ -1,12 +1,12 @@
 package by.off.photomap.presentation.viewmodel.photo
 
 import android.arch.lifecycle.LiveData
+import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.ViewModel
 import android.databinding.ObservableBoolean
 import android.databinding.ObservableField
 import android.databinding.ObservableInt
 import android.net.Uri
-import android.support.design.widget.Snackbar
 import android.util.Log
 import by.off.photomap.core.utils.LOGCAT
 import by.off.photomap.core.utils.map
@@ -19,6 +19,8 @@ class PhotoViewModel @Inject constructor(private val photoService: PhotoService)
     // todo make a separate livaData for upload
     val liveData: LiveData<Boolean> = photoService.serviceLiveData.map { response -> onResponse(response) }
     val loadImageLiveData = photoService.loadImageLiveData.map { progressPerCent -> onLoadStatus(progressPerCent) }
+    val errorLiveData = MutableLiveData<Exception?>()
+    val saveEnableLiveData = MutableLiveData<Boolean?>()
 
     val imageUri = ObservableField<Uri>()
     val inProgress = ObservableBoolean(false)
@@ -26,6 +28,7 @@ class PhotoViewModel @Inject constructor(private val photoService: PhotoService)
     val progressPerCent = ObservableInt(0)
     val photoInfo = ObservableField<PhotoInfo?>()
     val editMode = ObservableBoolean(false)
+    val descriptionError = ObservableField<String?>()
     private val saveInProgress = ObservableBoolean(false)
 
     fun loadById() {
@@ -42,11 +45,14 @@ class PhotoViewModel @Inject constructor(private val photoService: PhotoService)
     }
 
     fun save() {
-        saveInProgress.set(true)
-        progressIndeterminate.set(false)
-        inProgress.set(true)
+        if (validate()) {
+            saveInProgress.set(true)
+            progressIndeterminate.set(false)
+            inProgress.set(true)
+            saveEnableLiveData.postValue(false)
 
-        photoService.save(photoInfo.get()!!, imageUri.get()!!) // TODO add null check
+            photoService.save(photoInfo.get()!!, imageUri.get()!!) // TODO add null check
+        }
     }
 
     fun update(photoInfo: PhotoInfo) {
@@ -62,15 +68,27 @@ class PhotoViewModel @Inject constructor(private val photoService: PhotoService)
         inProgress.set(false)
         photoInfo.set(response.data)
         progressPerCent.set(0)
+        Log.i(LOGCAT, "Data arrived ${response.data}")
 
         if (saveInProgress.get() && response.data != null) {
             exitScreen = true
         }
-        if (response.error != null) {
-            // TODO create error liveData
+        response.error?.let {
+            errorLiveData.postValue(response.error)
+            saveEnableLiveData.postValue(false)
         }
         saveInProgress.set(false)
 
         return exitScreen
     }
+
+    private fun validate(): Boolean {
+        return if (photoInfo.get()?.description != null && photoInfo.get()?.description?.trim()?.isEmpty() != true) {
+            true
+        } else {
+            descriptionError.set("The field is mandatory, please fill in")
+            false
+        }
+    }
+
 }

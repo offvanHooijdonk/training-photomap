@@ -136,6 +136,7 @@
                         app:layout_constraintTop_toBottomOf="@id/txtPhotoTimestamp" />
 
                     <ImageView
+                        android:id="@+id/imgCategoryLabel"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:alpha="0.8"
@@ -143,6 +144,17 @@
                         android:tint="@color/colorAccent"
                         app:layout_constraintStart_toStartOf="@id/guideIcons"
                         app:layout_constraintTop_toTopOf="@id/txtPhotoCategory" />
+
+                    <ImageView
+                        android:id="@+id/imgCategorySpinner"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:alpha="0.8"
+                        android:src="@drawable/ic_category_24"
+                        android:tint="@color/colorAccent"
+                        app:layout_constraintBottom_toBottomOf="@id/spinnerCategories"
+                        app:layout_constraintStart_toStartOf="@id/guideIcons"
+                        app:layout_constraintTop_toTopOf="@id/spinnerCategories" />
 
                     <Spinner
                         android:id="@+id/spinnerCategories"
@@ -171,10 +183,11 @@
                         style="@style/DividerHorizontal"
                         android:layout_marginTop="@dimen/photo_attr_divider_margin_top"
                         app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="@id/txtPhotoCategory"
+                        app:layout_constraintStart_toStartOf="@id/guideParameters"
                         app:layout_constraintTop_toBottomOf="@id/barrierCategory" />
 
                     <ImageView
+                        android:id="@+id/imgDescriptionLabel"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:alpha="0.8"
@@ -183,14 +196,33 @@
                         app:layout_constraintStart_toStartOf="@id/guideIcons"
                         app:layout_constraintTop_toTopOf="@id/txtPhotoDescription" />
 
-                    <EditText
-                        android:id="@+id/inputPhotoDescription"
+                    <ImageView
+                        android:id="@+id/imgDescriptionEdit"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        android:alpha="0.8"
+                        android:src="@drawable/ic_description_24"
+                        android:tint="@color/colorAccent"
+                        app:layout_constraintStart_toStartOf="@id/guideIcons"
+                        app:layout_constraintTop_toTopOf="@id/tilPhotoDescription" />
+
+                    <android.support.design.widget.TextInputLayout
+                        android:id="@+id/tilPhotoDescription"
                         style="@style/TextPhotoAttributes"
-                        android:enabled="@{!model.inProgress}"
-                        android:text="@={model.photoInfo.description}"
+                        error="@{model.descriptionError}"
                         app:layout_constraintStart_toStartOf="@id/guideParameters"
-                        app:layout_constraintTop_toBottomOf="@id/barrierCategory"
-                        tools:text="@string/fish_text" />
+                        app:layout_constraintTop_toBottomOf="@id/barrierCategory">
+
+                        <EditText
+                            android:id="@+id/inputPhotoDescription"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:enabled="@{!model.inProgress}"
+                            android:text="@={model.photoInfo.description}"
+
+                            tools:text="@string/fish_text" />
+                    </android.support.design.widget.TextInputLayout>
 
                     <TextView
                         android:id="@+id/txtPhotoDescription"
@@ -199,7 +231,6 @@
                         android:text="@{model.photoInfo.description}"
                         app:layout_constraintStart_toStartOf="@id/guideParameters"
                         app:layout_constraintTop_toBottomOf="@id/barrierCategory"
-                        app:layout_goneMarginTop="@dimen/photo_attr_margin_top"
                         tools:text="@string/fish_text" />
 
                     <android.support.constraint.Barrier
@@ -207,26 +238,26 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         app:barrierDirection="bottom"
-                        app:constraint_referenced_ids="txtPhotoDescription,inputPhotoDescription" />
+                        app:constraint_referenced_ids="txtPhotoDescription,tilPhotoDescription" />
 
                     <View
                         android:id="@+id/dividerDescription"
                         style="@style/DividerHorizontal"
                         android:layout_marginTop="@dimen/photo_attr_divider_margin_top"
-                        app:layout_constraintStart_toStartOf="@id/txtPhotoDescription"
+                        app:layout_constraintStart_toStartOf="@id/guideParameters"
                         app:layout_constraintTop_toBottomOf="@id/barrierDescription" />
 
                     <android.support.constraint.Group
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:visibility="@{model.editMode ? View.VISIBLE : View.GONE}"
-                        app:constraint_referenced_ids="inputPhotoDescription, spinnerCategories" />
+                        app:constraint_referenced_ids="tilPhotoDescription, spinnerCategories, imgCategorySpinner, imgDescriptionEdit" />
 
                     <android.support.constraint.Group
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:visibility="@{model.editMode ? View.INVISIBLE : View.VISIBLE}"
-                        app:constraint_referenced_ids="txtPhotoDescription, txtPhotoCategory, dividerDescription" />
+                        android:visibility="@{model.editMode ? View.GONE : View.VISIBLE}"
+                        app:constraint_referenced_ids="txtPhotoDescription, txtPhotoCategory, imgCategoryLabel, dividerDescription, imgDescriptionLabel" />
                 </android.support.constraint.ConstraintLayout>
             </FrameLayout>
         </android.support.v4.widget.NestedScrollView>

@@ -68,7 +68,7 @@ class PhotoServiceImpl @Inject constructor(private val ctx: Context) : PhotoServ
                     val longitude = it.getDouble(it.getColumnIndex(MediaStore.Images.Media.LONGITUDE)).let { value -> if (value == 0.0) null else value }
                     val dateTaken = it.getLong(it.getColumnIndex(MediaStore.Images.Media.DATE_TAKEN))
                     val description = it.getString(it.getColumnIndex(MediaStore.Images.Media.TITLE))
-                    Response(PhotoInfo("", null, description, Date(dateTaken), 0, latitude, longitude))
+                    Response(PhotoInfo("", null, description ?: "", Date(dateTaken), 0, latitude, longitude))
                 }
             } catch (e: Exception) {
                 Response<PhotoInfo>(error = e)
