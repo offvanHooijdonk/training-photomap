@@ -63,19 +63,22 @@ class UserServiceImpl @Inject constructor() : UserService {
         }
     }
 
-    override fun getById(id: String): LiveData<Response<UserInfo>> {
-        val liveData = MutableLiveData<Response<UserInfo>>()
-        CoroutineScope(Dispatchers.IO).launch {
-            val response = getByIdSync(id)
-
-            liveData.postValue(response)
-        }
-        return liveData
-    }
-
     override fun authenticate(userName: String, pwd: String) {
         launchScopeIO {
             val response = authSync(userName, pwd)
+
+            liveData.postValue(response)
+        }
+    }
+
+    override fun logOut() {
+        launchScopeIO {
+            val response = try {
+                ParseUser.logOut()
+                Response(UserInfo(""))
+            } catch (e: Exception) {
+                Response<UserInfo>(error = e)
+            }
 
             liveData.postValue(response)
         }

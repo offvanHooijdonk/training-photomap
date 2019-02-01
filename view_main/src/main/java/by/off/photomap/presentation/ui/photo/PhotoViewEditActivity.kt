@@ -4,8 +4,10 @@ import android.arch.lifecycle.Observer
 import android.content.Context
 import android.databinding.BindingAdapter
 import android.databinding.DataBindingUtil
+import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Bundle
+import android.support.design.chip.Chip
 import android.support.design.widget.Snackbar
 import android.support.design.widget.TextInputLayout
 import android.support.v7.app.AlertDialog
@@ -13,6 +15,7 @@ import android.support.v7.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.ArrayAdapter
+import android.widget.ImageView
 import android.widget.TextView
 import by.off.photomap.core.ui.colorError
 import by.off.photomap.core.ui.dto.CategoryInfo
@@ -22,6 +25,7 @@ import by.off.photomap.presentation.ui.R
 import by.off.photomap.presentation.ui.databinding.ActPhotoViewEditBinding
 import by.off.photomap.presentation.viewmodel.photo.PhotoViewModel
 import kotlinx.android.synthetic.main.act_photo_view_edit.*
+import java.io.File
 import java.text.DateFormat
 import java.util.*
 import javax.inject.Inject
@@ -37,13 +41,13 @@ class PhotoViewEditActivity : AppCompatActivity() {
 
     private lateinit var ctx: Context
     private lateinit var mode: MODE
-    private lateinit var viewModel: PhotoViewModel
+    private lateinit var viewModel: PhotoViewModel // todo use default value insted
     private var enableSave = true
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         ctx = this
-
+// todo slice into init methods
         PhotoScreenComponent.get(this).inject(this)
         viewModel = viewModelFactory.create(PhotoViewModel::class.java)
 
@@ -58,10 +62,10 @@ class PhotoViewEditActivity : AppCompatActivity() {
             error?.let { Snackbar.make(progressSaving, it.message ?: "Unknown", Snackbar.LENGTH_INDEFINITE).colorError().show() }
         })
         viewModel.saveEnableLiveData.observe(this, Observer { enable ->
-            enableSave = enable ?: false
+            enableSave = enable ?: true
             invalidateOptionsMenu()
         })
-
+        viewModel.fileLiveData.observe(this, Observer { })
 
         setSupportActionBar(toolbar)
         title = null
@@ -69,11 +73,11 @@ class PhotoViewEditActivity : AppCompatActivity() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         val uri = intent.extras?.getParcelable<Uri>(EXTRA_IMAGE_URI)
-        if (uri != null) {
-            mode = MODE.CREATE
-            spinnerCategories.adapter = ArrayAdapter<String>(ctx, android.R.layout.simple_list_item_1, CategoryInfo.getTitlesOrdered(ctx))
-
-            viewModel.setupWithUri(uri)
+        val passedId = intent.extras?.getString(EXTRA_PHOTO_ID)
+        when {
+            uri != null -> loadByUri(uri)
+            passedId != null -> loadById(passedId)
+            else -> Unit // todo handle
         }
     }
 
@@ -102,6 +106,23 @@ class PhotoViewEditActivity : AppCompatActivity() {
         handleBack()
     }
 
+    private fun loadByUri(uri: Uri) {
+        mode = MODE.CREATE
+        spinnerCategories.adapter = ArrayAdapter<String>(
+            ctx,
+            android.R.layout.simple_list_item_1,
+            CategoryInfo.getTitlesOrdered().map { ctx.getString(it) }
+        )
+
+        viewModel.setupWithUri(uri)
+    }
+
+    private fun loadById(id: String) {
+        mode = MODE.VIEW
+
+        viewModel.loadById(id)
+    }
+
     private fun handleBack() {
         if (mode == MODE.CREATE || mode == MODE.EDIT) {
             AlertDialog.Builder(ctx)
@@ -110,6 +131,8 @@ class PhotoViewEditActivity : AppCompatActivity() {
                 .setPositiveButton(R.string.dialog_btn_discard) { _, _ -> this@PhotoViewEditActivity.finish() }
                 .setNegativeButton(R.string.dialog_btn_stay, null)
                 .show()
+        } else {
+            finish()
         }
     }
 
@@ -131,4 +154,23 @@ fun setPhotoTimestamp(textView: TextView, date: Date?) {
 @BindingAdapter("error")
 fun setTextInpuLayoutError(til: TextInputLayout, errorMessage: String?) {
     til.error = errorMessage
+}
+
+@BindingAdapter("category")
+fun setChipCategoryLabelColor(chip: Chip, categoryId: Int) {
+    chip.setText(CategoryInfo.getTitleRes(categoryId) ?: R.string.label_category_error)
+    //val catColor = chip.context.resources.getColor(CategoryInfo.getColorRes(categoryId) ?: R.color.category_unknown)
+    chip.setChipBackgroundColorResource(CategoryInfo.getColorRes(categoryId) ?: R.color.category_unknown)
+}
+
+@BindingAdapter("filePath")
+fun setImageFile(imageView: ImageView, filePath: String?) {
+    filePath?.let {
+        val file = File(filePath)
+        if (file.exists()) {
+            imageView.setImageBitmap(BitmapFactory.decodeFile(filePath))
+        } else {
+            // todo show error?
+        }
+    }
 }

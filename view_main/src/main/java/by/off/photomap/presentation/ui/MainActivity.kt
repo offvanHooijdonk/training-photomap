@@ -1,21 +1,23 @@
 package by.off.photomap.presentation.ui
 
+import android.arch.lifecycle.Observer
 import android.os.Bundle
+import android.support.design.widget.Snackbar
 import android.support.design.widget.TabLayout
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentManager
 import android.support.v4.app.FragmentPagerAdapter
 import android.support.v4.view.ViewPager
 import android.support.v7.app.AppCompatActivity
-import android.util.Log
 import android.view.Menu
-import android.view.MenuInflater
 import android.view.MenuItem
-import by.off.photomap.core.ui.BaseActivity
-import by.off.photomap.core.utils.LOGCAT
+import by.off.photomap.core.utils.di.ViewModelFactory
+import by.off.photomap.di.MainScreenComponent
 import by.off.photomap.presentation.ui.map.MapFragment
 import by.off.photomap.presentation.ui.timeline.TimelineFragment
+import by.off.photomap.presentation.viewmodel.MainScreenViewModel
 import kotlinx.android.synthetic.main.act_main.*
+import javax.inject.Inject
 
 class MainActivity : /*BaseActivity*/AppCompatActivity() {
     companion object {
@@ -25,13 +27,28 @@ class MainActivity : /*BaseActivity*/AppCompatActivity() {
         const val FLAG_LOCATION_LISTENER = 0b10
     }
 
+    @Inject
+    lateinit var viewModelFactory: ViewModelFactory
+
+    private lateinit var viewModel: MainScreenViewModel
+
     val registeredFlags = mutableMapOf<Int, Int>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.act_main)
+        MainScreenComponent.get(this).inject(this)
 
         setSupportActionBar(toolbar)
+
+        viewModel = viewModelFactory.create(MainScreenViewModel::class.java)
+        viewModel.liveData.observe(this, Observer { error ->
+            if (error == null) {
+                finish() // TODO place SplashActivity to this module and navigate to it here
+            } else {
+                Snackbar.make(mainRoot, error.message ?: "Some error occurred", Snackbar.LENGTH_LONG).show()
+            }
+        })
 
         container.adapter = MainPagerAdapter(supportFragmentManager)
         container.addOnPageChangeListener(TabLayout.TabLayoutOnPageChangeListener(tabs))
@@ -65,8 +82,11 @@ class MainActivity : /*BaseActivity*/AppCompatActivity() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
-        when(item?.itemId) {
-            R.id.item_log_out -> {} // TODO call logout
+        when (item?.itemId) {
+            R.id.item_log_out -> {
+                Snackbar.make(mainRoot, "Please wait while we are logging you off", Snackbar.LENGTH_INDEFINITE).show() // todo implement some dialog here
+                viewModel.logOut()
+            }
         }
         return true
     }

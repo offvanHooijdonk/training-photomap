@@ -2,6 +2,7 @@ package by.off.photomap.di
 
 import android.content.Context
 import by.off.photomap.core.utils.di.scopes.PerScreen
+import by.off.photomap.presentation.ui.MainActivity
 import by.off.photomap.presentation.ui.photo.PhotoViewEditActivity
 import by.off.photomap.presentation.ui.timeline.TimelineFragment
 import by.off.photomap.storage.parse.PhotoService
@@ -15,13 +16,9 @@ interface PhotoScreenComponent {
 
         fun get(ctx: Context): PhotoScreenComponent {
             val component = instance
-            return if (component == null) {
-                DaggerPhotoScreenComponent.builder()
-                    .dependencies((ctx.applicationContext as DependenciesProvider).providePhotoScreenDependencies())
-                    .build().also { instance = it }
-            } else {
-                component
-            }
+            return component ?: DaggerPhotoScreenComponent.builder()
+                .dependencies((ctx.applicationContext as DependenciesProvider).providePhotoScreenDependencies())
+                .build().also { instance = it }
         }
     }
 

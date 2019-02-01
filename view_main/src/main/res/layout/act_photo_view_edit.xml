@@ -15,7 +15,7 @@
             name="model"
             type="by.off.photomap.presentation.viewmodel.photo.PhotoViewModel" />
     </data>
-
+    <!-- TODO to includes -->
     <android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
@@ -45,6 +45,7 @@
 
                     <ImageView
                         android:id="@+id/imgPhoto"
+                        filePath="@{model.filePath}"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:adjustViewBounds="true"
@@ -142,8 +143,9 @@
                         android:alpha="0.8"
                         android:src="@drawable/ic_category_24"
                         android:tint="@color/colorAccent"
+                        app:layout_constraintBottom_toBottomOf="@id/chipPhotoCategory"
                         app:layout_constraintStart_toStartOf="@id/guideIcons"
-                        app:layout_constraintTop_toTopOf="@id/txtPhotoCategory" />
+                        app:layout_constraintTop_toTopOf="@id/chipPhotoCategory" />
 
                     <ImageView
                         android:id="@+id/imgCategorySpinner"
@@ -165,9 +167,19 @@
                         app:layout_constraintTop_toBottomOf="@id/txtPhotoTimestamp"
                         tools:entries="@array/categories" />
 
-                    <TextView
+                    <!--<TextView
                         android:id="@+id/txtPhotoCategory"
                         style="@style/TextPhotoAttributes"
+                        category="@{model.photoInfo.category}"
+                        app:layout_constraintStart_toStartOf="@id/guideParameters"
+                        app:layout_constraintTop_toBottomOf="@id/txtPhotoTimestamp"
+                        tools:text="@string/fish_text_short" />-->
+
+                    <android.support.design.chip.Chip
+                        android:id="@+id/chipPhotoCategory"
+                        style="@style/TextPhotoAttributes"
+                        category="@{model.photoInfo.category}"
+                        android:textAppearance="@style/ChipTextStyle"
                         app:layout_constraintStart_toStartOf="@id/guideParameters"
                         app:layout_constraintTop_toBottomOf="@id/txtPhotoTimestamp"
                         tools:text="@string/fish_text_short" />
@@ -257,7 +269,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:visibility="@{model.editMode ? View.GONE : View.VISIBLE}"
-                        app:constraint_referenced_ids="txtPhotoDescription, txtPhotoCategory, imgCategoryLabel, dividerDescription, imgDescriptionLabel" />
+                        app:constraint_referenced_ids="txtPhotoDescription, chipPhotoCategory, imgCategoryLabel, dividerDescription, imgDescriptionLabel" />
                 </android.support.constraint.ConstraintLayout>
             </FrameLayout>
         </android.support.v4.widget.NestedScrollView>

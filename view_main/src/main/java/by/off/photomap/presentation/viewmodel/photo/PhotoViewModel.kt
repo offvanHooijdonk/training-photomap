@@ -19,20 +19,28 @@ class PhotoViewModel @Inject constructor(private val photoService: PhotoService)
     // todo make a separate livaData for upload
     val liveData: LiveData<Boolean> = photoService.serviceLiveData.map { response -> onResponse(response) }
     val loadImageLiveData = photoService.loadImageLiveData.map { progressPerCent -> onLoadStatus(progressPerCent) }
-    val errorLiveData = MutableLiveData<Exception?>()
-    val saveEnableLiveData = MutableLiveData<Boolean?>()
+    val fileLiveData = photoService.serviceFileLiveData.map { filePath -> onImageFile(filePath) }
 
+    val errorLiveData = MutableLiveData<Exception?>()
+
+    val saveEnableLiveData = MutableLiveData<Boolean?>()
     val imageUri = ObservableField<Uri>()
+
     val inProgress = ObservableBoolean(false)
     val progressIndeterminate = ObservableBoolean(true)
     val progressPerCent = ObservableInt(0)
     val photoInfo = ObservableField<PhotoInfo?>()
     val editMode = ObservableBoolean(false)
     val descriptionError = ObservableField<String?>()
+    val filePath = ObservableField<String?>()
     private val saveInProgress = ObservableBoolean(false)
 
-    fun loadById() {
-        TODO("Yet to be implemented")
+    fun loadById(id: String) {
+        inProgress.set(true)
+        progressIndeterminate.set(true)
+        editMode.set(false)// todo check if this is author
+
+        photoService.loadById(id)
     }
 
     fun setupWithUri(uri: Uri) {
@@ -73,13 +81,19 @@ class PhotoViewModel @Inject constructor(private val photoService: PhotoService)
         if (saveInProgress.get() && response.data != null) {
             exitScreen = true
         }
-        response.error?.let {
-            errorLiveData.postValue(response.error)
+        response.error?.also {
+            errorLiveData.postValue(it)
             saveEnableLiveData.postValue(false)
+        } ?: let {
+            saveEnableLiveData.postValue(true)
         }
         saveInProgress.set(false)
 
         return exitScreen
+    }
+
+    private fun onImageFile(filePath: String) {
+        this.filePath.set(filePath)
     }
 
     private fun validate(): Boolean {
