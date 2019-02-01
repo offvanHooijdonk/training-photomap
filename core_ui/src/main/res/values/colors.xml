@@ -10,7 +10,7 @@
     <color name="firm_blue">#1976D2</color>
 
     <color name="category_friends">@color/colorAccentDark</color>
-    <color name="category_nature">@color/colorPrimaryDark</color>
+    <color name="category_nature">@color/colorPrimary</color>
     <color name="category_default">@color/firm_blue</color>
     <color name="category_unknown">#666666</color>
 
