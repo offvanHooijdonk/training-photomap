@@ -19,13 +19,13 @@ fun convertToPhoto(parse: ParseObject, userInfo: UserInfo): PhotoInfo =
 fun convertToUser(parseUser: ParseUser): UserInfo =
     UserInfo(
         parseUser.objectId,
-        parseUser.username ?: UserInfo.ERROR_MISSING,
-        parseUser.email ?: UserInfo.ERROR_MISSING
+        parseUser.username ?: UserInfo.DATA_MISSING,
+        parseUser.email ?: UserInfo.DATA_MISSING
     )
 
 fun convertToUser(obj: ParseObject): UserInfo =
     UserInfo(
         obj.objectId,
-        obj.getString(UserInfo.PROP_EMAIL) ?: UserInfo.ERROR_MISSING,
-        obj.getString(UserInfo.PROP_USER_NAME) ?: UserInfo.ERROR_MISSING
+        obj.getString(UserInfo.PROP_EMAIL) ?: UserInfo.DATA_MISSING,
+        obj.getString(UserInfo.PROP_USER_NAME) ?: UserInfo.DATA_MISSING
     )

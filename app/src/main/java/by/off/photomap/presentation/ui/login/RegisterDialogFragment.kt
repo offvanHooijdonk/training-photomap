@@ -76,7 +76,7 @@ class RegisterDialogFragment : DialogFragment() {
         }
 
         if (!validAll) {
-            showValidationError("Please fix validation error")
+            showValidationError("Please fix validation errorMessage")
         } else if (inputPwd.text.toString() != inputPwdCheck.text.toString()) {
             showValidationError("Passwords do not match")
         } else {

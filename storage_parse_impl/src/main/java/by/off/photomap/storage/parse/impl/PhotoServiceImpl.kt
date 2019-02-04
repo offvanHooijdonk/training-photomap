@@ -55,9 +55,14 @@ class PhotoServiceImpl @Inject constructor(private val ctx: Context) : PhotoServ
                 when (percentDone) {
                     100 -> {
                         Log.i(LOGCAT, "File upload complete")
-                        saveObjectSync(photo, file)
+                        val response = try {
+                            saveObjectSync(photo, file)
+                            Response(photo)
+                        } catch (e: Exception) {
+                            Response<PhotoInfo>(error = e)
+                        }
                         loadLD.postValue(percentDone)
-                        liveData.postValue(Response(data = photo))
+                        liveData.postValue(response)
                     }
                     else -> {
                         loadLD.postValue(percentDone)
@@ -117,7 +122,7 @@ class PhotoServiceImpl @Inject constructor(private val ctx: Context) : PhotoServ
         }
     }
 
-    private fun downloadImage(file: ParseFile) { // TODO make this more coroutine style?
+    private fun downloadImage(file: ParseFile) {
         val filePath = "${ctx.filesDir.absolutePath}/${file.name}"
         val imageFile = File(filePath)
         if (imageFile.createNewFile()) {

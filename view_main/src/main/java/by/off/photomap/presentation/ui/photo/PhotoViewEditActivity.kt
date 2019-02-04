@@ -1,88 +1,70 @@
 package by.off.photomap.presentation.ui.photo
 
 import android.arch.lifecycle.Observer
-import android.content.Context
-import android.databinding.BindingAdapter
 import android.databinding.DataBindingUtil
-import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Bundle
-import android.support.design.chip.Chip
 import android.support.design.widget.Snackbar
-import android.support.design.widget.TextInputLayout
 import android.support.v7.app.AlertDialog
-import android.support.v7.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.ArrayAdapter
-import android.widget.ImageView
-import android.widget.TextView
+import by.off.photomap.core.ui.BaseActivity
 import by.off.photomap.core.ui.colorError
+import by.off.photomap.core.ui.ctx
 import by.off.photomap.core.ui.dto.CategoryInfo
 import by.off.photomap.core.utils.di.ViewModelFactory
 import by.off.photomap.di.PhotoScreenComponent
 import by.off.photomap.presentation.ui.R
 import by.off.photomap.presentation.ui.databinding.ActPhotoViewEditBinding
 import by.off.photomap.presentation.viewmodel.photo.PhotoViewModel
+import by.off.photomap.presentation.viewmodel.photo.PhotoViewModel.MODE
 import kotlinx.android.synthetic.main.act_photo_view_edit.*
-import java.io.File
-import java.text.DateFormat
-import java.util.*
+import kotlinx.android.synthetic.main.include_collapsible_toolbar.*
 import javax.inject.Inject
 
-class PhotoViewEditActivity : AppCompatActivity() {
+class PhotoViewEditActivity : BaseActivity() {
     companion object {
         const val EXTRA_IMAGE_URI = "extra_image_uri"
         const val EXTRA_PHOTO_ID = "extra_photo_id"
+        private const val KEY_SAVED_INSTANCE = "key_saved_instance"
     }
 
     @Inject
-    lateinit var viewModelFactory: ViewModelFactory
+    override lateinit var viewModelFactory: ViewModelFactory
 
-    private lateinit var ctx: Context
-    private lateinit var mode: MODE
-    private lateinit var viewModel: PhotoViewModel // todo use default value insted
+    private var mode: MODE = MODE.VIEW
+    private lateinit var viewModel: PhotoViewModel
     private var enableSave = true
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        ctx = this
-// todo slice into init methods
+
         PhotoScreenComponent.get(this).inject(this)
-        viewModel = viewModelFactory.create(PhotoViewModel::class.java)
+        viewModel = getViewModel(PhotoViewModel::class.java)
 
-        val binding = DataBindingUtil.setContentView<ActPhotoViewEditBinding>(this, R.layout.act_photo_view_edit)
-        binding.model = viewModel
+        initBindings()
+        initModelsObserve()
 
-        viewModel.liveData.observe(this, Observer { leaveScreen ->
-            leaveScreen?.let { if (it) finish() }
-        })
-        viewModel.loadImageLiveData.observe(this, Observer { })
-        viewModel.errorLiveData.observe(this, Observer { error ->
-            error?.let { Snackbar.make(progressSaving, it.message ?: "Unknown", Snackbar.LENGTH_INDEFINITE).colorError().show() }
-        })
-        viewModel.saveEnableLiveData.observe(this, Observer { enable ->
-            enableSave = enable ?: true
-            invalidateOptionsMenu()
-        })
-        viewModel.fileLiveData.observe(this, Observer { })
+        initToolbar()
 
-        setSupportActionBar(toolbar)
-        title = null
-        supportActionBar?.setHomeButtonEnabled(true)
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
-
-        val uri = intent.extras?.getParcelable<Uri>(EXTRA_IMAGE_URI)
-        val passedId = intent.extras?.getString(EXTRA_PHOTO_ID)
-        when {
-            uri != null -> loadByUri(uri)
-            passedId != null -> loadById(passedId)
-            else -> Unit // todo handle
+        if (savedInstanceState == null) {
+            setupData()
         }
     }
 
+    override fun onSaveInstanceState(outState: Bundle?) {
+        super.onSaveInstanceState(outState)
+
+        outState?.putBoolean(KEY_SAVED_INSTANCE, true) // so that on screen rotation we do not call the ViewModel again
+    }
+
     override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
-        menu?.findItem(R.id.item_save)?.isEnabled = enableSave
+        if (mode == MODE.VIEW) {
+            menu?.findItem(R.id.item_save)?.isVisible = false
+        } else {
+            menu?.findItem(R.id.item_save)?.isEnabled = enableSave
+        }
 
         return super.onPrepareOptionsMenu(menu)
     }
@@ -106,6 +88,43 @@ class PhotoViewEditActivity : AppCompatActivity() {
         handleBack()
     }
 
+    private fun setupData() {
+        val uri = intent.extras?.getParcelable<Uri>(EXTRA_IMAGE_URI)
+        val passedId = intent.extras?.getString(EXTRA_PHOTO_ID)
+        when {
+            uri != null -> loadByUri(uri)
+            passedId != null -> loadById(passedId)
+            else -> {
+                Snackbar.make(progressSaving, R.string.no_data_provided, Snackbar.LENGTH_INDEFINITE).colorError().show()
+            }
+        }
+    }
+
+    private fun initBindings() {
+        val binding = DataBindingUtil.setContentView<ActPhotoViewEditBinding>(this, R.layout.act_photo_view_edit)
+        binding.model = viewModel
+    }
+
+    private fun initModelsObserve() {
+        viewModel.liveData.observe(this, Observer { })
+        viewModel.modeLiveData.observe(this, Observer { leaveScreen ->
+            leaveScreen?.let {
+                when (it) {
+                    MODE.CLOSE -> finish()
+                    MODE.CREATE -> mode = it.also { invalidateOptionsMenu() }
+                    MODE.EDIT -> mode = it.also { invalidateOptionsMenu() }
+                    MODE.VIEW -> mode = it.also { invalidateOptionsMenu() }
+                }
+            }
+        })
+        viewModel.loadImageLiveData.observe(this, Observer { })
+        viewModel.saveEnableLiveData.observe(this, Observer { enable ->
+            enableSave = enable ?: true
+            invalidateOptionsMenu()
+        })
+        viewModel.fileLiveData.observe(this, Observer { })
+    }
+
     private fun loadByUri(uri: Uri) {
         mode = MODE.CREATE
         spinnerCategories.adapter = ArrayAdapter<String>(
@@ -120,7 +139,7 @@ class PhotoViewEditActivity : AppCompatActivity() {
     private fun loadById(id: String) {
         mode = MODE.VIEW
 
-        viewModel.loadById(id)
+        viewModel.setupWithPhotoById(id)
     }
 
     private fun handleBack() {
@@ -136,41 +155,10 @@ class PhotoViewEditActivity : AppCompatActivity() {
         }
     }
 
-    private enum class MODE {
-        CREATE, EDIT, VIEW
-    }
-}
-
-/*@BindingAdapter("android:src")
-fun setImageUri(imageView: ImageView, uri: Uri?) {
-    uri?.let { imageView.setImageURI(uri) }
-}*/
-
-@BindingAdapter("timestamp")
-fun setPhotoTimestamp(textView: TextView, date: Date?) {
-    textView.text = if (date != null) DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.MEDIUM).format(date) else null
-}
-
-@BindingAdapter("error")
-fun setTextInpuLayoutError(til: TextInputLayout, errorMessage: String?) {
-    til.error = errorMessage
-}
-
-@BindingAdapter("category")
-fun setChipCategoryLabelColor(chip: Chip, categoryId: Int) {
-    chip.setText(CategoryInfo.getTitleRes(categoryId) ?: R.string.label_category_error)
-    //val catColor = chip.context.resources.getColor(CategoryInfo.getColorRes(categoryId) ?: R.color.category_unknown)
-    chip.setChipBackgroundColorResource(CategoryInfo.getColorRes(categoryId) ?: R.color.category_unknown)
-}
-
-@BindingAdapter("filePath")
-fun setImageFile(imageView: ImageView, filePath: String?) {
-    filePath?.let {
-        val file = File(filePath)
-        if (file.exists()) {
-            imageView.setImageBitmap(BitmapFactory.decodeFile(filePath))
-        } else {
-            // todo show error?
-        }
+    private fun initToolbar() {
+        setSupportActionBar(toolbar)
+        title = null
+        supportActionBar?.setHomeButtonEnabled(true)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
     }
 }

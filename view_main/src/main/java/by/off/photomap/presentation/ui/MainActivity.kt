@@ -8,9 +8,9 @@ import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentManager
 import android.support.v4.app.FragmentPagerAdapter
 import android.support.v4.view.ViewPager
-import android.support.v7.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
+import by.off.photomap.core.ui.BaseActivity
 import by.off.photomap.core.utils.di.ViewModelFactory
 import by.off.photomap.di.MainScreenComponent
 import by.off.photomap.presentation.ui.map.MapFragment
@@ -19,7 +19,7 @@ import by.off.photomap.presentation.viewmodel.MainScreenViewModel
 import kotlinx.android.synthetic.main.act_main.*
 import javax.inject.Inject
 
-class MainActivity : /*BaseActivity*/AppCompatActivity() {
+class MainActivity : BaseActivity() {
     companion object {
         const val TAB_INDEX_MAP = 0
         const val TAB_INDEX_TIMELINE = 1
@@ -28,7 +28,7 @@ class MainActivity : /*BaseActivity*/AppCompatActivity() {
     }
 
     @Inject
-    lateinit var viewModelFactory: ViewModelFactory
+    override lateinit var viewModelFactory: ViewModelFactory
 
     private lateinit var viewModel: MainScreenViewModel
 
@@ -41,30 +41,9 @@ class MainActivity : /*BaseActivity*/AppCompatActivity() {
 
         setSupportActionBar(toolbar)
 
-        viewModel = viewModelFactory.create(MainScreenViewModel::class.java)
-        viewModel.liveData.observe(this, Observer { error ->
-            if (error == null) {
-                finish() // TODO place SplashActivity to this module and navigate to it here
-            } else {
-                Snackbar.make(mainRoot, error.message ?: "Some error occurred", Snackbar.LENGTH_LONG).show()
-            }
-        })
+        initModelObserve()
 
-        container.adapter = MainPagerAdapter(supportFragmentManager)
-        container.addOnPageChangeListener(TabLayout.TabLayoutOnPageChangeListener(tabs))
-        tabs.addOnTabSelectedListener(TabLayout.ViewPagerOnTabSelectedListener(container))
-
-        container.addOnPageChangeListener(object : ViewPager.OnPageChangeListener {
-            override fun onPageScrollStateChanged(state: Int) {}
-
-            override fun onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int) {}
-
-            override fun onPageSelected(position: Int) {
-                val flag = registeredFlags[position] ?: 0
-                if (flag and FLAG_PHOTO_LISTENER != 0) fabAddPhoto.show() else fabAddPhoto.hide()
-                if (flag and FLAG_LOCATION_LISTENER != 0) fabLocation.show() else fabLocation.hide()
-            }
-        })
+        initTabLayout()
 
         fabAddPhoto.setOnClickListener {
             val fr = getCurrentFragment()
@@ -91,6 +70,35 @@ class MainActivity : /*BaseActivity*/AppCompatActivity() {
         return true
     }
 
+    private fun initModelObserve() {
+        viewModel = getViewModel(MainScreenViewModel::class.java)
+        viewModel.liveData.observe(this, Observer { error ->
+            if (error == null) {
+                finish() // TODO place SplashActivity to this module and navigate to it here
+            } else {
+                Snackbar.make(mainRoot, error.message ?: "Some errorMessage occurred", Snackbar.LENGTH_LONG).show()
+            }
+        })
+    }
+
+    private fun initTabLayout() {
+        container.adapter = MainPagerAdapter(supportFragmentManager)
+        container.addOnPageChangeListener(TabLayout.TabLayoutOnPageChangeListener(tabs))
+        tabs.addOnTabSelectedListener(TabLayout.ViewPagerOnTabSelectedListener(container))
+
+        container.addOnPageChangeListener(object : ViewPager.OnPageChangeListener {
+            override fun onPageScrollStateChanged(state: Int) {}
+
+            override fun onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int) {}
+
+            override fun onPageSelected(position: Int) {
+                val flag = registeredFlags[position] ?: 0
+                if (flag and FLAG_PHOTO_LISTENER != 0) fabAddPhoto.show() else fabAddPhoto.hide()
+                if (flag and FLAG_LOCATION_LISTENER != 0) fabLocation.show() else fabLocation.hide()
+            }
+        })
+    }
+
     private fun getFragmentFlag(f: Fragment) =
         (if (f is ButtonPhotoListener) FLAG_PHOTO_LISTENER else 0) or
                 (if (f is ButtonLocationListener) FLAG_LOCATION_LISTENER else 0)
@@ -102,6 +110,7 @@ class MainActivity : /*BaseActivity*/AppCompatActivity() {
         }
         return null
     }
+
 
     private inner class MainPagerAdapter(fm: FragmentManager) : FragmentPagerAdapter(fm) {
 
