@@ -1,69 +1,72 @@
 package by.off.photomap.presentation.ui.photo
 
 import android.arch.lifecycle.Observer
-import android.content.Context
-import android.databinding.BindingAdapter
 import android.databinding.DataBindingUtil
 import android.net.Uri
 import android.os.Bundle
+import android.support.design.widget.Snackbar
 import android.support.v7.app.AlertDialog
-import android.support.v7.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.ArrayAdapter
-import android.widget.TextView
+import by.off.photomap.core.ui.BaseActivity
+import by.off.photomap.core.ui.colorError
+import by.off.photomap.core.ui.ctx
 import by.off.photomap.core.ui.dto.CategoryInfo
 import by.off.photomap.core.utils.di.ViewModelFactory
 import by.off.photomap.di.PhotoScreenComponent
 import by.off.photomap.presentation.ui.R
 import by.off.photomap.presentation.ui.databinding.ActPhotoViewEditBinding
 import by.off.photomap.presentation.viewmodel.photo.PhotoViewModel
+import by.off.photomap.presentation.viewmodel.photo.PhotoViewModel.MODE
 import kotlinx.android.synthetic.main.act_photo_view_edit.*
-import java.text.DateFormat
-import java.util.*
+import kotlinx.android.synthetic.main.include_collapsible_toolbar.*
 import javax.inject.Inject
 
-class PhotoViewEditActivity : AppCompatActivity() {
+class PhotoViewEditActivity : BaseActivity() {
     companion object {
         const val EXTRA_IMAGE_URI = "extra_image_uri"
         const val EXTRA_PHOTO_ID = "extra_photo_id"
+        private const val KEY_SAVED_INSTANCE = "key_saved_instance"
     }
 
     @Inject
-    lateinit var viewModelFactory: ViewModelFactory
+    override lateinit var viewModelFactory: ViewModelFactory
 
-    private lateinit var ctx: Context
-    private lateinit var mode: MODE
+    private var mode: MODE = MODE.VIEW
     private lateinit var viewModel: PhotoViewModel
+    private var enableSave = true
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        ctx = this
 
         PhotoScreenComponent.get(this).inject(this)
-        viewModel = viewModelFactory.create(PhotoViewModel::class.java)
+        viewModel = getViewModel(PhotoViewModel::class.java)
 
-        val binding = DataBindingUtil.setContentView<ActPhotoViewEditBinding>(this, R.layout.act_photo_view_edit)
-        binding.model = viewModel
+        initBindings()
+        initModelsObserve()
 
-        viewModel.liveData.observe(this, Observer { leaveScreen ->
-            leaveScreen?.let { if (it) finish() }
-        })
-        viewModel.loadImageLiveData.observe(this, Observer { })
+        initToolbar()
 
-
-        setSupportActionBar(toolbar)
-        title = null
-        supportActionBar?.setHomeButtonEnabled(true)
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
-
-        val uri = intent.extras?.getParcelable<Uri>(EXTRA_IMAGE_URI)
-        if (uri != null) {
-            mode = MODE.CREATE
-            spinnerCategories.adapter = ArrayAdapter<String>(ctx, android.R.layout.simple_list_item_1, CategoryInfo.getTitlesOrdered(ctx))
-
-            viewModel.setupWithUri(uri)
+        if (savedInstanceState == null) {
+            setupData()
         }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle?) {
+        super.onSaveInstanceState(outState)
+
+        outState?.putBoolean(KEY_SAVED_INSTANCE, true) // so that on screen rotation we do not call the ViewModel again
+    }
+
+    override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
+        if (mode == MODE.VIEW) {
+            menu?.findItem(R.id.item_save)?.isVisible = false
+        } else {
+            menu?.findItem(R.id.item_save)?.isEnabled = enableSave
+        }
+
+        return super.onPrepareOptionsMenu(menu)
     }
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
@@ -85,6 +88,60 @@ class PhotoViewEditActivity : AppCompatActivity() {
         handleBack()
     }
 
+    private fun setupData() {
+        val uri = intent.extras?.getParcelable<Uri>(EXTRA_IMAGE_URI)
+        val passedId = intent.extras?.getString(EXTRA_PHOTO_ID)
+        when {
+            uri != null -> loadByUri(uri)
+            passedId != null -> loadById(passedId)
+            else -> {
+                Snackbar.make(progressSaving, R.string.no_data_provided, Snackbar.LENGTH_INDEFINITE).colorError().show()
+            }
+        }
+    }
+
+    private fun initBindings() {
+        val binding = DataBindingUtil.setContentView<ActPhotoViewEditBinding>(this, R.layout.act_photo_view_edit)
+        binding.model = viewModel
+    }
+
+    private fun initModelsObserve() {
+        viewModel.liveData.observe(this, Observer { })
+        viewModel.modeLiveData.observe(this, Observer { leaveScreen ->
+            leaveScreen?.let {
+                when (it) {
+                    MODE.CLOSE -> finish()
+                    MODE.CREATE -> mode = it.also { invalidateOptionsMenu() }
+                    MODE.EDIT -> mode = it.also { invalidateOptionsMenu() }
+                    MODE.VIEW -> mode = it.also { invalidateOptionsMenu() }
+                }
+            }
+        })
+        viewModel.loadImageLiveData.observe(this, Observer { })
+        viewModel.saveEnableLiveData.observe(this, Observer { enable ->
+            enableSave = enable ?: true
+            invalidateOptionsMenu()
+        })
+        viewModel.fileLiveData.observe(this, Observer { })
+    }
+
+    private fun loadByUri(uri: Uri) {
+        mode = MODE.CREATE
+        spinnerCategories.adapter = ArrayAdapter<String>(
+            ctx,
+            android.R.layout.simple_list_item_1,
+            CategoryInfo.getTitlesOrdered().map { ctx.getString(it) }
+        )
+
+        viewModel.setupWithUri(uri)
+    }
+
+    private fun loadById(id: String) {
+        mode = MODE.VIEW
+
+        viewModel.setupWithPhotoById(id)
+    }
+
     private fun handleBack() {
         if (mode == MODE.CREATE || mode == MODE.EDIT) {
             AlertDialog.Builder(ctx)
@@ -93,20 +150,15 @@ class PhotoViewEditActivity : AppCompatActivity() {
                 .setPositiveButton(R.string.dialog_btn_discard) { _, _ -> this@PhotoViewEditActivity.finish() }
                 .setNegativeButton(R.string.dialog_btn_stay, null)
                 .show()
+        } else {
+            finish()
         }
     }
 
-    private enum class MODE {
-        CREATE, EDIT, VIEW
+    private fun initToolbar() {
+        setSupportActionBar(toolbar)
+        title = null
+        supportActionBar?.setHomeButtonEnabled(true)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
     }
-}
-
-/*@BindingAdapter("android:src")
-fun setImageUri(imageView: ImageView, uri: Uri?) {
-    uri?.let { imageView.setImageURI(uri) }
-}*/
-
-@BindingAdapter("timestamp")
-fun setPhotoTimestamp(textView: TextView, date: Date?) {
-    textView.text = if (date != null) DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.MEDIUM).format(date) else null
 }

@@ -7,7 +7,7 @@ import javax.inject.Singleton
 
 @Component(modules = [AppModule::class], dependencies = [StorageApi::class])
 @Singleton
-abstract class AppComponent : LoginScreenComponent.Dependencies, PhotoScreenComponent.Dependencies {
+abstract class AppComponent : LoginScreenComponent.Dependencies, PhotoScreenComponent.Dependencies, MainScreenComponent.Dependencies {
     companion object {
         val component: AppComponent by lazy { create() }
         private fun create(): AppComponent = DaggerAppComponent.builder().storageApi(

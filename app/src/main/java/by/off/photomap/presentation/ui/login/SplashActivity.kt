@@ -11,6 +11,7 @@ import android.view.View
 import android.widget.TextView
 import by.off.photomap.R
 import by.off.photomap.core.ui.BaseActivity
+import by.off.photomap.core.ui.ErrorDescriptions
 import by.off.photomap.core.utils.di.ViewModelFactory
 import by.off.photomap.databinding.ScreenSplashBinding
 import by.off.photomap.di.LoginScreenComponent
@@ -24,21 +25,21 @@ import by.off.photomap.storage.parse.UserNotFoundException
 import kotlinx.android.synthetic.main.dialog_login.view.*
 import javax.inject.Inject
 
-class SplashActivity : BaseActivity<ScreenSplashBinding>() {
+class SplashActivity : BaseActivity() {
     companion object {
         private const val TAG_DIALOG_REGISTER = "tag_dialog_register"
     }
 
     @Inject
-    lateinit var viewModelFactory: ViewModelFactory
+    override lateinit var viewModelFactory: ViewModelFactory
 
-    private val viewModel
-        get() = viewModelFactory.create(LoginViewModel::class.java)
+    private lateinit var viewModel: LoginViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         LoginScreenComponent.get(this).inject(this)
+        viewModel = getViewModel(LoginViewModel::class.java)
 
         val binding = DataBindingUtil.setContentView<ScreenSplashBinding>(this, R.layout.screen_splash)
         binding.model = viewModel
@@ -89,21 +90,10 @@ class SplashActivity : BaseActivity<ScreenSplashBinding>() {
 
 }
 
-
-@BindingAdapter("exception") // TODO make a separate class that just creates string from exception
+@BindingAdapter("exception")
 fun setErrorMessage(textView: TextView, e: Exception?) {
     val ctx = textView.context
-    val errorMsg = when (e) {
-        null -> null
-        is AuthenticationFailedException -> ctx.getString(by.off.photomap.core.ui.R.string.error_auth_failed, e.userName)
-        is UserNotFoundException -> ctx.getString(by.off.photomap.core.ui.R.string.error_user_not_found, e.id)
-        is RegistrationFailedException ->
-            when (e.fieldDuplicated) {
-                Field.EMAIL -> ctx.getString(by.off.photomap.core.ui.R.string.error_registration_failed_by_email, e.value)
-                Field.USER_NAME -> ctx.getString(by.off.photomap.core.ui.R.string.error_registration_failed_by_name, e.value)
-            }
-        else -> ctx.getString(by.off.photomap.core.ui.R.string.error_default_auth)
-    }
+    val errorMsg = e?.let { ErrorDescriptions.getDescripitionRes(ctx, e) }
 
     textView.text = errorMsg
 }

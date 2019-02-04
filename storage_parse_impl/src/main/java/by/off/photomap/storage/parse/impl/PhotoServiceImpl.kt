@@ -8,12 +8,14 @@ import android.provider.MediaStore
 import android.util.Log
 import by.off.photomap.core.utils.LOGCAT
 import by.off.photomap.core.utils.launchScopeIO
-import by.off.photomap.core.utils.session.Session
 import by.off.photomap.model.PhotoInfo
+import by.off.photomap.storage.parse.ListResponse
 import by.off.photomap.storage.parse.PhotoService
 import by.off.photomap.storage.parse.Response
 import com.parse.*
 import java.io.ByteArrayOutputStream
+import java.io.File
+import java.io.FileOutputStream
 import java.util.*
 import javax.inject.Inject
 
@@ -28,11 +30,17 @@ class PhotoServiceImpl @Inject constructor(private val ctx: Context) : PhotoServ
 
     override val serviceLiveData: LiveData<Response<PhotoInfo>>
         get() = liveData
+    override val serviceListLiveData: LiveData<ListResponse<PhotoInfo>>
+        get() = listLiveData
     override val loadImageLiveData: LiveData<Int>
         get() = loadLD
+    override val serviceFileLiveData: LiveData<String>
+        get() = fileLiveData
 
     private val liveData = MutableLiveData<Response<PhotoInfo>>()
+    private val listLiveData = MutableLiveData<ListResponse<PhotoInfo>>()
     private val loadLD = MutableLiveData<Int>()
+    private val fileLiveData = MutableLiveData<String>()
 
     override fun save(photo: PhotoInfo, /*photoFilePath: String*/uriPhoto: Uri) {
         launchScopeIO {
@@ -47,9 +55,14 @@ class PhotoServiceImpl @Inject constructor(private val ctx: Context) : PhotoServ
                 when (percentDone) {
                     100 -> {
                         Log.i(LOGCAT, "File upload complete")
-                        saveObjectSync(photo, file)
+                        val response = try {
+                            saveObjectSync(photo, file)
+                            Response(photo)
+                        } catch (e: Exception) {
+                            Response<PhotoInfo>(error = e)
+                        }
                         loadLD.postValue(percentDone)
-                        liveData.postValue(Response(data = photo))
+                        liveData.postValue(response)
                     }
                     else -> {
                         loadLD.postValue(percentDone)
@@ -63,12 +76,13 @@ class PhotoServiceImpl @Inject constructor(private val ctx: Context) : PhotoServ
         launchScopeIO {
             val response = try {
                 ctx.contentResolver.query(uri, contentColumns, null, null, null)?.use {
+                    // todo move implementation to a separate class
                     it.moveToFirst()
                     val latitude = it.getDouble(it.getColumnIndex(MediaStore.Images.Media.LATITUDE)).let { value -> if (value == 0.0) null else value }
                     val longitude = it.getDouble(it.getColumnIndex(MediaStore.Images.Media.LONGITUDE)).let { value -> if (value == 0.0) null else value }
                     val dateTaken = it.getLong(it.getColumnIndex(MediaStore.Images.Media.DATE_TAKEN))
                     val description = it.getString(it.getColumnIndex(MediaStore.Images.Media.TITLE))
-                    Response(PhotoInfo("", null, description, Date(dateTaken), 0, latitude, longitude))
+                    Response(PhotoInfo("", null, description ?: "", Date(dateTaken), 0, latitude, longitude))
                 }
             } catch (e: Exception) {
                 Response<PhotoInfo>(error = e)
@@ -77,24 +91,61 @@ class PhotoServiceImpl @Inject constructor(private val ctx: Context) : PhotoServ
         }
     }
 
-    override fun list() {
+    override fun loadById(id: String) {
         launchScopeIO {
-            val list = ParseQuery.getQuery<ParseObject>(PhotoInfo.TABLE).find()
-            for (parseObject in list) {
+            lateinit var parseObject: ParseObject
+            val response = try {
+                parseObject = ParseQuery.getQuery<ParseObject>(PhotoInfo.TABLE).get(id)
                 val user = convertToUser(parseObject.getParseUser(PhotoInfo.AUTHOR)!!.fetch())
-                liveData.postValue(Response(convertToPhoto(parseObject, user)))
+                Response(convertToPhoto(parseObject, user))
+            } catch (e: Exception) {
+                Response<PhotoInfo>(error = e)
+            }
+
+            liveData.postValue(response)
+
+            if (response.data != null) {
+                downloadImage(parseObject.getParseFile(PhotoInfo.BIN_DATA)!!)
             }
         }
     }
+
+    override fun list() { // TODO add parameter for sorting or rename method
+        launchScopeIO {
+            val list = ParseQuery.getQuery<ParseObject>(PhotoInfo.TABLE).addDescendingOrder(PhotoInfo.SHOT_TIMESTAMP).find()
+            val resultList = mutableListOf<PhotoInfo>()
+            for (parseObject in list) {
+                val user = convertToUser(parseObject.getParseUser(PhotoInfo.AUTHOR)!!.fetch())
+                resultList.add(convertToPhoto(parseObject, user))
+            }
+            listLiveData.postValue(ListResponse(resultList))
+        }
+    }
+
+    private fun downloadImage(file: ParseFile) {
+        val filePath = "${ctx.filesDir.absolutePath}/${file.name}"
+        val imageFile = File(filePath)
+        if (imageFile.createNewFile()) {
+            file.getDataInBackground({ data, e ->
+                FileOutputStream(imageFile).use {
+                    it.write(data)
+                }
+                fileLiveData.postValue(filePath)
+            }, { perCent ->
+                loadLD.postValue(perCent)
+            })
+        } else {
+            fileLiveData.postValue(filePath)
+        }
+    }
+
 
     private fun saveObjectSync(photoInfo: PhotoInfo, file: ParseFile) { // todo move to separate class
         val parse = ParseObject(PhotoInfo.TABLE)
         parse.put(PhotoInfo.BIN_DATA, file)
         parse.put(PhotoInfo.AUTHOR, ParseUser.getCurrentUser())
         parse.put(PhotoInfo.CATEGORY, photoInfo.category)
-        photoInfo.description?.let {
-            parse.put(PhotoInfo.DESCRIPTION, it)
-        }
+        parse.put(PhotoInfo.DESCRIPTION, photoInfo.description)
         parse.put(PhotoInfo.SHOT_TIMESTAMP, photoInfo.shotTimestamp)
         parse.put(PhotoInfo.LOCATION, ParseGeoPoint(photoInfo.latitude ?: 0.0, photoInfo.longitude ?: 0.0))
         parse.save()

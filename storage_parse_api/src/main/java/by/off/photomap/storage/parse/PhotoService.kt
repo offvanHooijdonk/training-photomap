@@ -7,6 +7,8 @@ import by.off.photomap.model.PhotoInfo
 interface PhotoService {
     val serviceLiveData: LiveData<Response<PhotoInfo>>
 
+    val serviceListLiveData: LiveData<ListResponse<PhotoInfo>>
+
     val loadImageLiveData: LiveData<Int>
 
     /**
@@ -19,5 +21,8 @@ interface PhotoService {
      */
     fun retrieveMetadata(uri: Uri)
 
+    fun loadById(id: String)
+
     fun list()
+    val serviceFileLiveData: LiveData<String>
 }

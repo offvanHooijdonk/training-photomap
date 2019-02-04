@@ -41,7 +41,9 @@ dependencies {
     implementation "com.android.support:support-v4:$support_v7_version"
     implementation "com.android.support:appcompat-v7:$support_v7_version"
     implementation "com.android.support.constraint:constraint-layout:$constraint_version"
+    implementation "android.arch.lifecycle:extensions:$lifecycle_version"
     implementation "com.android.support:design:$support_v7_version"
+    implementation "de.hdodenhof:circleimageview:3.0.0"
 
     implementation "com.google.dagger:dagger:$dagger_version"
     kapt "com.google.dagger:dagger-compiler:$dagger_version"

@@ -36,4 +36,9 @@
         <item name="layout_constraintEnd_toEndOf">parent</item>
         <item name="android:background">#20000000</item>
     </style>
+
+    <style name="ChipTextStyle">
+        <item name="android:textSize">14sp</item>
+        <item name="android:textColor">#ffffff</item>
+    </style>
 </resources>
