@@ -52,7 +52,7 @@
                         android:id="@+id/progressSaving"
                         style="?android:attr/progressBarStyleHorizontal"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
+                        android:layout_height="@dimen/progress_linear_height"
                         android:layout_gravity="center_vertical"
                         android:indeterminate="@{model.progressIndeterminate}"
                         android:progress="@{model.progressPerCent}"
@@ -194,8 +194,8 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:enabled="@{!model.inProgress}"
+                            android:inputType="text|textMultiLine"
                             android:text="@={model.photoInfo.description}"
-
                             tools:text="@string/fish_text" />
                     </android.support.design.widget.TextInputLayout>
 

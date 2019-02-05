@@ -23,6 +23,7 @@
             android:layout_marginStart="@dimen/item_margin_horizontal"
             android:layout_marginTop="@dimen/item_margin_vertical"
             android:visibility="gone"
+            android:textAllCaps="true"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             tools:text="@string/fish_text_short"
@@ -32,7 +33,7 @@
             android:id="@+id/itemRoot"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
+            android:layout_marginTop="0dp"
             android:background="?selectableItemBackground"
             android:paddingStart="@dimen/item_margin_horizontal"
             android:paddingTop="@dimen/item_margin_vertical"
@@ -84,5 +85,10 @@
                 app:layout_constraintTop_toBottomOf="@id/txtPhotoTimestamp"
                 tools:text="@string/fish_text_short" />
         </android.support.constraint.ConstraintLayout>
+        <View
+            style="@style/DividerHorizontal"
+            android:layout_marginStart="@dimen/item_bottom_divider_margin_start"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"/>
     </android.support.constraint.ConstraintLayout>
 </layout>

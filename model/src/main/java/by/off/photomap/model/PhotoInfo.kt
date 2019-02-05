@@ -14,6 +14,7 @@ data class PhotoInfo(
     companion object {
         const val TABLE = "Photo"
         const val BIN_DATA = "binData"
+        const val THUMBNAIL_DATA = "thumbnail_data"
         const val AUTHOR = "author"
         const val DESCRIPTION = "description"
         const val SHOT_TIMESTAMP = "shotTimestamp"

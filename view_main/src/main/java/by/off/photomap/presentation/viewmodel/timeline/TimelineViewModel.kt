@@ -12,11 +12,16 @@ import javax.inject.Inject
 
 class TimelineViewModel @Inject constructor(private val photoService: PhotoService) : ViewModel() {
     val liveData = photoService.serviceListLiveData.map { onData(it) }
+    val thumbnailLiveData = photoService.thumbnailLiveData
 
     val listData = ObservableArrayList<PhotoInfo>()
 
     fun loadData() {
         photoService.list()
+    }
+
+    fun requestThumbnail(photoId: String) {
+        photoService.requestThumbnail(photoId)
     }
 
     private fun onData(response: ListResponse<PhotoInfo>): ListResponse<PhotoInfo> {

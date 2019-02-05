@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="dialog_confirm_title">Подтвердите</string>
+    <string name="label_category_error">-</string>
+    <string name="fish_date_full">25го января – 17:28</string>
+    <string name="fish_date_short">15.02.2017</string>
+    <string name="dialog_confirm_cancel_reg">Вы уверены, что хотите выйти?</string>
+    <string name="dialog_confirm_cancel_photo">Вы уверены, что хотите сбросить все изменения?</string>
+    <string name="dialog_btn_discard">Сбросить</string>
+    <string name="dialog_btn_stay">Нет, остаться</string>
+    <string name="label_category_default">Общее</string>
+    <string name="label_category_nature">Природа</string>
+    <string name="label_category_friends">Друзья</string>
+    <string name="fish_text">Дълго преди това обаче българите приемат това животно като нечисто, поради потайния хищнически живот и спорадичните нападения над домашния добитък. След края на Втората световна война рисът изчезва от българската природа и е вписан като изчезнал вид в Червената книга на България</string>
+    <string name="fish_text_short">Дълго преди това обаче българите приемат това животно като нечисто</string>
+    <string name="error_auth_failed">Не удалось войти под именем \'%1$s\'</string>
+    <string name="error_user_not_found">Пользователь с id %1$s не найден</string>
+    <string name="error_registration_failed_by_name">Извините, имя \'%1$s\' уже занято</string>
+    <string name="error_registration_failed_by_email">Извините, почта \'%1$s\' уже занята</string>
+    <string name="error_default_auth">Неизвестная ошибка</string>
+    <string name="no_data_provided">Данные не предоставлены</string>
+    <string name="error_unknown">Неизвестная ошибка</string>
+</resources>

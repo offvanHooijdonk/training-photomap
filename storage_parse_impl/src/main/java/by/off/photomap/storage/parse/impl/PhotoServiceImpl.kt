@@ -3,6 +3,8 @@ package by.off.photomap.storage.parse.impl
 import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.MutableLiveData
 import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.net.Uri
 import android.provider.MediaStore
 import android.util.Log
@@ -20,6 +22,11 @@ import java.util.*
 import javax.inject.Inject
 
 class PhotoServiceImpl @Inject constructor(private val ctx: Context) : PhotoService {
+    companion object {
+        private const val RESIZE_WIDTH = 240
+        private const val RESIZE_HEIGHT = 240
+    }
+
     private val contentColumns = arrayOf(
         MediaStore.Images.Media.LATITUDE,
         MediaStore.Images.Media.LONGITUDE,
@@ -28,6 +35,8 @@ class PhotoServiceImpl @Inject constructor(private val ctx: Context) : PhotoServ
         MediaStore.Images.Media.DATA
     )
 
+    override val thumbnailLiveData: LiveData<Pair<String, String?>>
+        get() = thumbLD
     override val serviceLiveData: LiveData<Response<PhotoInfo>>
         get() = liveData
     override val serviceListLiveData: LiveData<ListResponse<PhotoInfo>>
@@ -41,8 +50,9 @@ class PhotoServiceImpl @Inject constructor(private val ctx: Context) : PhotoServ
     private val listLiveData = MutableLiveData<ListResponse<PhotoInfo>>()
     private val loadLD = MutableLiveData<Int>()
     private val fileLiveData = MutableLiveData<String>()
+    private val thumbLD = MutableLiveData<Pair<String, String?>>()
 
-    override fun save(photo: PhotoInfo, /*photoFilePath: String*/uriPhoto: Uri) {
+    override fun save(photo: PhotoInfo, uriPhoto: Uri) {
         launchScopeIO {
             val bytes = readBytes(uriPhoto)
             val file = if (uriPhoto.path != null) {
@@ -56,7 +66,8 @@ class PhotoServiceImpl @Inject constructor(private val ctx: Context) : PhotoServ
                     100 -> {
                         Log.i(LOGCAT, "File upload complete")
                         val response = try {
-                            saveObjectSync(photo, file)
+                            val thumbFile = saveThumbnail(uriPhoto)
+                            saveObjectSync(photo, file, thumbFile)
                             Response(photo)
                         } catch (e: Exception) {
                             Response<PhotoInfo>(error = e)
@@ -122,6 +133,26 @@ class PhotoServiceImpl @Inject constructor(private val ctx: Context) : PhotoServ
         }
     }
 
+    override fun requestThumbnail(photoId: String) {
+        launchScopeIO {
+            val parseObject = ParseQuery.getQuery<ParseObject>(PhotoInfo.TABLE).get(photoId)
+            val parseFile = parseObject.getParseFile(PhotoInfo.THUMBNAIL_DATA)!!
+            val filePath = "${ctx.filesDir.absolutePath}/${parseFile.name}_thumb"
+            val imageFile = File(filePath)
+            if (imageFile.createNewFile()) {
+                parseFile.getDataInBackground { data, e ->
+                    FileOutputStream(imageFile).use {
+                        it.write(data)
+                    }
+                    thumbLD.postValue(photoId to filePath)
+                }
+            } else {
+                Log.i(LOGCAT, "Fetch cached image")
+                thumbLD.postValue(photoId to filePath)
+            }
+        }
+    }
+
     private fun downloadImage(file: ParseFile) {
         val filePath = "${ctx.filesDir.absolutePath}/${file.name}"
         val imageFile = File(filePath)
@@ -140,15 +171,46 @@ class PhotoServiceImpl @Inject constructor(private val ctx: Context) : PhotoServ
     }
 
 
-    private fun saveObjectSync(photoInfo: PhotoInfo, file: ParseFile) { // todo move to separate class
+    private fun saveObjectSync(photoInfo: PhotoInfo, file: ParseFile, thumbFile: ParseFile?) { // todo move to separate class
         val parse = ParseObject(PhotoInfo.TABLE)
         parse.put(PhotoInfo.BIN_DATA, file)
+        thumbFile?.let { parse.put(PhotoInfo.THUMBNAIL_DATA, thumbFile) }
         parse.put(PhotoInfo.AUTHOR, ParseUser.getCurrentUser())
         parse.put(PhotoInfo.CATEGORY, photoInfo.category)
         parse.put(PhotoInfo.DESCRIPTION, photoInfo.description)
         parse.put(PhotoInfo.SHOT_TIMESTAMP, photoInfo.shotTimestamp)
         parse.put(PhotoInfo.LOCATION, ParseGeoPoint(photoInfo.latitude ?: 0.0, photoInfo.longitude ?: 0.0))
         parse.save()
+    }
+
+    private fun saveThumbnail(uriPhoto: Uri): ParseFile? {
+        var thumbFile: ParseFile? = null
+        val thumbBytes = resizePhoto(uriPhoto)
+        if (thumbBytes != null) {
+            thumbFile = if (uriPhoto.path != null) {
+                ParseFile(uriPhoto.path.substringAfterLast("/"), thumbBytes)
+            } else {
+                ParseFile(thumbBytes)
+            }
+            thumbFile.save()
+        }
+        return thumbFile
+    }
+
+    private fun resizePhoto(uri: Uri): ByteArray? {
+        val bitOpts = BitmapFactory.Options()
+        bitOpts.inJustDecodeBounds = true
+        BitmapFactory.decodeStream(ctx.contentResolver.openInputStream(uri), null, bitOpts)
+
+        val scaleFactor = Math.min(bitOpts.outWidth / RESIZE_WIDTH, bitOpts.outHeight / RESIZE_HEIGHT)
+
+        bitOpts.inJustDecodeBounds = false
+        bitOpts.inSampleSize = scaleFactor
+
+        val bitmap = BitmapFactory.decodeStream(ctx.contentResolver.openInputStream(uri), null, bitOpts)!!
+        val stream = ByteArrayOutputStream()
+        val result = bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream)
+        return if (result) stream.toByteArray() else null
     }
 
     private fun readBytes(uri: Uri): ByteArray {

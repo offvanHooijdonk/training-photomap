@@ -6,4 +6,5 @@
     <string name="log_out">Выйти</string>
     <string name="option_gallery">Выбрать из Галереи</string>
     <string name="option_take_photo">Сделать снимок</string>
+    <string name="photo_save">Сохранить</string>
 </resources>

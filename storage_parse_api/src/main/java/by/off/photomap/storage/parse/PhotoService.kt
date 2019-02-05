@@ -8,6 +8,7 @@ interface PhotoService {
     val serviceLiveData: LiveData<Response<PhotoInfo>>
 
     val serviceListLiveData: LiveData<ListResponse<PhotoInfo>>
+    val thumbnailLiveData: LiveData<Pair<String, String?>>
 
     val loadImageLiveData: LiveData<Int>
 
@@ -25,4 +26,5 @@ interface PhotoService {
 
     fun list()
     val serviceFileLiveData: LiveData<String>
+    fun requestThumbnail(photoId: String)
 }

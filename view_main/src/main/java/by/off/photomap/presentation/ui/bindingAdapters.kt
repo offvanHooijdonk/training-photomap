@@ -76,5 +76,7 @@ fun setTimestampShort(textView: TextView, timestamp: Date) {
 
 @BindingAdapter("snackbar")
 fun setErrorToSnackbar(view: View, msg: String?) {
-    Snackbar.make(view, msg ?: view.context.getString(R.string.error_unknown), Snackbar.LENGTH_LONG).colorError().show()
+    msg?.let {
+        Snackbar.make(view, it, Snackbar.LENGTH_LONG).colorError().show()
+    }
 }
