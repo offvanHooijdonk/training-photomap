@@ -1,6 +1,7 @@
 package by.off.photomap.storage.parse
 
 import android.arch.lifecycle.LiveData
+import android.graphics.Bitmap
 import android.net.Uri
 import by.off.photomap.model.PhotoInfo
 
@@ -27,4 +28,5 @@ interface PhotoService {
     fun listOrderTime()
     val serviceFileLiveData: LiveData<String>
     fun requestThumbnail(photoId: String)
+    fun saveToTempFile(bitmap: Bitmap)
 }

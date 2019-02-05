@@ -7,4 +7,5 @@
     <string name="option_gallery">Абраць з Галерэi</string>
     <string name="option_take_photo">Зрабiць здымак</string>
     <string name="photo_save">Захаваць</string>
+    <string name="dialog_progress_processing">Апрацоўваецца…</string>
 </resources>

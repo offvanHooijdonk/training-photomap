@@ -2,7 +2,7 @@ package by.off.photomap.storage.parse.impl
 
 import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.MutableLiveData
-import android.content.Context
+import android.graphics.Bitmap
 import android.net.Uri
 import android.util.Log
 import by.off.photomap.core.utils.LOGCAT
@@ -13,13 +13,10 @@ import by.off.photomap.storage.parse.PhotoService
 import by.off.photomap.storage.parse.Response
 import by.off.photomap.storage.parse.impl.image.ImageService
 import by.off.photomap.storage.parse.impl.parse.ParsePhotoService
-import com.parse.*
-import java.io.File
-import java.io.FileOutputStream
+import com.parse.ParseFile
 import javax.inject.Inject
 
 class PhotoServiceImpl @Inject constructor(
-    private val ctx: Context,
     private val parsePhotoService: ParsePhotoService,
     private val imageService: ImageService
 ) : PhotoService {
@@ -102,6 +99,13 @@ class PhotoServiceImpl @Inject constructor(
         launchScopeIO {
             val resultList = parsePhotoService.list(PhotoInfo.SHOT_TIMESTAMP, false)
             listLiveData.postValue(ListResponse(resultList))
+        }
+    }
+
+    override fun saveToTempFile(bitmap: Bitmap) {
+        launchScopeIO {
+            val filePath = imageService.saveBitmapToTempFile(bitmap)
+            fileLiveData.postValue(filePath)
         }
     }
 

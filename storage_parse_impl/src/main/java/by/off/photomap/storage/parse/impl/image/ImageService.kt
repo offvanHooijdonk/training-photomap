@@ -9,6 +9,8 @@ import by.off.photomap.model.PhotoInfo
 import by.off.photomap.storage.parse.Response
 import by.off.photomap.storage.parse.impl.parse.ParsePhotoService
 import java.io.ByteArrayOutputStream
+import java.io.File
+import java.io.FileOutputStream
 import java.util.*
 import javax.inject.Inject
 
@@ -33,8 +35,22 @@ class ImageService @Inject constructor(private val ctx: Context) {
 
         val bitmap = BitmapFactory.decodeStream(ctx.contentResolver.openInputStream(uri), null, bitOpts)!!
         val stream = ByteArrayOutputStream()
-        val result = bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream)
+        val result = bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream)
         return if (result) stream.toByteArray() else null
+    }
+
+    fun saveBitmapToTempFile(bitmap: Bitmap): String? {
+        val stream = ByteArrayOutputStream()
+        val result = bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream)
+        return if (result) {
+            val filePath = "${ctx.filesDir.absolutePath}/temp_${System.currentTimeMillis()}"
+            val file = File(filePath)
+            if (file.exists()) file.delete() else file.createNewFile()
+            FileOutputStream(file).use { it.write(stream.toByteArray()) }
+            filePath
+        } else {
+            null
+        }
     }
 
     fun readBytes(uri: Uri): ByteArray {
@@ -55,7 +71,7 @@ class ImageService @Inject constructor(private val ctx: Context) {
 
     fun getMetadata(uri: Uri): Response<PhotoInfo> {
         return ctx.contentResolver.query(uri, contentColumns, null, null, null).use {
-            it.moveToFirst()
+            it!!.moveToFirst()
             val latitude = it.getDouble(it.getColumnIndex(MediaStore.Images.Media.LATITUDE)).let { value -> if (value == 0.0) null else value }
             val longitude = it.getDouble(it.getColumnIndex(MediaStore.Images.Media.LONGITUDE)).let { value -> if (value == 0.0) null else value }
             val dateTaken = it.getLong(it.getColumnIndex(MediaStore.Images.Media.DATE_TAKEN))
