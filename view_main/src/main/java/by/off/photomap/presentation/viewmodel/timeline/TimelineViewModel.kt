@@ -17,7 +17,7 @@ class TimelineViewModel @Inject constructor(private val photoService: PhotoServi
     val listData = ObservableArrayList<PhotoInfo>()
 
     fun loadData() {
-        photoService.list()
+        photoService.listOrderTime()
     }
 
     fun requestThumbnail(photoId: String) {

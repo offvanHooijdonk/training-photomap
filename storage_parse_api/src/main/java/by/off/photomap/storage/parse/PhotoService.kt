@@ -24,7 +24,7 @@ interface PhotoService {
 
     fun loadById(id: String)
 
-    fun list()
+    fun listOrderTime()
     val serviceFileLiveData: LiveData<String>
     fun requestThumbnail(photoId: String)
 }

@@ -40,7 +40,6 @@ fun setTextInpuLayoutError(til: TextInputLayout, errorMessage: String?) {
 @BindingAdapter("category")
 fun setChipCategoryLabelColor(chip: Chip, categoryId: Int) {
     chip.setText(CategoryInfo(categoryId).labelRes)
-    //val catColor = chip.context.resources.getColor(CategoryInfo.getTextColorRes(categoryId) ?: R.color.category_unknown)
     chip.setChipBackgroundColorResource(CategoryInfo(categoryId).backColorRes)
 }
 
