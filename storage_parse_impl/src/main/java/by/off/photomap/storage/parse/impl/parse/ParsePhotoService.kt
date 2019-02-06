@@ -57,9 +57,10 @@ class ParsePhotoService @Inject constructor(private val ctx: Context, private va
     /**
      * Works synchronously
      */
-    fun saveObject(photoInfo: PhotoInfo, file: ParseFile, thumbFile: ParseFile?) { // todo move to separate class
+    fun saveObject(photoInfo: PhotoInfo, file: ParseFile?, thumbFile: ParseFile?) { // todo move to separate class
         val parse = ParseObject(PhotoInfo.TABLE)
-        parse.put(PhotoInfo.BIN_DATA, file)
+        photoInfo.takeUnless { it.id.isEmpty() }?.let { parse.objectId = it.id }
+        file?.let { parse.put(PhotoInfo.BIN_DATA, file) }
         thumbFile?.let { parse.put(PhotoInfo.THUMBNAIL_DATA, thumbFile) }
         parse.put(PhotoInfo.AUTHOR, ParseUser.getCurrentUser())
         parse.put(PhotoInfo.CATEGORY, photoInfo.category)
@@ -151,6 +152,5 @@ class ParsePhotoService @Inject constructor(private val ctx: Context, private va
         }
 
     private fun createFileObjectName(uri: Uri) = uri.path?.substringAfterLast("/")
-
     private fun createFileObjectName(filePath: String) = filePath.substringAfterLast("/")
 }

@@ -86,6 +86,19 @@ class PhotoServiceImpl @Inject constructor(
         }
     }
 
+    override fun update(photo: PhotoInfo) {
+        launchScopeIO {
+
+            val response = try {
+                parsePhotoService.saveObject(photo, null, null)
+                Response(photo)
+            } catch (e: Exception) {
+                Response<PhotoInfo>(error = e)
+            }
+            liveData.postValue(response)
+        }
+    }
+
     override fun retrieveMetadata(uri: Uri) {
         launchScopeIO {
             val response = try {

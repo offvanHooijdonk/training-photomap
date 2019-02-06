@@ -65,6 +65,7 @@ class PhotoViewEditActivity : BaseActivity() {
         if (mode == MODE.VIEW) {
             menu?.findItem(R.id.item_save)?.isVisible = false
         } else {
+            menu?.findItem(R.id.item_save)?.isVisible = true
             menu?.findItem(R.id.item_save)?.isEnabled = enableSave
         }
 
@@ -133,6 +134,15 @@ class PhotoViewEditActivity : BaseActivity() {
             invalidateOptionsMenu()
         })
         viewModel.fileLiveData.observe(this, Observer { })
+        viewModel.handleBackLiveData.observe(this, Observer { isHandle ->
+            isHandle?.let {
+                if (isHandle) {
+                    startConfirmLeaveDialog()
+                } else {
+                    finish()
+                }
+            }
+        })
     }
 
     private fun initCategoriesList() {
@@ -156,16 +166,16 @@ class PhotoViewEditActivity : BaseActivity() {
     }
 
     private fun handleBack() {
-        if (mode == MODE.CREATE || mode == MODE.EDIT) {
-            AlertDialog.Builder(ctx)
-                .setTitle(R.string.dialog_confirm_title)
-                .setMessage(R.string.dialog_confirm_cancel_photo)
-                .setPositiveButton(R.string.dialog_btn_discard) { _, _ -> this@PhotoViewEditActivity.finish() }
-                .setNegativeButton(R.string.dialog_btn_stay, null)
-                .show()
-        } else {
-            finish()
-        }
+        viewModel.onBackRequested()
+    }
+
+    private fun startConfirmLeaveDialog() {
+        AlertDialog.Builder(ctx)
+            .setTitle(R.string.dialog_confirm_title)
+            .setMessage(R.string.dialog_confirm_cancel_photo)
+            .setPositiveButton(R.string.dialog_btn_discard) { _, _ -> this@PhotoViewEditActivity.finish() }
+            .setNegativeButton(R.string.dialog_btn_stay, null)
+            .show()
     }
 
     private fun initToolbar() {
