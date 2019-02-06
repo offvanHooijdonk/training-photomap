@@ -7,10 +7,7 @@ import android.net.Uri
 import android.provider.MediaStore
 import by.off.photomap.model.PhotoInfo
 import by.off.photomap.storage.parse.Response
-import by.off.photomap.storage.parse.impl.parse.ParsePhotoService
-import java.io.ByteArrayOutputStream
-import java.io.File
-import java.io.FileOutputStream
+import java.io.*
 import java.util.*
 import javax.inject.Inject
 
@@ -24,19 +21,35 @@ class ImageService @Inject constructor(private val ctx: Context) {
     )
 
     fun resizePhoto(uri: Uri, width: Int, height: Int): ByteArray? {
-        val bitOpts = BitmapFactory.Options()
-        bitOpts.inJustDecodeBounds = true
-        BitmapFactory.decodeStream(ctx.contentResolver.openInputStream(uri), null, bitOpts)
+        return resizePhoto({ ctx.contentResolver.openInputStream(uri) }, width, height)
+    }
 
-        val scaleFactor = Math.min(bitOpts.outWidth / width, bitOpts.outHeight / height)
+    fun resizePhoto(filePath: String, width: Int, height: Int): ByteArray? {
+        return resizePhoto({
+            File(filePath).let {
+                if (it.exists()) FileInputStream(it) else null
+            }
+        }, width, height)
+    }
 
-        bitOpts.inJustDecodeBounds = false
-        bitOpts.inSampleSize = scaleFactor
+    private fun resizePhoto(provideInputStream: () -> InputStream?, width: Int, height: Int): ByteArray? {
+        try {
+            val bitOpts = BitmapFactory.Options()
+            bitOpts.inJustDecodeBounds = true
+            BitmapFactory.decodeStream(provideInputStream(), null, bitOpts)
 
-        val bitmap = BitmapFactory.decodeStream(ctx.contentResolver.openInputStream(uri), null, bitOpts)!!
-        val stream = ByteArrayOutputStream()
-        val result = bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream)
-        return if (result) stream.toByteArray() else null
+            val scaleFactor = Math.min(bitOpts.outWidth / width, bitOpts.outHeight / height)
+
+            bitOpts.inJustDecodeBounds = false
+            bitOpts.inSampleSize = scaleFactor
+
+            val bitmap = BitmapFactory.decodeStream(provideInputStream(), null, bitOpts)!!
+            val stream = ByteArrayOutputStream()
+            val result = bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream)
+            return if (result) stream.toByteArray() else null
+        } catch (e: Exception) {
+            return null
+        }
     }
 
     fun saveBitmapToTempFile(bitmap: Bitmap): String? {
@@ -53,10 +66,19 @@ class ImageService @Inject constructor(private val ctx: Context) {
         }
     }
 
-    fun readBytes(uri: Uri): ByteArray {
-        val byteBuffer = ByteArrayOutputStream()
+    fun readBytes(filePath: String): ByteArray? {
+        val file = File(filePath)
+        return if (file.exists()) readBytes(FileInputStream(file)) else null
+    }
+
+    fun readBytes(uri: Uri): ByteArray? {
         val inputStream = ctx.contentResolver.openInputStream(uri)
-        inputStream?.use {
+        return if (inputStream != null) readBytes(inputStream) else null
+    }
+
+    fun readBytes(inputStream: InputStream): ByteArray {
+        val byteBuffer = ByteArrayOutputStream()
+        inputStream.use {
             // TODO handle null
             val bufferSize = 1024
             val buffer = ByteArray(bufferSize)

@@ -16,7 +16,12 @@ interface PhotoService {
     /**
      * Works with [serviceLiveData] and [loadImageLiveData]
      */
-    fun save(photo: PhotoInfo, /*photoFilePath: String*/ uriPhoto: Uri)
+    fun save(photo: PhotoInfo, uriPhoto: Uri)
+
+    /**
+     * Works with [serviceLiveData] and [loadImageLiveData]
+     */
+    fun save(photo: PhotoInfo, filePath: String)
 
     /**
      * Works with [serviceLiveData]

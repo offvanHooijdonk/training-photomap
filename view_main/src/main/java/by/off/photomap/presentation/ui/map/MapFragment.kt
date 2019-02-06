@@ -52,8 +52,7 @@ class MapFragment : BaseFragment(), MainActivity.ButtonPhotoListener, MainActivi
         viewModel.fileLiveData.observe(this, Observer { filePath ->
             filePath?.let {
                 progressDialog?.dismiss()
-                Log.i(LOGCAT, "Saved to temp file: $filePath")
-                // todo start photo activity here
+                startActivity(Intent(ctx, PhotoViewEditActivity::class.java).apply { putExtra(PhotoViewEditActivity.EXTRA_CAMERA_FILE, filePath) })
             }
         })
     }

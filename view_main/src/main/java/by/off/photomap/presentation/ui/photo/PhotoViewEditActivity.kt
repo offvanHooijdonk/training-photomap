@@ -27,6 +27,8 @@ class PhotoViewEditActivity : BaseActivity() {
     companion object {
         const val EXTRA_IMAGE_URI = "extra_image_uri"
         const val EXTRA_PHOTO_ID = "extra_photo_id"
+        const val EXTRA_CAMERA_FILE = "extra_camera_file"
+
         private const val KEY_SAVED_INSTANCE = "key_saved_instance"
     }
 
@@ -91,9 +93,11 @@ class PhotoViewEditActivity : BaseActivity() {
     private fun setupData() {
         val uri = intent.extras?.getParcelable<Uri>(EXTRA_IMAGE_URI)
         val passedId = intent.extras?.getString(EXTRA_PHOTO_ID)
+        val passedFile = intent.extras?.getString(EXTRA_CAMERA_FILE)
         when {
             uri != null -> loadByUri(uri)
             passedId != null -> loadById(passedId)
+            passedFile != null -> loadByCameraPhoto(passedFile)
             else -> {
                 Snackbar.make(progressSaving, R.string.no_data_provided, Snackbar.LENGTH_INDEFINITE).colorError().show()
             }
@@ -111,8 +115,14 @@ class PhotoViewEditActivity : BaseActivity() {
             leaveScreen?.let {
                 when (it) {
                     MODE.CLOSE -> finish()
-                    MODE.CREATE -> mode = it.also { invalidateOptionsMenu() }
-                    MODE.EDIT -> mode = it.also { invalidateOptionsMenu() }
+                    MODE.CREATE -> mode = it.also {
+                        initCategoriesList()
+                        invalidateOptionsMenu()
+                    }
+                    MODE.EDIT -> mode = it.also {
+                        initCategoriesList()
+                        invalidateOptionsMenu()
+                    }
                     MODE.VIEW -> mode = it.also { invalidateOptionsMenu() }
                 }
             }
@@ -125,21 +135,24 @@ class PhotoViewEditActivity : BaseActivity() {
         viewModel.fileLiveData.observe(this, Observer { })
     }
 
-    private fun loadByUri(uri: Uri) {
-        mode = MODE.CREATE
+    private fun initCategoriesList() {
         spinnerCategories.adapter = ArrayAdapter<String>(
             ctx,
             android.R.layout.simple_list_item_1,
             CategoryInfo.getTitlesOrdered().map { ctx.getString(it) }
         )
+    }
 
+    private fun loadByUri(uri: Uri) {
         viewModel.setupWithUri(uri)
     }
 
     private fun loadById(id: String) {
-        mode = MODE.VIEW
-
         viewModel.setupWithPhotoById(id)
+    }
+
+    private fun loadByCameraPhoto(filePath: String) {
+        viewModel.setupWithFile(filePath)
     }
 
     private fun handleBack() {

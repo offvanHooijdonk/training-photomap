@@ -62,6 +62,30 @@ class PhotoServiceImpl @Inject constructor(
         }
     }
 
+    override fun save(photo: PhotoInfo, filePath: String) {
+        launchScopeIO {
+            parsePhotoService.savePhoto(filePath, false) { perCent, file ->
+                when (perCent) {
+                    100 -> {
+                        Log.i(LOGCAT, "File upload complete")
+                        val response = try {
+                            val thumbFile = parsePhotoService.savePhoto(filePath, true, null)
+                            parsePhotoService.saveObject(photo, file, thumbFile)
+                            Response(photo)
+                        } catch (e: Exception) {
+                            Response<PhotoInfo>(error = e)
+                        }
+                        loadLD.postValue(perCent)
+                        liveData.postValue(response)
+                    }
+                    else -> {
+                        loadLD.postValue(perCent)
+                    }
+                }
+            }
+        }
+    }
+
     override fun retrieveMetadata(uri: Uri) {
         launchScopeIO {
             val response = try {

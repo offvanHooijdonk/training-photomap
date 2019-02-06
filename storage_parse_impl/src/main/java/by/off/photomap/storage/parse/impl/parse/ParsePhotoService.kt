@@ -2,9 +2,6 @@ package by.off.photomap.storage.parse.impl.parse
 
 import android.content.Context
 import android.net.Uri
-import android.support.annotation.MainThread
-import android.util.Log
-import by.off.photomap.core.utils.LOGCAT
 import by.off.photomap.model.PhotoInfo
 import by.off.photomap.storage.parse.Response
 import by.off.photomap.storage.parse.impl.convertToPhoto
@@ -26,11 +23,7 @@ class ParsePhotoService @Inject constructor(private val ctx: Context, private va
      */
     fun savePhoto(uriPhoto: Uri, resize: Boolean, progressCallback: ((Int, ParseFile) -> Unit)?): ParseFile? {
         var parseFile: ParseFile? = null
-        val bytes = if (resize) {
-            imageService.resizePhoto(uriPhoto, RESIZE_WIDTH, RESIZE_HEIGHT)
-        } else {
-            imageService.readBytes(uriPhoto)
-        }
+        val bytes = readPhotoFile(uriPhoto, resize)
         if (bytes != null) {
             val fileName = createFileObjectName(uriPhoto)
             parseFile = if (fileName != null) {
@@ -38,11 +31,25 @@ class ParsePhotoService @Inject constructor(private val ctx: Context, private va
             } else {
                 ParseFile(bytes)
             }
-            if (progressCallback != null) {
-                parseFile.saveInBackground { perCent: Int -> progressCallback(perCent, parseFile) }
+            saveParseFile(parseFile, progressCallback)
+        }
+        return parseFile
+    }
+
+    /**
+     * Works synchronously unless [progressCallback] is provided - then file save is done in a separate thread
+     */
+    fun savePhoto(filePath: String, resize: Boolean, progressCallback: ((Int, ParseFile) -> Unit)?): ParseFile? {
+        var parseFile: ParseFile? = null
+        val bytes = readPhotoFile(filePath, resize)
+        if (bytes != null) {
+            val fileName = createFileObjectName(filePath)
+            parseFile = if (!fileName.isEmpty()) {
+                ParseFile(fileName, bytes)
             } else {
-                parseFile.save()
+                ParseFile(bytes)
             }
+            saveParseFile(parseFile, progressCallback)
         }
         return parseFile
     }
@@ -121,5 +128,29 @@ class ParsePhotoService @Inject constructor(private val ctx: Context, private va
         return filePath
     }
 
+    private fun saveParseFile(parseFile: ParseFile, progressCallback: ((Int, ParseFile) -> Unit)?) {
+        if (progressCallback != null) {
+            parseFile.saveInBackground { perCent: Int -> progressCallback(perCent, parseFile) }
+        } else {
+            parseFile.save()
+        }
+    }
+
+    private fun readPhotoFile(uri: Uri, resize: Boolean) =
+        if (resize) {
+            imageService.resizePhoto(uri, RESIZE_WIDTH, RESIZE_HEIGHT)
+        } else {
+            imageService.readBytes(uri)
+        }
+
+    private fun readPhotoFile(filePath: String, resize: Boolean) =
+        if (resize) {
+            imageService.resizePhoto(filePath, RESIZE_WIDTH, RESIZE_HEIGHT)
+        } else {
+            imageService.readBytes(filePath)
+        }
+
     private fun createFileObjectName(uri: Uri) = uri.path?.substringAfterLast("/")
+
+    private fun createFileObjectName(filePath: String) = filePath.substringAfterLast("/")
 }

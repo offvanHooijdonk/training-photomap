@@ -5,10 +5,12 @@ import android.databinding.ObservableBoolean
 import android.databinding.ObservableField
 import android.databinding.ObservableInt
 import android.net.Uri
+import by.off.photomap.core.ui.dto.CategoryInfo
 import by.off.photomap.core.utils.map
 import by.off.photomap.model.PhotoInfo
 import by.off.photomap.storage.parse.PhotoService
 import by.off.photomap.storage.parse.Response
+import java.util.*
 import javax.inject.Inject
 
 class PhotoViewModel @Inject constructor(private val photoService: PhotoService) : ViewModel() {
@@ -20,7 +22,7 @@ class PhotoViewModel @Inject constructor(private val photoService: PhotoService)
 
     val imageUri = ObservableField<Uri>()
     val inProgress = ObservableBoolean(false)
-    val downloadInprogress = ObservableBoolean(false)
+    val downloadInProgress = ObservableBoolean(false)
     val progressIndeterminate = ObservableBoolean(true)
     val progressPerCent = ObservableInt(0)
     val photoInfo = ObservableField<PhotoInfo?>()
@@ -35,7 +37,7 @@ class PhotoViewModel @Inject constructor(private val photoService: PhotoService)
         modeLiveData.value = MODE.VIEW
         editMode.set(false)// todo check if this is author
         inProgress.set(true)
-        downloadInprogress.set(true)
+        downloadInProgress.set(true)
         progressIndeterminate.set(true)
 
         photoService.loadById(id)
@@ -51,6 +53,13 @@ class PhotoViewModel @Inject constructor(private val photoService: PhotoService)
         photoService.retrieveMetadata(uri)
     }
 
+    fun setupWithFile(filePath: String) {
+        modeLiveData.postValue(MODE.CREATE)
+        editMode.set(true)
+        this.filePath.set(filePath)
+        photoInfo.set(PhotoInfo("", null, "", Date(), CategoryInfo.ID_DEAFULT))
+    }
+
     fun save() {
         if (validate()) {
             saveInProgress = true
@@ -62,7 +71,12 @@ class PhotoViewModel @Inject constructor(private val photoService: PhotoService)
             if (photo == null) {
                 errorMessage.set("No data available for save.") // todo need to fix this
             } else {
-                photoService.save(photo, imageUri.get()!!)
+                val uri = imageUri.get()
+                val filePath = this.filePath.get()
+                when {
+                    uri != null -> photoService.save(photo, uri)
+                    filePath != null -> photoService.save(photo, filePath)
+                }
             }
         }
     }
@@ -96,7 +110,7 @@ class PhotoViewModel @Inject constructor(private val photoService: PhotoService)
     }
 
     private fun onImageFile(filePath: String) {
-        downloadInprogress.set(false)
+        downloadInProgress.set(false)
         this.filePath.set(filePath)
     }
 
