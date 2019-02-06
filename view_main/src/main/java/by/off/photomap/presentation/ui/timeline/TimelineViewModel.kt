@@ -1,4 +1,4 @@
-package by.off.photomap.presentation.viewmodel.timeline
+package by.off.photomap.presentation.ui.timeline
 
 import android.arch.lifecycle.ViewModel
 import android.databinding.ObservableArrayList

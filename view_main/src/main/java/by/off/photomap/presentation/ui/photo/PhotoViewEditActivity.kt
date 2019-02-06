@@ -17,8 +17,7 @@ import by.off.photomap.core.utils.di.ViewModelFactory
 import by.off.photomap.di.PhotoScreenComponent
 import by.off.photomap.presentation.ui.R
 import by.off.photomap.presentation.ui.databinding.ActPhotoViewEditBinding
-import by.off.photomap.presentation.viewmodel.photo.PhotoViewModel
-import by.off.photomap.presentation.viewmodel.photo.PhotoViewModel.MODE
+import by.off.photomap.presentation.ui.photo.PhotoViewModel.MODE
 import kotlinx.android.synthetic.main.act_photo_view_edit.*
 import kotlinx.android.synthetic.main.include_collapsible_toolbar.*
 import javax.inject.Inject

@@ -1,4 +1,4 @@
-package by.off.photomap.presentation.viewmodel
+package by.off.photomap.presentation.ui
 
 import android.arch.lifecycle.ViewModel
 import by.off.photomap.core.utils.map

@@ -1,31 +1,21 @@
 package by.off.photomap.presentation.ui.timeline
 
 import android.arch.lifecycle.Observer
-import android.content.Context
 import android.content.Intent
 import android.databinding.DataBindingUtil
 import android.os.Bundle
-import android.support.v4.app.Fragment
-import android.support.v7.widget.DividerItemDecoration
 import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import by.off.photomap.core.ui.BaseFragment
 import by.off.photomap.core.ui.ctx
-import by.off.photomap.core.ui.show
 import by.off.photomap.core.utils.di.ViewModelFactory
 import by.off.photomap.di.PhotoScreenComponent
-import by.off.photomap.model.PhotoInfo
 import by.off.photomap.presentation.ui.R
-import by.off.photomap.presentation.ui.databinding.ItemTimelineBinding
 import by.off.photomap.presentation.ui.databinding.ScreenTimelineBinding
 import by.off.photomap.presentation.ui.photo.PhotoViewEditActivity
-import by.off.photomap.presentation.viewmodel.timeline.TimelineViewModel
 import kotlinx.android.synthetic.main.screen_timeline.*
-import java.text.SimpleDateFormat
-import java.util.*
 import javax.inject.Inject
 
 class TimelineFragment : BaseFragment() {

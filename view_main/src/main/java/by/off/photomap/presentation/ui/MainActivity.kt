@@ -15,7 +15,6 @@ import by.off.photomap.core.utils.di.ViewModelFactory
 import by.off.photomap.di.MainScreenComponent
 import by.off.photomap.presentation.ui.map.MapFragment
 import by.off.photomap.presentation.ui.timeline.TimelineFragment
-import by.off.photomap.presentation.viewmodel.MainScreenViewModel
 import kotlinx.android.synthetic.main.act_main.*
 import javax.inject.Inject
 

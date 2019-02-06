@@ -7,7 +7,6 @@ import android.graphics.Bitmap
 import android.os.Bundle
 import android.provider.MediaStore
 import android.support.v7.app.AppCompatActivity
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,13 +14,11 @@ import android.widget.ArrayAdapter
 import android.widget.Toast
 import by.off.photomap.core.ui.BaseFragment
 import by.off.photomap.core.ui.ctx
-import by.off.photomap.core.utils.LOGCAT
 import by.off.photomap.core.utils.di.ViewModelFactory
 import by.off.photomap.di.PhotoScreenComponent
 import by.off.photomap.presentation.ui.MainActivity
 import by.off.photomap.presentation.ui.R
 import by.off.photomap.presentation.ui.photo.PhotoViewEditActivity
-import by.off.photomap.presentation.viewmodel.MapViewModel
 import javax.inject.Inject
 
 class MapFragment : BaseFragment(), MainActivity.ButtonPhotoListener, MainActivity.ButtonLocationListener {

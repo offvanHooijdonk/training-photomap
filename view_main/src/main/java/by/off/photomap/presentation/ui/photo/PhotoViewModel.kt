@@ -1,14 +1,11 @@
-package by.off.photomap.presentation.viewmodel.photo
+package by.off.photomap.presentation.ui.photo
 
 import android.arch.lifecycle.*
-import android.databinding.Observable
 import android.databinding.ObservableBoolean
 import android.databinding.ObservableField
 import android.databinding.ObservableInt
 import android.net.Uri
-import android.util.Log
 import by.off.photomap.core.ui.dto.CategoryInfo
-import by.off.photomap.core.utils.LOGCAT
 import by.off.photomap.core.utils.map
 import by.off.photomap.core.utils.session.Session
 import by.off.photomap.model.PhotoInfo
