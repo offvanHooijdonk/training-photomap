@@ -5,7 +5,9 @@ import android.databinding.ObservableBoolean
 import android.databinding.ObservableField
 import android.databinding.ObservableInt
 import android.net.Uri
+import android.util.Log
 import by.off.photomap.core.ui.dto.CategoryInfo
+import by.off.photomap.core.utils.LOGCAT
 import by.off.photomap.core.utils.map
 import by.off.photomap.core.utils.session.Session
 import by.off.photomap.model.PhotoInfo
@@ -34,6 +36,7 @@ class PhotoViewModel @Inject constructor(private val photoService: PhotoService)
     val errorMessage = ObservableField<String?>()
 
     private var saveInProgress = false
+    private var originalPhotoInfo: PhotoInfo? = null
 
     fun setupWithPhotoById(id: String) {
         modeLiveData.value = MODE.VIEW
@@ -84,7 +87,8 @@ class PhotoViewModel @Inject constructor(private val photoService: PhotoService)
     }
 
     fun onBackRequested() {
-        handleBackLiveData.value = modeLiveData.value == MODE.CREATE || modeLiveData.value == MODE.EDIT
+        Log.i(LOGCAT, "Original hash ${originalPhotoInfo?.hashCode()} vs new hash ${photoInfo.get()?.hashCode()}")
+        handleBackLiveData.value = modeLiveData.value == MODE.CREATE || modeLiveData.value == MODE.EDIT && originalPhotoInfo?.hashCode() != photoInfo.get()?.hashCode()
     }
 
     private fun onLoadStatus(perCent: Int) {
@@ -103,11 +107,7 @@ class PhotoViewModel @Inject constructor(private val photoService: PhotoService)
         when {
             saveInProgress && data != null -> exitScreen = true
             !saveInProgress && data != null -> {
-                photoInfo.set(data)
-                if (data.author?.id == Session.user.id) {
-                    editMode.set(true)
-                    modeLiveData.value = MODE.EDIT
-                }
+                handleLoadedData(data)
             }
             error != null -> errorMessage.set(error.message)
         }
@@ -121,6 +121,15 @@ class PhotoViewModel @Inject constructor(private val photoService: PhotoService)
     private fun onImageFile(filePath: String) {
         downloadInProgress.set(false)
         this.filePath.set(filePath)
+    }
+
+    private fun handleLoadedData(data: PhotoInfo) {
+        photoInfo.set(data)
+        originalPhotoInfo = data.copy()
+        if (data.author?.id == Session.user.id) {
+            editMode.set(true)
+            modeLiveData.value = MODE.EDIT
+        }
     }
 
     private fun validate(): Boolean {
