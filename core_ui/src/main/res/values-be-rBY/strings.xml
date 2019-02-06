@@ -20,4 +20,19 @@
     <string name="error_default_auth">Нявызначаная памылка</string>
     <string name="no_data_provided">Iнфармацыя не прыведзеная</string>
     <string name="error_unknown">Нявызначаная памылка</string>
+
+    <string-array name="months_full">
+        <item>Студзень</item>
+        <item>Люты</item>
+        <item>Сакавiк</item>
+        <item>Красавiк</item>
+        <item>Травень</item>
+        <item>Чэрвень</item>
+        <item>Лiпень</item>
+        <item>Жнiвень</item>
+        <item>Верасень</item>
+        <item>Кастрычнiк</item>
+        <item>Лiстапад</item>
+        <item>Сьнежань</item>
+    </string-array>
 </resources>

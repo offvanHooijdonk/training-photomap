@@ -20,6 +20,7 @@ class PhotoViewModel @Inject constructor(private val photoService: PhotoService)
 
     val imageUri = ObservableField<Uri>()
     val inProgress = ObservableBoolean(false)
+    val downloadInprogress = ObservableBoolean(false)
     val progressIndeterminate = ObservableBoolean(true)
     val progressPerCent = ObservableInt(0)
     val photoInfo = ObservableField<PhotoInfo?>()
@@ -34,6 +35,7 @@ class PhotoViewModel @Inject constructor(private val photoService: PhotoService)
         modeLiveData.value = MODE.VIEW
         editMode.set(false)// todo check if this is author
         inProgress.set(true)
+        downloadInprogress.set(true)
         progressIndeterminate.set(true)
 
         photoService.loadById(id)
@@ -94,6 +96,7 @@ class PhotoViewModel @Inject constructor(private val photoService: PhotoService)
     }
 
     private fun onImageFile(filePath: String) {
+        downloadInprogress.set(false)
         this.filePath.set(filePath)
     }
 

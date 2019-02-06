@@ -50,7 +50,7 @@ class TimelineAdapter(
         with(vh.binding) {
             if (showDateHeader) {
                 txtPeriod.show()
-                txtPeriod.text = DateHelper.formatTimelineDate(photo.shotTimestamp)
+                txtPeriod.text = DateHelper.formatTimelineDate(photo.shotTimestamp, ctx)
             }
             imgThumb.setImageResource(R.drawable.ic_photo_placeholder_24)
             imgThumb.tag = photo.id

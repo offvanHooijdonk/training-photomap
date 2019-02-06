@@ -56,7 +56,7 @@
                         android:layout_gravity="center_vertical"
                         android:indeterminate="@{model.progressIndeterminate}"
                         android:progress="@{model.progressPerCent}"
-                        android:visibility="@{model.inProgress ? View.VISIBLE : View.GONE}"
+                        android:visibility="@{model.inProgress || model.downloadInprogress ? View.VISIBLE : View.GONE}"
                         tools:progress="25"
                         tools:visibility="visible" />
                 </FrameLayout>

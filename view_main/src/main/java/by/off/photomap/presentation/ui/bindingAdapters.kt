@@ -1,6 +1,7 @@
 package by.off.photomap.presentation.ui
 
 import android.databinding.BindingAdapter
+import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.support.design.chip.Chip
 import android.support.design.widget.Snackbar
@@ -17,9 +18,11 @@ import by.off.photomap.core.ui.dto.CategoryInfo
 import by.off.photomap.core.utils.LOGCAT
 import by.off.photomap.model.PhotoInfo
 import by.off.photomap.presentation.ui.timeline.TimelineAdapter
-import kotlinx.android.synthetic.main.act_photo_view_edit.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.io.File
-import java.text.DateFormat
 import java.util.*
 
 @BindingAdapter("enabled")
@@ -48,7 +51,13 @@ fun setImageFile(imageView: ImageView, filePath: String?) {
     filePath?.let {
         val file = File(filePath)
         if (file.exists()) {
-            imageView.setImageBitmap(BitmapFactory.decodeFile(filePath))
+            CoroutineScope(Dispatchers.Main).launch {
+                val targetView: ImageView? = imageView
+                val bitmap: Bitmap = withContext(Dispatchers.IO) {
+                    BitmapFactory.decodeFile(filePath)
+                }
+                targetView?.setImageBitmap(bitmap)
+            }
         } else {
             imageView.setImageResource(R.drawable.ic_warning_24)
         }

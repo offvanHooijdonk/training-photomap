@@ -20,4 +20,19 @@
     <string name="error_default_auth">Неизвестная ошибка</string>
     <string name="no_data_provided">Данные не предоставлены</string>
     <string name="error_unknown">Неизвестная ошибка</string>
+
+    <string-array name="months_full">
+        <item>Январь</item>
+        <item>Февраль</item>
+        <item>Март</item>
+        <item>Апрель</item>
+        <item>Май</item>
+        <item>Июнь</item>
+        <item>Июль</item>
+        <item>Август</item>
+        <item>Сентябрь</item>
+        <item>Октябрь</item>
+        <item>Ноябрь</item>
+        <item>Декабрь</item>
+    </string-array>
 </resources>

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="main_title">Photo Map</string>
+    <string name="main_title">Фота Мапа</string>
     <string name="log_out">Выйсьцi</string>
     <string name="tab_map">Мапа</string>
     <string name="tab_timeline">Стужка</string>
