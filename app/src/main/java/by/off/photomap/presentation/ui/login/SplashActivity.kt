@@ -3,7 +3,6 @@ package by.off.photomap.presentation.ui.login
 import android.arch.lifecycle.Observer
 import android.content.Intent
 import android.databinding.BindingAdapter
-import android.databinding.DataBindingUtil
 import android.os.Bundle
 import android.support.v7.app.AlertDialog
 import android.view.LayoutInflater
@@ -12,36 +11,31 @@ import android.widget.TextView
 import by.off.photomap.R
 import by.off.photomap.core.ui.BaseActivity
 import by.off.photomap.core.ui.ErrorDescriptions
-import by.off.photomap.core.utils.di.ViewModelFactory
 import by.off.photomap.databinding.ScreenSplashBinding
 import by.off.photomap.di.LoginScreenComponent
 import by.off.photomap.model.UserInfo
 import by.off.photomap.presentation.ui.MainActivity
 import by.off.photomap.presentation.viewmodel.login.LoginViewModel
-import by.off.photomap.storage.parse.AuthenticationFailedException
-import by.off.photomap.storage.parse.RegistrationFailedException
-import by.off.photomap.storage.parse.RegistrationFailedException.Field
-import by.off.photomap.storage.parse.UserNotFoundException
 import kotlinx.android.synthetic.main.dialog_login.view.*
-import javax.inject.Inject
 
-class SplashActivity : BaseActivity() {
+class SplashActivity : BaseActivity<LoginViewModel, ScreenSplashBinding>() {
     companion object {
         private const val TAG_DIALOG_REGISTER = "tag_dialog_register"
     }
 
-    @Inject
-    override lateinit var viewModelFactory: ViewModelFactory
+    override val layout: Int
+        get() = R.layout.screen_splash
 
-    private lateinit var viewModel: LoginViewModel
+    override val viewModelClass: Class<LoginViewModel>
+        get() = LoginViewModel::class.java
 
-    override fun onCreate(savedInstanceState: Bundle?) {
+    override fun inject() {
+        LoginScreenComponent.get(this).inject(this)
+    }
+
+   override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        LoginScreenComponent.get(this).inject(this)
-        viewModel = getViewModel(LoginViewModel::class.java)
-
-        val binding = DataBindingUtil.setContentView<ScreenSplashBinding>(this, R.layout.screen_splash)
         binding.model = viewModel
 
         viewModel.liveData.observe(this, Observer { response ->

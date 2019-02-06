@@ -1,7 +1,6 @@
 package by.off.photomap.presentation.ui.photo
 
 import android.arch.lifecycle.Observer
-import android.databinding.DataBindingUtil
 import android.net.Uri
 import android.os.Bundle
 import android.support.design.widget.Snackbar
@@ -13,7 +12,6 @@ import by.off.photomap.core.ui.BaseActivity
 import by.off.photomap.core.ui.colorError
 import by.off.photomap.core.ui.ctx
 import by.off.photomap.core.ui.dto.CategoryInfo
-import by.off.photomap.core.utils.di.ViewModelFactory
 import by.off.photomap.di.PhotoScreenComponent
 import by.off.photomap.presentation.ui.R
 import by.off.photomap.presentation.ui.databinding.ActPhotoViewEditBinding
@@ -21,27 +19,28 @@ import by.off.photomap.presentation.viewmodel.photo.PhotoViewModel
 import by.off.photomap.presentation.viewmodel.photo.PhotoViewModel.MODE
 import kotlinx.android.synthetic.main.act_photo_view_edit.*
 import kotlinx.android.synthetic.main.include_collapsible_toolbar.*
-import javax.inject.Inject
 
-class PhotoViewEditActivity : BaseActivity() {
+class PhotoViewEditActivity : BaseActivity<PhotoViewModel, ActPhotoViewEditBinding>() {
+    override val layout: Int
+        get() = R.layout.act_photo_view_edit
+    override val viewModelClass: Class<PhotoViewModel>
+        get() = PhotoViewModel::class.java
+
+    override fun inject() {
+        PhotoScreenComponent.get(this).inject(this)
+    }
+
     companion object {
         const val EXTRA_IMAGE_URI = "extra_image_uri"
         const val EXTRA_PHOTO_ID = "extra_photo_id"
         private const val KEY_SAVED_INSTANCE = "key_saved_instance"
     }
 
-    @Inject
-    override lateinit var viewModelFactory: ViewModelFactory
-
     private var mode: MODE = MODE.VIEW
-    private lateinit var viewModel: PhotoViewModel
     private var enableSave = true
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        PhotoScreenComponent.get(this).inject(this)
-        viewModel = getViewModel(PhotoViewModel::class.java)
 
         initBindings()
         initModelsObserve()
@@ -101,7 +100,6 @@ class PhotoViewEditActivity : BaseActivity() {
     }
 
     private fun initBindings() {
-        val binding = DataBindingUtil.setContentView<ActPhotoViewEditBinding>(this, R.layout.act_photo_view_edit)
         binding.model = viewModel
     }
 

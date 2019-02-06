@@ -13,13 +13,14 @@ import android.view.MenuItem
 import by.off.photomap.core.ui.BaseActivity
 import by.off.photomap.core.utils.di.ViewModelFactory
 import by.off.photomap.di.MainScreenComponent
+import by.off.photomap.presentation.ui.databinding.ActMainBinding
 import by.off.photomap.presentation.ui.map.MapFragment
 import by.off.photomap.presentation.ui.timeline.TimelineFragment
 import by.off.photomap.presentation.viewmodel.MainScreenViewModel
 import kotlinx.android.synthetic.main.act_main.*
 import javax.inject.Inject
 
-class MainActivity : BaseActivity() {
+class MainActivity : BaseActivity<MainScreenViewModel, ActMainBinding>() {
     companion object {
         const val TAB_INDEX_MAP = 0
         const val TAB_INDEX_TIMELINE = 1
@@ -27,17 +28,19 @@ class MainActivity : BaseActivity() {
         const val FLAG_LOCATION_LISTENER = 0b10
     }
 
-    @Inject
-    override lateinit var viewModelFactory: ViewModelFactory
+    override val layout: Int
+        get() = R.layout.act_main
+    override val viewModelClass: Class<MainScreenViewModel>
+        get() = MainScreenViewModel::class.java
 
-    private lateinit var viewModel: MainScreenViewModel
+    override fun inject() {
+        MainScreenComponent.get(this).inject(this)
+    }
 
     val registeredFlags = mutableMapOf<Int, Int>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.act_main)
-        MainScreenComponent.get(this).inject(this)
 
         setSupportActionBar(toolbar)
 
@@ -71,7 +74,6 @@ class MainActivity : BaseActivity() {
     }
 
     private fun initModelObserve() {
-        viewModel = getViewModel(MainScreenViewModel::class.java)
         viewModel.liveData.observe(this, Observer { error ->
             if (error == null) {
                 finish() // TODO place SplashActivity to this module and navigate to it here
