@@ -1,0 +1,13 @@
+<resources>
+    <string name="main_title">Photo Map</string>
+    <string name="log_out">Log Out</string>
+    <string name="tab_map">Map</string>
+    <string name="tab_timeline">Timeline</string>
+    <string name="option_gallery">Choose from Gallery</string>
+    <string name="option_take_photo">Take a picture</string>
+    <string-array name="options_add_picture">
+        <item>@string/option_gallery</item>
+        <item>@string/option_take_photo</item>
+    </string-array>
+    <string name="photo_save">Save</string>
+</resources>

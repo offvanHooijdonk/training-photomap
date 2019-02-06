@@ -7,7 +7,7 @@
 
         <variable
             name="model"
-            type="by.off.photomap.presentation.ui.login.LoginViewModel" />
+            type="by.off.photomap.presentation.viewmodel.login.LoginViewModel" />
 
     </data>
 
@@ -56,11 +56,11 @@
 
         <TextView
             android:id="@+id/txtError"
+            exception="@{model.errorObject}"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:drawableStart="@drawable/ic_error_24"
             android:drawablePadding="@dimen/error_icon_text_padding"
-            android:text="@{model.errorObject}"
             android:textColor="@color/splashLayoutAccent"
             android:textSize="14sp"
             android:visibility="@{model.isError ? View.VISIBLE : View.GONE}"

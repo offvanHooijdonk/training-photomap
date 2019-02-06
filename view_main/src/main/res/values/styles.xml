@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="TextPhotoAttributes">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="layout_constraintEnd_toEndOf">parent</item>
+        <item name="android:textSize">@dimen/photo_attr_text_size</item>
+        <item name="android:layout_marginTop">@dimen/photo_attr_margin_top</item>
+    </style>
+</resources>

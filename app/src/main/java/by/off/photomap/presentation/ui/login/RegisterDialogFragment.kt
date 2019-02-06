@@ -53,8 +53,8 @@ class RegisterDialogFragment : DialogFragment() {
             if (shouldConfirm())
                 AlertDialog.Builder(ctx)
                     .setCancelable(false)
-                    .setTitle("Confirm")
-                    .setMessage("Are you sure you want to discard input and leave?")
+                    .setTitle(R.string.dialog_confirm_title)
+                    .setMessage(R.string.dialog_confirm_cancel_reg)
                     .setNegativeButton(android.R.string.no, null)
                     .setPositiveButton(android.R.string.yes) { dialog, _ -> dialog.dismiss(); this@RegisterDialogFragment.dismiss() }
                     .create().show()
@@ -76,7 +76,7 @@ class RegisterDialogFragment : DialogFragment() {
         }
 
         if (!validAll) {
-            showValidationError("Please fix validation error")
+            showValidationError("Please fix validation errorMessage")
         } else if (inputPwd.text.toString() != inputPwdCheck.text.toString()) {
             showValidationError("Passwords do not match")
         } else {

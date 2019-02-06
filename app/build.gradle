@@ -29,6 +29,7 @@ dependencies {
     implementation project(":model")
     implementation project(":core_ui")
     implementation project(":core_utils")
+    implementation project(":view_main")
     implementation project(":storage_parse_api")
     implementation project(":storage_parse_impl")
 
@@ -42,12 +43,12 @@ dependencies {
     implementation "com.google.dagger:dagger:$dagger_version"
     kapt "com.google.dagger:dagger-compiler:$dagger_version"
 
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutines_version"
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutines_version"
+    //implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutines_version"
+    //implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutines_version"
 
-    implementation "com.github.parse-community.Parse-SDK-Android:parse:$parse_version"
+    //implementation "com.github.parse-community.Parse-SDK-Android:parse:$parse_version"
 
-    implementation 'com.google.android.gms:play-services-maps:16.0.0'
+    //implementation 'com.google.android.gms:play-services-maps:16.0.0'
 
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'

@@ -24,10 +24,5 @@ interface UserService {
      */
     fun registerAndLogin(user: UserInfo, pwd: String)
 
-    /**
-     * Works with [serviceLiveData]
-     * @param id objectID of the user
-     * @exception UserNotFoundException Can produce when no user with such id found
-     */
-    fun getById(id: String): LiveData<Response<UserInfo>>
+    fun logOut()
 }

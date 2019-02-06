@@ -11,10 +11,6 @@ import com.parse.ParseException
 import com.parse.ParseObject
 import com.parse.ParseQuery
 import com.parse.ParseUser
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 // TODO log errors before returning response
@@ -64,19 +60,22 @@ class UserServiceImpl @Inject constructor() : UserService {
         }
     }
 
-    override fun getById(id: String): LiveData<Response<UserInfo>> {
-        val liveData = MutableLiveData<Response<UserInfo>>()
-        CoroutineScope(Dispatchers.IO).launch {
-            val response = getByIdSync(id)
-
-            liveData.postValue(response)
-        }
-        return liveData
-    }
-
     override fun authenticate(userName: String, pwd: String) {
         launchScopeIO {
             val response = authSync(userName, pwd)
+
+            liveData.postValue(response)
+        }
+    }
+
+    override fun logOut() {
+        launchScopeIO {
+            val response = try {
+                ParseUser.logOut()
+                Response(UserInfo(""))
+            } catch (e: Exception) {
+                Response<UserInfo>(error = e)
+            }
 
             liveData.postValue(response)
         }
@@ -94,7 +93,7 @@ class UserServiceImpl @Inject constructor() : UserService {
     private fun getByIdSync(id: String) =
         try {
             val query: ParseQuery<ParseObject> = ParseQuery.getQuery(UserInfo.TABLE)
-            Response(convert(query.get(id)), null)
+            Response(convertToUser(query.get(id)), null)
         } catch (e: ParseException) {
             val error = when {
                 e.code == ParseException.OBJECT_NOT_FOUND -> UserNotFoundException(id)
@@ -102,11 +101,4 @@ class UserServiceImpl @Inject constructor() : UserService {
             }
             Response<UserInfo>(null, error)
         }
-
-    private fun convert(obj: ParseObject): UserInfo =
-        UserInfo(
-            obj.objectId, // TODO implement better?
-            obj.getString(UserInfo.PROP_EMAIL) ?: UserInfo.ERROR_MISSING,
-            obj.getString(UserInfo.PROP_USER_NAME) ?: UserInfo.ERROR_MISSING
-        )
 }
