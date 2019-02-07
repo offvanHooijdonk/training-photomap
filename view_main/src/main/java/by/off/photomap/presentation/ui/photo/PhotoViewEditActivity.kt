@@ -16,7 +16,7 @@ import by.off.photomap.core.ui.dto.CategoryInfo
 import by.off.photomap.core.utils.di.ViewModelFactory
 import by.off.photomap.di.PhotoScreenComponent
 import by.off.photomap.presentation.ui.R
-import by.off.photomap.presentation.ui.databinding.ActPhotoViewEditBinding
+import by.off.photomap.presentation.ui.databinding.PhotoEditBinding
 import by.off.photomap.presentation.ui.photo.PhotoViewModel.MODE
 import kotlinx.android.synthetic.main.act_photo_view_edit.*
 import kotlinx.android.synthetic.main.include_collapsible_toolbar.*
@@ -105,7 +105,7 @@ class PhotoViewEditActivity : BaseActivity() {
     }
 
     private fun initBindings() {
-        val binding = DataBindingUtil.setContentView<ActPhotoViewEditBinding>(this, R.layout.act_photo_view_edit)
+        val binding = DataBindingUtil.setContentView<PhotoEditBinding>(this, R.layout.act_photo_view_edit)
         binding.model = viewModel
     }
 
