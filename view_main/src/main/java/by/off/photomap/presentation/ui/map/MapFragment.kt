@@ -7,35 +7,49 @@ import android.graphics.Bitmap
 import android.os.Bundle
 import android.provider.MediaStore
 import android.support.v7.app.AppCompatActivity
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.Toast
 import by.off.photomap.core.ui.BaseFragment
+import by.off.photomap.core.ui.CallbackHolder
 import by.off.photomap.core.ui.ctx
+import by.off.photomap.core.ui.dto.CategoryInfo
+import by.off.photomap.core.ui.hue
+import by.off.photomap.core.utils.LOGCAT
 import by.off.photomap.core.utils.di.ViewModelFactory
 import by.off.photomap.di.PhotoScreenComponent
+import by.off.photomap.model.PhotoInfo
 import by.off.photomap.presentation.ui.MainActivity
 import by.off.photomap.presentation.ui.R
 import by.off.photomap.presentation.ui.photo.PhotoViewEditActivity
+import com.google.android.gms.maps.*
+import com.google.android.gms.maps.model.BitmapDescriptorFactory
+import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.MarkerOptions
 import javax.inject.Inject
 
-class MapFragment : BaseFragment(), MainActivity.ButtonPhotoListener, MainActivity.ButtonLocationListener {
+class MapFragment : BaseFragment(), MainActivity.ButtonPhotoListener, MainActivity.ButtonLocationListener, OnMapReadyCallback {
     companion object {
+
         private const val OPTION_GALLERY = 0
         private const val OPTION_MAKE_PHOTO = 1
-
         private const val PICKER_GALLERY = 1
+
         private const val PICKER_CAMERA = 2
         private const val EXTRA_CAMERA_DATA = "data"
     }
 
     @Inject
     override lateinit var viewModelFactory: ViewModelFactory
-    private lateinit var viewModel: MapViewModel
 
+    private val hueMap = mutableMapOf<Int, Float>() // category to hue
+    private lateinit var viewModel: MapViewModel
     private var progressDialog: AlertDialog? = null
+    private var googleMap: GoogleMap? = null
+    private val callbacks = mutableMapOf<String, CallbackHolder>()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         PhotoScreenComponent.get(ctx).inject(this)
@@ -52,6 +66,32 @@ class MapFragment : BaseFragment(), MainActivity.ButtonPhotoListener, MainActivi
                 startActivity(Intent(ctx, PhotoViewEditActivity::class.java).apply { putExtra(PhotoViewEditActivity.EXTRA_CAMERA_FILE, filePath) })
             }
         })
+        viewModel.listLiveData.observe(this, Observer { listResponse ->
+            listResponse?.let {
+                updateMarkers(it.list)
+            }
+        })
+        viewModel.thumbLiveData.observe(this, Observer { response ->
+            response?.let {
+                val photoId = it.first
+                callbacks[photoId]?.let { holder -> holder.callback(photoId, it.second) }
+                callbacks.remove(photoId)
+            }
+        })
+        (childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment).getMapAsync(this)
+    }
+
+    override fun onMapReady(gMap: GoogleMap?) {
+        gMap?.let {
+            googleMap = gMap
+            viewModel.loadData() // TODO make kind of refreshing onStart
+
+            gMap.setInfoWindowAdapter(MarkerAdapter(ctx) { photoId, callback ->
+                callbacks[photoId] = CallbackHolder(photoId, callback)
+                viewModel.requestThumbnail(photoId)
+            })
+            gMap.uiSettings?.isMapToolbarEnabled = false
+        }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -64,6 +104,22 @@ class MapFragment : BaseFragment(), MainActivity.ButtonPhotoListener, MainActivi
 
     override fun onPhotoClicked() {
         showOptionsDialog()
+    }
+
+    private fun updateMarkers(photoList: List<PhotoInfo>) {
+        val gMap = googleMap
+        gMap?.let {
+            it.clear()
+            for (photo in photoList) {
+                val lat = photo.latitude
+                val lon = photo.longitude
+                if (lat != null && lon != null) {
+                    val marker = gMap.addMarker(MarkerOptions().position(LatLng(lat, lon)).title(photo.description))
+                    marker.setIcon(BitmapDescriptorFactory.defaultMarker(getCategoryHue(photo.category)))
+                    marker.tag = photo
+                }
+            }
+        }
     }
 
     override fun onLocationClicked() {
@@ -124,5 +180,9 @@ class MapFragment : BaseFragment(), MainActivity.ButtonPhotoListener, MainActivi
             .setView(R.layout.dialog_progress)
             .setCancelable(false)
             .show()
+    }
+
+    private fun getCategoryHue(category: Int) = hueMap[category] ?: let {
+        hue(ctx.resources.getColor(CategoryInfo.getMarkerColor(category))).also { hueMap[category] = it }
     }
 }

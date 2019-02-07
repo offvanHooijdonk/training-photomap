@@ -18,7 +18,7 @@ import java.util.*
 class TimelineAdapter(
     private val ctx: Context,
     private val onClick: (position: Int, photoId: String) -> Unit,
-    private val requestThumbnail: (photoId: String, callback: (photoId: String, filePath: String?) -> Unit) -> Unit
+        private val requestThumbnail: (photoId: String, callback: (photoId: String, filePath: String?) -> Unit) -> Unit
 ) :
     RecyclerView.Adapter<TimelineAdapter.ViewHolder>() {
     companion object {

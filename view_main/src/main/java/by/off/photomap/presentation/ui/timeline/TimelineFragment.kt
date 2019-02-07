@@ -9,6 +9,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import by.off.photomap.core.ui.BaseFragment
+import by.off.photomap.core.ui.CallbackHolder
 import by.off.photomap.core.ui.ctx
 import by.off.photomap.core.ui.setupDefaults
 import by.off.photomap.core.utils.di.ViewModelFactory
@@ -81,5 +82,3 @@ class TimelineFragment : BaseFragment() {
         )
     }
 }
-
-data class CallbackHolder(val photoId: String, val callback: (photoId: String, filePath: String?) -> Unit)
