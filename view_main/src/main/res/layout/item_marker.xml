@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:padding="@dimen/marker_popup_padding">
+
+    <ImageView
+        android:id="@+id/imgThumb"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="@id/txtTimestamp"
+        android:scaleType="centerCrop"
+        android:adjustViewBounds="true"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/txtDescription"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/marker_popup_padding"
+        android:ellipsize="end"
+        android:maxWidth="@dimen/marker_popup_text_width"
+        android:maxLines="3"
+        android:textSize="16sp"
+        app:layout_constraintStart_toEndOf="@id/imgThumb"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="@string/fish_text_short" />
+
+    <TextView
+        android:id="@+id/txtTimestamp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/marker_popup_padding"
+        app:layout_constraintStart_toStartOf="@id/txtDescription"
+        app:layout_constraintTop_toBottomOf="@id/txtDescription"
+        tools:text="@string/fish_date_short" />
+</android.support.constraint.ConstraintLayout>
