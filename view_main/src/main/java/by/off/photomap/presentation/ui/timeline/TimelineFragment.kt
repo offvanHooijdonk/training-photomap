@@ -10,6 +10,7 @@ import android.view.View
 import android.view.ViewGroup
 import by.off.photomap.core.ui.BaseFragment
 import by.off.photomap.core.ui.ctx
+import by.off.photomap.core.ui.setupDefaults
 import by.off.photomap.core.utils.di.ViewModelFactory
 import by.off.photomap.di.PhotoScreenComponent
 import by.off.photomap.presentation.ui.R
@@ -57,6 +58,8 @@ class TimelineFragment : BaseFragment() {
                 }
             }
         })
+        refreshLayout.setOnRefreshListener { viewModel.loadData() }
+        refreshLayout.setupDefaults()
     }
 
     override fun onStart() {

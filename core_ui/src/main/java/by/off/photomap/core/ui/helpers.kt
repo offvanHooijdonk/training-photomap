@@ -3,6 +3,7 @@ package by.off.photomap.core.ui
 import android.content.Context
 import android.support.design.widget.Snackbar
 import android.support.v4.app.Fragment
+import android.support.v4.widget.SwipeRefreshLayout
 import android.support.v7.app.AppCompatActivity
 import android.view.View
 import android.widget.TextView
@@ -30,3 +31,7 @@ val AppCompatActivity.ctx: Context
 
 val Fragment.ctx: Context
     get() = this.requireContext()
+
+fun SwipeRefreshLayout.setupDefaults() {
+    this.setColorSchemeResources(R.color.refresh_1, R.color.refresh_2, R.color.refresh_3)
+}
