@@ -8,8 +8,8 @@ data class PhotoInfo(
     var description: String,
     val shotTimestamp: Date,
     var category: Int,
-    val latitude: Double? = null,
-    val longitude: Double? = null
+    var latitude: Double? = null,
+    var longitude: Double? = null
 ) : DataObject {
     companion object {
         const val TABLE = "Photo"

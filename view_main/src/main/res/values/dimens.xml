@@ -5,4 +5,5 @@
     <dimen name="photo_attr_divider_margin_top">20dp</dimen>
     <dimen name="marker_popup_padding">8dp</dimen>
     <dimen name="marker_popup_text_width">180dp</dimen>
+    <dimen name="marker_thumb_max">100dp</dimen>
 </resources>

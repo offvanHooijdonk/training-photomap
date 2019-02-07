@@ -37,6 +37,7 @@ class PhotoViewModel @Inject constructor(private val photoService: PhotoService)
 
     private var saveInProgress = false
     private var originalPhotoInfo: PhotoInfo? = null
+    private var latLong: Pair<Double, Double>? = null
 
     fun setupWithPhotoById(id: String) {
         modeLiveData.value = MODE.VIEW
@@ -48,21 +49,23 @@ class PhotoViewModel @Inject constructor(private val photoService: PhotoService)
         photoService.loadById(id)
     }
 
-    fun setupWithUri(uri: Uri) {
+    fun setupWithUri(uri: Uri, latLong: Pair<Double, Double>?) {
         modeLiveData.value = MODE.CREATE
         imageUri.set(uri)
         progressIndeterminate.set(true)
         inProgress.set(true)
         editMode.set(true)
+        this.latLong = latLong
 
         photoService.retrieveMetadata(uri)
     }
 
-    fun setupWithFile(filePath: String) {
+    fun setupWithFile(filePath: String, latLong: Pair<Double, Double>?) {
         modeLiveData.postValue(MODE.CREATE)
         editMode.set(true)
         this.filePath.set(filePath)
         photoInfo.set(PhotoInfo("", null, "", Date(), CategoryInfo.ID_DEAFULT))
+        this.latLong = latLong
     }
 
     fun save() {
@@ -78,6 +81,7 @@ class PhotoViewModel @Inject constructor(private val photoService: PhotoService)
             } else {
                 val uri = imageUri.get()
                 val filePath = this.filePath.get()
+                latLong?.let { photo.latitude = it.first; photo.longitude = it.second }
                 when {
                     uri != null -> photoService.save(photo, uri)
                     filePath != null -> photoService.save(photo, filePath)

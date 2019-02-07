@@ -7,7 +7,6 @@ import android.graphics.Bitmap
 import android.os.Bundle
 import android.provider.MediaStore
 import android.support.v7.app.AppCompatActivity
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -18,7 +17,6 @@ import by.off.photomap.core.ui.CallbackHolder
 import by.off.photomap.core.ui.ctx
 import by.off.photomap.core.ui.dto.CategoryInfo
 import by.off.photomap.core.ui.hue
-import by.off.photomap.core.utils.LOGCAT
 import by.off.photomap.core.utils.di.ViewModelFactory
 import by.off.photomap.di.PhotoScreenComponent
 import by.off.photomap.model.PhotoInfo
@@ -28,6 +26,7 @@ import by.off.photomap.presentation.ui.photo.PhotoViewEditActivity
 import com.google.android.gms.maps.*
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import javax.inject.Inject
 
@@ -50,6 +49,8 @@ class MapFragment : BaseFragment(), MainActivity.ButtonPhotoListener, MainActivi
     private var progressDialog: AlertDialog? = null
     private var googleMap: GoogleMap? = null
     private val callbacks = mutableMapOf<String, CallbackHolder>()
+    private var latLongPicked: LatLng? = null
+    private var stateRestored = false
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         PhotoScreenComponent.get(ctx).inject(this)
@@ -63,14 +64,19 @@ class MapFragment : BaseFragment(), MainActivity.ButtonPhotoListener, MainActivi
         viewModel.fileLiveData.observe(this, Observer { filePath ->
             filePath?.let {
                 progressDialog?.dismiss()
-                startActivity(Intent(ctx, PhotoViewEditActivity::class.java).apply { putExtra(PhotoViewEditActivity.EXTRA_CAMERA_FILE, filePath) })
+                PhotoViewEditActivity.IntentBuilder(ctx)
+                    .withFile(filePath)
+                    .withGeoPoint(latLongPicked)
+                    .start()
             }
         })
+
         viewModel.listLiveData.observe(this, Observer { listResponse ->
             listResponse?.let {
                 updateMarkers(it.list)
             }
         })
+
         viewModel.thumbLiveData.observe(this, Observer { response ->
             response?.let {
                 val photoId = it.first
@@ -79,17 +85,38 @@ class MapFragment : BaseFragment(), MainActivity.ButtonPhotoListener, MainActivi
             }
         })
         (childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment).getMapAsync(this)
+        stateRestored = savedInstanceState != null
+    }
+
+    override fun onStart() { // TODO save marker selected and location picked for the case of
+        super.onStart()
+
+        if (!stateRestored) {
+            viewModel.loadData()
+        } else {
+            stateRestored = false
+        }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putBoolean("save_instance", true)
     }
 
     override fun onMapReady(gMap: GoogleMap?) {
         gMap?.let {
-            googleMap = gMap
-            viewModel.loadData() // TODO make kind of refreshing onStart
 
+            googleMap = gMap
+            viewModel.listLiveData.value?.let { updateMarkers(it.list) }
             gMap.setInfoWindowAdapter(MarkerAdapter(ctx) { photoId, callback ->
                 callbacks[photoId] = CallbackHolder(photoId, callback)
                 viewModel.requestThumbnail(photoId)
             })
+            gMap.setOnInfoWindowClickListener(::onMarkerPopupClick)
+            gMap.setOnMapLongClickListener {
+                latLongPicked = it
+                startOptionsDialog()
+            }
             gMap.uiSettings?.isMapToolbarEnabled = false
         }
     }
@@ -102,8 +129,9 @@ class MapFragment : BaseFragment(), MainActivity.ButtonPhotoListener, MainActivi
         }
     }
 
-    override fun onPhotoClicked() {
-        showOptionsDialog()
+    override fun onAddPhotoClicked() {
+        latLongPicked = null
+        startOptionsDialog()
     }
 
     private fun updateMarkers(photoList: List<PhotoInfo>) {
@@ -139,11 +167,14 @@ class MapFragment : BaseFragment(), MainActivity.ButtonPhotoListener, MainActivi
     private fun onGalleryResponse(resultCode: Int, data: Intent?) {
         if (resultCode == AppCompatActivity.RESULT_OK && data?.data != null) {
             val imageUri = data.data
-            startActivity(Intent(ctx, PhotoViewEditActivity::class.java).apply { putExtra(PhotoViewEditActivity.EXTRA_IMAGE_URI, imageUri) })
+            PhotoViewEditActivity.IntentBuilder(ctx)
+                .withUri(imageUri)
+                .withGeoPoint(latLongPicked)
+                .start()
         }
     }
 
-    private fun showOptionsDialog() {
+    private fun startOptionsDialog() {
         AlertDialog.Builder(ctx)
             .setTitle("Photo")
             .setAdapter(ArrayAdapter<String>(ctx, android.R.layout.select_dialog_item).apply {
@@ -161,6 +192,14 @@ class MapFragment : BaseFragment(), MainActivity.ButtonPhotoListener, MainActivi
             OPTION_GALLERY -> startGalleryPick()
             OPTION_MAKE_PHOTO -> startCamera()
         }
+    }
+
+    private fun onMarkerPopupClick(marker: Marker) {
+        val photo = marker.tag as PhotoInfo
+        PhotoViewEditActivity.IntentBuilder(ctx)
+            .withPhotoId(photo.id)
+            .withGeoPoint(latLongPicked)
+            .start()
     }
 
     private fun startCamera() {

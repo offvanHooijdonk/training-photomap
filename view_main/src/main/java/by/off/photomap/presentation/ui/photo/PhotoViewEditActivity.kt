@@ -1,6 +1,8 @@
 package by.off.photomap.presentation.ui.photo
 
 import android.arch.lifecycle.Observer
+import android.content.Context
+import android.content.Intent
 import android.databinding.DataBindingUtil
 import android.net.Uri
 import android.os.Bundle
@@ -9,6 +11,7 @@ import android.support.v7.app.AlertDialog
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.ArrayAdapter
+import android.widget.Toast
 import by.off.photomap.core.ui.BaseActivity
 import by.off.photomap.core.ui.colorError
 import by.off.photomap.core.ui.ctx
@@ -18,6 +21,7 @@ import by.off.photomap.di.PhotoScreenComponent
 import by.off.photomap.presentation.ui.R
 import by.off.photomap.presentation.ui.databinding.PhotoEditBinding
 import by.off.photomap.presentation.ui.photo.PhotoViewModel.MODE
+import com.google.android.gms.maps.model.LatLng
 import kotlinx.android.synthetic.main.act_photo_view_edit.*
 import kotlinx.android.synthetic.main.include_collapsible_toolbar.*
 import javax.inject.Inject
@@ -27,6 +31,8 @@ class PhotoViewEditActivity : BaseActivity() {
         const val EXTRA_IMAGE_URI = "extra_image_uri"
         const val EXTRA_PHOTO_ID = "extra_photo_id"
         const val EXTRA_CAMERA_FILE = "extra_camera_file"
+        const val EXTRA_LATITUDE = "extra_latitude"
+        const val EXTRA_LONGITUDE = "extra_longitude"
 
         private const val KEY_SAVED_INSTANCE = "key_saved_instance"
     }
@@ -94,10 +100,14 @@ class PhotoViewEditActivity : BaseActivity() {
         val uri = intent.extras?.getParcelable<Uri>(EXTRA_IMAGE_URI)
         val passedId = intent.extras?.getString(EXTRA_PHOTO_ID)
         val passedFile = intent.extras?.getString(EXTRA_CAMERA_FILE)
+        val lat = intent.extras?.getDouble(EXTRA_LATITUDE)
+        val lon = intent.extras?.getDouble(EXTRA_LONGITUDE)
+
+        val latLong = if (lat != null && lon != null) lat to lon else null
         when {
-            uri != null -> loadByUri(uri)
+            uri != null -> loadByUri(uri, latLong)
             passedId != null -> loadById(passedId)
-            passedFile != null -> loadByCameraPhoto(passedFile)
+            passedFile != null -> loadByCameraPhoto(passedFile, latLong)
             else -> {
                 Snackbar.make(progressSaving, R.string.no_data_provided, Snackbar.LENGTH_INDEFINITE).colorError().show()
             }
@@ -152,16 +162,16 @@ class PhotoViewEditActivity : BaseActivity() {
         )
     }
 
-    private fun loadByUri(uri: Uri) {
-        viewModel.setupWithUri(uri)
+    private fun loadByUri(uri: Uri, latLong: Pair<Double, Double>?) {
+        viewModel.setupWithUri(uri, latLong)
     }
 
     private fun loadById(id: String) {
         viewModel.setupWithPhotoById(id)
     }
 
-    private fun loadByCameraPhoto(filePath: String) {
-        viewModel.setupWithFile(filePath)
+    private fun loadByCameraPhoto(filePath: String, latLong: Pair<Double, Double>?) {
+        viewModel.setupWithFile(filePath, latLong)
     }
 
     private fun handleBack() {
@@ -182,5 +192,35 @@ class PhotoViewEditActivity : BaseActivity() {
         title = null
         supportActionBar?.setHomeButtonEnabled(true)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
+    }
+
+    class IntentBuilder(private val ctx: Context) {
+        private val intent: Intent = Intent(ctx, PhotoViewEditActivity::class.java)
+        private var requiredSet = false
+
+        fun withFile(filePath: String) = intent.let { it.putExtra(EXTRA_CAMERA_FILE, filePath); requiredSet = true; this }
+
+        fun withPhotoId(photoId: String) = intent.let { it.putExtra(EXTRA_PHOTO_ID, photoId); requiredSet = true; this }
+
+        fun withUri(imageUri: Uri) = intent.let { it.putExtra(EXTRA_IMAGE_URI, imageUri); requiredSet = true; this }
+
+        fun withGeoPoint(latitude: Double, longitude: Double) = intent.let {
+            it.putExtra(EXTRA_LATITUDE, latitude)
+            it.putExtra(EXTRA_LONGITUDE, longitude)
+            this
+        }
+
+        fun withGeoPoint(latLong: LatLng?) = this.apply {
+            latLong?.let {
+                withGeoPoint(it.latitude, it.longitude)
+            }
+        }
+
+        fun start() {
+            if (requiredSet)
+                ctx.startActivity(intent)
+            else
+                Toast.makeText(ctx, "Required data not provided!", Toast.LENGTH_LONG).show()
+        }
     }
 }

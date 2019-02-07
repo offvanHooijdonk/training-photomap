@@ -46,7 +46,7 @@ class MainActivity : BaseActivity() {
 
         fabAddPhoto.setOnClickListener {
             val fr = getCurrentFragment()
-            if (fr is ButtonPhotoListener) fr.onPhotoClicked()
+            if (fr is ButtonPhotoListener) fr.onAddPhotoClicked()
         }
         fabLocation.setOnClickListener {
             val fr = getCurrentFragment()
@@ -125,7 +125,7 @@ class MainActivity : BaseActivity() {
     }
 
     interface ButtonPhotoListener {
-        fun onPhotoClicked()
+        fun onAddPhotoClicked()
     }
 
     interface ButtonLocationListener {

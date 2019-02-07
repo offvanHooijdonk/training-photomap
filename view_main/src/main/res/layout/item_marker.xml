@@ -10,9 +10,10 @@
         android:id="@+id/imgThumb"
         android:layout_width="wrap_content"
         android:layout_height="0dp"
-        app:layout_constraintBottom_toBottomOf="@id/txtTimestamp"
-        android:scaleType="centerCrop"
         android:adjustViewBounds="true"
+        android:maxWidth="@dimen/marker_thumb_max"
+        android:scaleType="centerCrop"
+        app:layout_constraintBottom_toBottomOf="@id/txtTimestamp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
