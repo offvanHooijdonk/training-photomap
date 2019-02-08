@@ -1,11 +1,14 @@
 package by.off.photomap.presentation.ui.map
 
 import android.app.AlertDialog
+import android.app.Dialog
 import android.arch.lifecycle.Observer
 import android.content.Intent
 import android.graphics.Bitmap
 import android.os.Bundle
 import android.provider.MediaStore
+import android.support.design.widget.Snackbar
+import android.support.v4.app.DialogFragment
 import android.support.v7.app.AppCompatActivity
 import android.view.LayoutInflater
 import android.view.View
@@ -28,15 +31,15 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
+import kotlinx.android.synthetic.main.screen_map.*
 import javax.inject.Inject
+import kotlin.random.Random
 
 class MapFragment : BaseFragment(), MainActivity.ButtonPhotoListener, MainActivity.ButtonLocationListener, OnMapReadyCallback {
     companion object {
-
-        private const val OPTION_GALLERY = 0
-        private const val OPTION_MAKE_PHOTO = 1
+        /*private const val OPTION_GALLERY = 0
+        private const val OPTION_MAKE_PHOTO = 1*/
         private const val PICKER_GALLERY = 1
-
         private const val PICKER_CAMERA = 2
         private const val EXTRA_CAMERA_DATA = "data"
     }
@@ -48,6 +51,7 @@ class MapFragment : BaseFragment(), MainActivity.ButtonPhotoListener, MainActivi
     private lateinit var viewModel: MapViewModel
     private var progressDialog: AlertDialog? = null
     private var googleMap: GoogleMap? = null
+    private var dialogAddPhoto: DialogFragment? = null
     private val callbacks = mutableMapOf<String, CallbackHolder>()
     private var latLongPicked: LatLng? = null
     private var stateRestored = false
@@ -115,7 +119,7 @@ class MapFragment : BaseFragment(), MainActivity.ButtonPhotoListener, MainActivi
             gMap.setOnInfoWindowClickListener(::onMarkerPopupClick)
             gMap.setOnMapLongClickListener {
                 latLongPicked = it
-                startOptionsDialog()
+                startLocationDialog(it)
             }
             gMap.uiSettings?.isMapToolbarEnabled = false
         }
@@ -130,8 +134,27 @@ class MapFragment : BaseFragment(), MainActivity.ButtonPhotoListener, MainActivi
     }
 
     override fun onAddPhotoClicked() {
-        latLongPicked = null
-        startOptionsDialog()
+        // todo implement current location awareness
+        // todo implement show snackbar through MainActivity
+
+        //Snackbar.make(coordinatorLayout, "Location is unknown, please pick some on the map", Snackbar.LENGTH_LONG).show()
+
+        Toast.makeText(ctx, "Location is unknown, please pick some on the map", Toast.LENGTH_LONG).show()
+        //}
+        //latLongPicked = null
+        //startOptionsDialog()
+        //val geoPoint = LatLng(Random.nextDouble(-70.0, 70.0), Random.nextDouble(-175.0, 175.0))
+        //startLocationDialog(geoPoint)
+    }
+
+    private fun startLocationDialog(geoPoint: LatLng) {
+        dialogAddPhoto = AddPhotoBottomSheet.createNewDialog(latLongPicked ?: geoPoint)
+            .apply {
+                onAddClicked = ::onOptionPicked
+                placeLiveData = viewModel.placeLiveData
+            }
+        dialogAddPhoto?.show(childFragmentManager, "")
+        viewModel.loadPlaceInfo(geoPoint)
     }
 
     private fun updateMarkers(photoList: List<PhotoInfo>) {
@@ -156,6 +179,7 @@ class MapFragment : BaseFragment(), MainActivity.ButtonPhotoListener, MainActivi
 
     private fun onCameraResponse(resultCode: Int, data: Intent?) {
         data?.extras?.let { extras ->
+            dialogAddPhoto?.dismiss()
             if (resultCode == AppCompatActivity.RESULT_OK && extras.keySet().contains(EXTRA_CAMERA_DATA)) {
                 val bitmap = extras[EXTRA_CAMERA_DATA] as Bitmap
                 startProgressDialog()
@@ -166,6 +190,7 @@ class MapFragment : BaseFragment(), MainActivity.ButtonPhotoListener, MainActivi
 
     private fun onGalleryResponse(resultCode: Int, data: Intent?) {
         if (resultCode == AppCompatActivity.RESULT_OK && data?.data != null) {
+            dialogAddPhoto?.dismiss()
             val imageUri = data.data
             PhotoViewEditActivity.IntentBuilder(ctx)
                 .withUri(imageUri)
@@ -174,7 +199,7 @@ class MapFragment : BaseFragment(), MainActivity.ButtonPhotoListener, MainActivi
         }
     }
 
-    private fun startOptionsDialog() {
+    /*private fun startOptionsDialog() {
         AlertDialog.Builder(ctx)
             .setTitle("Photo")
             .setAdapter(ArrayAdapter<String>(ctx, android.R.layout.select_dialog_item).apply {
@@ -185,12 +210,12 @@ class MapFragment : BaseFragment(), MainActivity.ButtonPhotoListener, MainActivi
             }
             .setCancelable(true)
             .show()
-    }
+    }*/
 
     private fun onOptionPicked(position: Int) {
         when (position) {
-            OPTION_GALLERY -> startGalleryPick()
-            OPTION_MAKE_PHOTO -> startCamera()
+            AddPhotoBottomSheet.OPTION_GALLERY -> startGalleryPick()
+            AddPhotoBottomSheet.OPTION_MAKE_PHOTO -> startCamera()
         }
     }
 

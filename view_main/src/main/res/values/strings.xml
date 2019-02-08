@@ -11,4 +11,8 @@
     </string-array>
     <string name="photo_save">Save</string>
     <string name="dialog_progress_processing">Processing…</string>
+    <string name="fish_lat">17˚26.53´E</string>
+    <string name="fish_long">108˚35.92´N</string>
+    <string name="btn_from_gallery">Gallery</string>
+    <string name="btn_from_camera">Camera</string>
 </resources>

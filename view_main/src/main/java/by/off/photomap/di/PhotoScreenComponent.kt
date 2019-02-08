@@ -6,6 +6,7 @@ import by.off.photomap.presentation.ui.MainActivity
 import by.off.photomap.presentation.ui.map.MapFragment
 import by.off.photomap.presentation.ui.photo.PhotoViewEditActivity
 import by.off.photomap.presentation.ui.timeline.TimelineFragment
+import by.off.photomap.storage.parse.GeoPointService
 import by.off.photomap.storage.parse.PhotoService
 import dagger.Component
 
@@ -31,6 +32,7 @@ interface PhotoScreenComponent {
 
     interface Dependencies {
         fun photoService(): PhotoService
+        fun geoPointService(): GeoPointService
     }
 
     interface DependenciesProvider {

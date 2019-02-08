@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingStart="@dimen/activity_margin_horizontal"
+    android:paddingTop="@dimen/activity_margin_vertical"
+    android:paddingEnd="@dimen/activity_margin_horizontal"
+    android:paddingBottom="32dp">
+
+    <TextView
+        android:id="@+id/txtLat"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="@string/fish_lat" />
+
+    <TextView
+        android:id="@+id/txtLong"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/activity_margin_horizontal"
+        app:layout_constraintStart_toEndOf="@id/txtLat"
+        app:layout_constraintTop_toTopOf="@id/txtLat"
+        tools:text="@string/fish_long" />
+
+    <TextView
+        android:id="@+id/txtPlaceInfo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:textColor="@color/item_primary_text"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/txtLat"
+        tools:text="@string/fish_text" />
+
+    <ProgressBar
+        android:id="@+id/progressPlaceLoad"
+        style="?android:attr/progressBarStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:indeterminateTint="@color/colorAccent"
+        android:visibility="gone"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/txtPlaceInfo"
+        tools:visibility="visible" />
+
+    <TextView
+        android:id="@+id/txtFromGallery"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/activity_margin_vertical"
+        android:background="?selectableItemBackgroundBorderless"
+        android:drawableTop="@drawable/ic_from_gallery"
+        android:drawablePadding="4dp"
+        android:padding="4dp"
+        android:text="@string/btn_from_gallery"
+        android:textAllCaps="true"
+        android:layout_marginBottom="16dp"
+        android:textColor="@color/colorAccent"
+        app:layout_constraintEnd_toStartOf="@id/txtFromCamera"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/txtPlaceInfo" />
+
+    <TextView
+        android:id="@+id/txtFromCamera"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="?selectableItemBackgroundBorderless"
+        android:drawableTop="@drawable/ic_from_camera"
+        android:drawablePadding="4dp"
+        android:padding="4dp"
+        android:text="@string/btn_from_camera"
+        android:textAllCaps="true"
+        android:textColor="@color/colorAccent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/txtFromGallery"
+        app:layout_constraintTop_toTopOf="@id/txtFromGallery" />
+
+</android.support.constraint.ConstraintLayout>

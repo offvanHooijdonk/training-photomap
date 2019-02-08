@@ -28,6 +28,11 @@
     <string name="no_data_provided">No data provided.</string>
     <string name="error_unknown">Unknown error occurred</string>
 
+    <string name="lat_north">N</string>
+    <string name="lat_south">S</string>
+    <string name="long_east">E</string>
+    <string name="long_west">W</string>
+
     <string-array name="months_full">
         <item>January</item>
         <item>February</item>

@@ -11,8 +11,8 @@
     <string name="label_category_default">Общее</string>
     <string name="label_category_nature">Природа</string>
     <string name="label_category_friends">Друзья</string>
-    <string name="fish_text">Дълго преди това обаче българите приемат това животно като нечисто, поради потайния хищнически живот и спорадичните нападения над домашния добитък. След края на Втората световна война рисът изчезва от българската природа и е вписан като изчезнал вид в Червената книга на България</string>
-    <string name="fish_text_short">Дълго преди това обаче българите приемат това животно като нечисто</string>
+    <string name="fish_text">Дълго преди това обаче приемат това животно като нечисто, поради потайния хищнически живот и спорадичните нападения над домашния добитък. Изчезва от природа и е вписан като изчезнал вид.</string>
+    <string name="fish_text_short">Дълго преди това обаче приемат това животно като нечисто</string>
     <string name="error_auth_failed">Не удалось войти под именем \'%1$s\'</string>
     <string name="error_user_not_found">Пользователь с id %1$s не найден</string>
     <string name="error_registration_failed_by_name">Извините, имя \'%1$s\' уже занято</string>

@@ -6,6 +6,7 @@
         <item name="colorAccent">@color/colorAccent</item>
 
         <item name="android:windowBackground">@drawable/splash_back</item>
+        <item name="android:windowTranslucentNavigation">true</item>
     </style>
 
     <style name="LoginButton" parent="Widget.AppCompat.Button.Borderless.Colored">
