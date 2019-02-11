@@ -1,6 +1,7 @@
 package by.off.photomap.presentation.ui
 
 import android.arch.lifecycle.Observer
+import android.content.res.ColorStateList
 import android.os.Bundle
 import android.support.design.widget.Snackbar
 import android.support.design.widget.TabLayout
@@ -8,9 +9,13 @@ import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentManager
 import android.support.v4.app.FragmentPagerAdapter
 import android.support.v4.view.ViewPager
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import by.off.photomap.core.ui.BaseActivity
+import by.off.photomap.core.ui.ctx
+import by.off.photomap.core.utils.LOGCAT
 import by.off.photomap.core.utils.di.ViewModelFactory
 import by.off.photomap.di.MainScreenComponent
 import by.off.photomap.presentation.ui.map.MapFragment
@@ -28,6 +33,9 @@ class MainActivity : BaseActivity() {
 
     @Inject
     override lateinit var viewModelFactory: ViewModelFactory
+
+    val snackbarRoot: View
+        get() = mainRoot
 
     private lateinit var viewModel: MainScreenViewModel
 
@@ -67,6 +75,11 @@ class MainActivity : BaseActivity() {
             }
         }
         return true
+    }
+
+    fun setNavigationButtonMode(isOn: Boolean) { // todo implement with ViewModels
+        val colorRes = if (isOn) R.color.navigation_btn_mode_on else R.color.navigation_btn_mode_off
+        fabLocation.backgroundTintList = ColorStateList.valueOf(ctx.resources.getColor(colorRes))
     }
 
     private fun initModelObserve() {

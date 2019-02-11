@@ -61,6 +61,7 @@
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fabLocation"
         style="@style/FABBasic"
-        android:src="@drawable/ic_near_me_24dp" />
+        android:src="@drawable/ic_near_me_24dp"
+        app:backgroundTint="@color/navigation_btn_mode_off" />
 
 </android.support.design.widget.CoordinatorLayout>

@@ -14,7 +14,7 @@ object DateHelper {
     private val dateFormatShort by lazy { DateFormat.getDateInstance(DateFormat.MEDIUM) }
     private val dateFormatFull by lazy { DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.MEDIUM) }
 
-    fun formatTimelineDate(date: Date, ctx: Context): String {
+    fun formatTimelineDate(date: Date, ctx: Context): String { // todo pass months string array instead
         val calendar = Calendar.getInstance().apply { time = date }
         val monthName = ctx.resources.getStringArray(R.array.months_full)[calendar.get(Calendar.MONTH)]
         val yearString = calendar.get(Calendar.YEAR).toString()

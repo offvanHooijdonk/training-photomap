@@ -15,4 +15,6 @@
     <string name="fish_long">108˚35.92´N</string>
     <string name="btn_from_gallery">Gallery</string>
     <string name="btn_from_camera">Camera</string>
+    <string name="permission_explanation">Please consider granting location permission to find your current location</string>
+    <string name="location_unknown_try_manual">Location is unknown, try pick some on the map manually.</string>
 </resources>

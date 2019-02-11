@@ -75,17 +75,21 @@ class PhotoViewModel @Inject constructor(private val photoService: PhotoService)
             inProgress.set(true)
             saveEnableLiveData.postValue(false)
 
-            val photo = photoInfo.get()!!
-            if (modeLiveData.value == MODE.EDIT) {
-                photoService.update(photo)
-            } else {
-                val uri = imageUri.get()
-                val filePath = this.filePath.get()
-                latLong?.let { photo.latitude = it.first; photo.longitude = it.second }
-                when {
-                    uri != null -> photoService.save(photo, uri)
-                    filePath != null -> photoService.save(photo, filePath)
+            val photo = photoInfo.get()
+            if (photo != null) {
+                if (modeLiveData.value == MODE.EDIT) {
+                    photoService.update(photo)
+                } else {
+                    val uri = imageUri.get()
+                    val filePath = this.filePath.get()
+                    latLong?.let { photo.latitude = it.first; photo.longitude = it.second }
+                    when {
+                        uri != null -> photoService.save(photo, uri)
+                        filePath != null -> photoService.save(photo, filePath)
+                    }
                 }
+            } else {
+                errorMessage.set("No data provide") // todo need some exception here?
             }
         }
     }

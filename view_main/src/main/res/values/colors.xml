@@ -6,4 +6,7 @@
     <color name="tabs_selected_text">#ccffffff</color>
 
     <color name="icon_for_text">#1F000000</color>
+
+    <color name="navigation_btn_mode_on">@color/colorAccent</color>
+    <color name="navigation_btn_mode_off">#9E9E9E</color>
 </resources>

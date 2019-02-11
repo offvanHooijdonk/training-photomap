@@ -15,6 +15,7 @@ import by.off.photomap.presentation.ui.databinding.ItemTimelineBinding
 import kotlinx.android.synthetic.main.item_timeline.view.*
 import java.util.*
 
+//
 class TimelineAdapter(
     private val ctx: Context,
     private val onClick: (position: Int, photoId: String) -> Unit,
