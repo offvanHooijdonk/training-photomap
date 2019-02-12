@@ -1,6 +1,5 @@
 <resources>
     <string name="app_name">Photo Map</string>
-    <string name="title_activity_maps">Map</string>
     <string name="btn_login">Login</string>
     <string name="btn_register">Register</string>
     <string name="hint_user_name">User Name</string>
@@ -17,7 +16,7 @@
     <string name="pattern_email" translatable="false">[A-Za-z0-9\._%-]+@[A-Za-z0-9\.-]+\.[A-Za-z]{2,6}</string>
     <string name="pattern_email_error">Please enter a valid email</string>
     <string name="pattern_pwd" translatable="false">[A-Za-z0-9]{%1$d,%2$d}</string>
-    <string name="pattern_pwd_error" translatable="false">Password must be of letters and numbers and be %1$d to %2$d long</string>
+    <string name="pattern_pwd_error">Password must be of letters and numbers and be %1$d to %2$d long</string>
     <string name="pattern_pwd_not_match">The passwords do not match!</string>
     <string name="btn_dialog_register">Register</string>
     <integer name="min_pwd">@integer/min_user_name</integer>

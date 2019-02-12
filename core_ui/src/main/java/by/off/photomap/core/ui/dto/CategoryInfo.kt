@@ -10,7 +10,7 @@ data class CategoryInfo(val id: Int, @StringRes val labelRes: Int, @ColorRes val
         id,
         categories[id]?.labelRes ?: R.string.label_category_default,
         categories[id]?.textColorRes ?: R.color.category_default,
-        categories[id]?.textColorRes ?: R.color.category_default
+        categories[id]?.backColorRes ?: R.color.category_default_back
     )
 
     companion object {

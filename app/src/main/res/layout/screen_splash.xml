@@ -7,7 +7,7 @@
 
         <variable
             name="model"
-            type="by.off.photomap.presentation.viewmodel.login.LoginViewModel" />
+            type="by.off.photomap.presentation.ui.login.LoginViewModel" />
 
     </data>
 

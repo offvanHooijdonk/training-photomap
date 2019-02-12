@@ -3,6 +3,8 @@ package by.off.photomap.storage.parse.impl.di
 import by.off.photomap.core.utils.di.ToolsProvider
 import by.off.photomap.core.utils.di.scopes.PerFeature
 import by.off.photomap.storage.parse.di.StorageApi
+import by.off.photomap.storage.parse.impl.parse.ParsePhotoService
+import by.off.photomap.storage.parse.impl.parse.ParseUserService
 import dagger.Component
 
 @Component(modules = [StorageModule::class], dependencies = [ToolsProvider::class])
@@ -14,4 +16,5 @@ abstract class StorageComponent : StorageApi {
                 .toolsProvider(toolsProvider)
                 .build()
     }
+
 }

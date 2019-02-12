@@ -16,6 +16,10 @@
     <color name="category_nature_back">@color/colorPrimaryLight</color>
     <color name="category_default_back">@color/firm_blue</color>
 
+    <color name="refresh_1">@color/colorAccent</color>
+    <color name="refresh_2">@color/colorPrimary</color>
+    <color name="refresh_3">@color/firm_blue</color>
+
     <color name="snackbar_error_text">@color/colorAccentLight</color>
     <color name="warning">#FFB300</color>
     <color name="item_primary_text">#cc000000</color>

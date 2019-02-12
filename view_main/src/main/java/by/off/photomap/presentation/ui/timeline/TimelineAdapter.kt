@@ -2,6 +2,8 @@ package by.off.photomap.presentation.ui.timeline
 
 import android.content.Context
 import android.databinding.DataBindingUtil
+import android.graphics.BitmapFactory
+import android.net.Uri
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -10,14 +12,21 @@ import by.off.photomap.core.ui.show
 import by.off.photomap.model.PhotoInfo
 import by.off.photomap.presentation.ui.R
 import by.off.photomap.presentation.ui.databinding.ItemTimelineBinding
+import kotlinx.android.synthetic.main.item_timeline.view.*
 import java.util.*
 
-class TimelineAdapter(private val ctx: Context, private val onClick: (position: Int, photoId: String) -> Unit) :
+class TimelineAdapter(
+    private val ctx: Context,
+    private val onClick: (position: Int, photoId: String) -> Unit,
+    private val requestThumbnail: (photoId: String, callback: (photoId: String, filePath: String?) -> Unit) -> Unit
+) :
     RecyclerView.Adapter<TimelineAdapter.ViewHolder>() {
     companion object {
         const val TYPE_JUST_DATA = 0
         const val TYPE_WITH_PERIOD = 1
     }
+
+    private val thumbCache = mutableMapOf<String, String>()
 
     private var photos: List<PhotoInfo> = emptyList()
 
@@ -41,7 +50,14 @@ class TimelineAdapter(private val ctx: Context, private val onClick: (position: 
         with(vh.binding) {
             if (showDateHeader) {
                 txtPeriod.show()
-                txtPeriod.text = DateHelper.formatTimelineDate(photo.shotTimestamp)
+                txtPeriod.text = DateHelper.formatTimelineDate(photo.shotTimestamp, ctx)
+            }
+            imgThumb.setImageResource(R.drawable.ic_photo_placeholder_24)
+            imgThumb.tag = photo.id
+            if (thumbCache[photo.id] != null) {
+                imgThumb.setImageURI(Uri.parse(thumbCache[photo.id]))
+            } else {
+                requestThumbnail(photo.id, vh::callbackThumbnail)
             }
             itemRoot.setOnClickListener {
                 onClick(position, photo.id)
@@ -49,9 +65,17 @@ class TimelineAdapter(private val ctx: Context, private val onClick: (position: 
         }
     }
 
-    class ViewHolder(val binding: ItemTimelineBinding) : RecyclerView.ViewHolder(binding.root) {
+    inner class ViewHolder(val binding: ItemTimelineBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(item: PhotoInfo) {
+            binding.invalidateAll()
             binding.item = item
+        }
+
+        fun callbackThumbnail(id: String, filePath: String?) {
+            if (filePath != null && itemView.imgThumb.tag == id) {
+                itemView.imgThumb.setImageURI(Uri.parse(filePath))
+                thumbCache[id] = filePath
+            }
         }
     }
 

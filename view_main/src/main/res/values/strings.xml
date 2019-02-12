@@ -10,4 +10,5 @@
         <item>@string/option_take_photo</item>
     </string-array>
     <string name="photo_save">Save</string>
+    <string name="dialog_progress_processing">Processing…</string>
 </resources>

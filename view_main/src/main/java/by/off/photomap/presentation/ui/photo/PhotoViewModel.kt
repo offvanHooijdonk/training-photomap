@@ -1,14 +1,19 @@
-package by.off.photomap.presentation.viewmodel.photo
+package by.off.photomap.presentation.ui.photo
 
 import android.arch.lifecycle.*
 import android.databinding.ObservableBoolean
 import android.databinding.ObservableField
 import android.databinding.ObservableInt
 import android.net.Uri
+import android.util.Log
+import by.off.photomap.core.ui.dto.CategoryInfo
+import by.off.photomap.core.utils.LOGCAT
 import by.off.photomap.core.utils.map
+import by.off.photomap.core.utils.session.Session
 import by.off.photomap.model.PhotoInfo
 import by.off.photomap.storage.parse.PhotoService
 import by.off.photomap.storage.parse.Response
+import java.util.*
 import javax.inject.Inject
 
 class PhotoViewModel @Inject constructor(private val photoService: PhotoService) : ViewModel() {
@@ -17,9 +22,11 @@ class PhotoViewModel @Inject constructor(private val photoService: PhotoService)
     val fileLiveData = photoService.serviceFileLiveData.map { filePath -> onImageFile(filePath) }
     val saveEnableLiveData = MutableLiveData<Boolean?>()
     val modeLiveData = MutableLiveData<MODE>()
+    val handleBackLiveData = MutableLiveData<Boolean>()
 
     val imageUri = ObservableField<Uri>()
     val inProgress = ObservableBoolean(false)
+    val downloadInProgress = ObservableBoolean(false)
     val progressIndeterminate = ObservableBoolean(true)
     val progressPerCent = ObservableInt(0)
     val photoInfo = ObservableField<PhotoInfo?>()
@@ -29,11 +36,13 @@ class PhotoViewModel @Inject constructor(private val photoService: PhotoService)
     val errorMessage = ObservableField<String?>()
 
     private var saveInProgress = false
+    private var originalPhotoInfo: PhotoInfo? = null
 
     fun setupWithPhotoById(id: String) {
         modeLiveData.value = MODE.VIEW
         editMode.set(false)// todo check if this is author
         inProgress.set(true)
+        downloadInProgress.set(true)
         progressIndeterminate.set(true)
 
         photoService.loadById(id)
@@ -49,6 +58,13 @@ class PhotoViewModel @Inject constructor(private val photoService: PhotoService)
         photoService.retrieveMetadata(uri)
     }
 
+    fun setupWithFile(filePath: String) {
+        modeLiveData.postValue(MODE.CREATE)
+        editMode.set(true)
+        this.filePath.set(filePath)
+        photoInfo.set(PhotoInfo("", null, "", Date(), CategoryInfo.ID_DEAFULT))
+    }
+
     fun save() {
         if (validate()) {
             saveInProgress = true
@@ -56,17 +72,23 @@ class PhotoViewModel @Inject constructor(private val photoService: PhotoService)
             inProgress.set(true)
             saveEnableLiveData.postValue(false)
 
-            val photo = photoInfo.get()
-            if (photo == null) {
-                errorMessage.set("No data available for save.") // todo need to fix this
+            val photo = photoInfo.get()!!
+            if (modeLiveData.value == MODE.EDIT) {
+                photoService.update(photo)
             } else {
-                photoService.save(photo, imageUri.get()!!)
+                val uri = imageUri.get()
+                val filePath = this.filePath.get()
+                when {
+                    uri != null -> photoService.save(photo, uri)
+                    filePath != null -> photoService.save(photo, filePath)
+                }
             }
         }
     }
 
-    fun update(photoInfo: PhotoInfo) {
-        TODO("Yet to be implemented")
+    fun onBackRequested() {
+        Log.i(LOGCAT, "Original hash ${originalPhotoInfo?.hashCode()} vs new hash ${photoInfo.get()?.hashCode()}")
+        handleBackLiveData.value = modeLiveData.value == MODE.CREATE || modeLiveData.value == MODE.EDIT && originalPhotoInfo?.hashCode() != photoInfo.get()?.hashCode()
     }
 
     private fun onLoadStatus(perCent: Int) {
@@ -81,9 +103,12 @@ class PhotoViewModel @Inject constructor(private val photoService: PhotoService)
         //Log.i(LOGCAT, "Data arrived ${response.data}")
 
         val error = response.error
+        val data = response.data
         when {
-            saveInProgress && response.data != null -> exitScreen = true
-            !saveInProgress && response.data != null -> photoInfo.set(response.data)
+            saveInProgress && data != null -> exitScreen = true
+            !saveInProgress && data != null -> {
+                handleLoadedData(data)
+            }
             error != null -> errorMessage.set(error.message)
         }
         saveInProgress = false
@@ -94,7 +119,17 @@ class PhotoViewModel @Inject constructor(private val photoService: PhotoService)
     }
 
     private fun onImageFile(filePath: String) {
+        downloadInProgress.set(false)
         this.filePath.set(filePath)
+    }
+
+    private fun handleLoadedData(data: PhotoInfo) {
+        photoInfo.set(data)
+        originalPhotoInfo = data.copy()
+        if (data.author?.id == Session.user.id) {
+            editMode.set(true)
+            modeLiveData.value = MODE.EDIT
+        }
     }
 
     private fun validate(): Boolean {

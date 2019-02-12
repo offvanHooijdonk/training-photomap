@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="dialog_confirm_title">Пацьвердзiце</string>
+    <string name="dialog_confirm_cancel_reg">Цi вы ўпэнены, што вы хацiце выйсцi?</string>
+    <string name="dialog_confirm_cancel_photo">Цi вы ўпэнены, што вы хацiце адкiнуць усе зьмены?</string>
+    <string name="dialog_btn_discard">Адкiнуць</string>
+    <string name="dialog_btn_stay">Не, застацца</string>
+    <string name="label_category_default">Агульнае</string>
+    <string name="label_category_nature">Прырода</string>
+    <string name="label_category_friends">Сябры</string>
+    <string name="label_category_error">-</string>
+    <string name="fish_text">Сыстэмы страхаваньня ўнёскаў дзейнічаюць у шматлікіх краінах сьвету. Пры стварэньні беларускае арганізацыі за прыклад была ўзятая амэрыканская мадэль, у якой арганізацыя, што займаецца страхаваньнем сродкаў у банках, падкантрольная парлямэнту і ўраду. Самі банкі не прымаюць удзелу ў кіраваньні гэтым органам.</string>
+    <string name="fish_text_short">Сыстэмы страхаваньня ўнёскаў дзейнічаюць у шматлікіх краінах сьвету</string>
+    <string name="fish_date_full">25га сьнежня 2018 – 17:28</string>
+    <string name="fish_date_short">15.02.2017</string>
+    <string name="error_auth_failed">Не ўдалося аўтарызаваць асобу з iмем \'%1$s\'</string>
+    <string name="error_user_not_found">Асоба з id %1$s ня знойдзена</string>
+    <string name="error_registration_failed_by_name">Прабачце, але iмя \'%1$s\' ўжо занятае</string>
+    <string name="error_registration_failed_by_email">Прабачце, але пошта \'%1$s\' ўжо занятае</string>
+    <string name="error_default_auth">Нявызначаная памылка</string>
+    <string name="no_data_provided">Iнфармацыя не прыведзеная</string>
+    <string name="error_unknown">Нявызначаная памылка</string>
+
+    <string-array name="months_full">
+        <item>Студзень</item>
+        <item>Люты</item>
+        <item>Сакавiк</item>
+        <item>Красавiк</item>
+        <item>Травень</item>
+        <item>Чэрвень</item>
+        <item>Лiпень</item>
+        <item>Жнiвень</item>
+        <item>Верасень</item>
+        <item>Кастрычнiк</item>
+        <item>Лiстапад</item>
+        <item>Сьнежань</item>
+    </string-array>
+</resources>

@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="main_title">Photo Map</string>
+    <string name="main_title">Фота Мапа</string>
     <string name="log_out">Выйсьцi</string>
     <string name="tab_map">Мапа</string>
     <string name="tab_timeline">Стужка</string>
     <string name="option_gallery">Абраць з Галерэi</string>
     <string name="option_take_photo">Зрабiць здымак</string>
+    <string name="photo_save">Захаваць</string>
+    <string name="dialog_progress_processing">Апрацоўваецца…</string>
 </resources>

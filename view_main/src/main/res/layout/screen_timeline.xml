@@ -1,21 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout>
+<layout xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
 
         <variable
             name="model"
-            type="by.off.photomap.presentation.viewmodel.timeline.TimelineViewModel" />
+            type="by.off.photomap.presentation.ui.timeline.TimelineViewModel" />
     </data>
 
-    <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    <android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/recyclerTimeline"
-            items="@{model.listData}"
+        <android.support.v4.widget.SwipeRefreshLayout
+            android:id="@+id/refreshLayout"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
-    </android.support.constraint.ConstraintLayout>
+            android:layout_height="match_parent"
+            app:refreshing="@{model.isRefreshing}">
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/recyclerTimeline"
+                items="@{model.listData}"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+        </android.support.v4.widget.SwipeRefreshLayout>
+    </android.support.design.widget.CoordinatorLayout>
 </layout>

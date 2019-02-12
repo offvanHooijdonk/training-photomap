@@ -5,9 +5,9 @@ import android.arch.lifecycle.ViewModelProvider
 import by.off.photomap.core.utils.di.ViewModelFactory
 import by.off.photomap.core.utils.di.ViewModelKey
 import by.off.photomap.core.utils.di.scopes.PerScreen
-import by.off.photomap.presentation.viewmodel.MainScreenViewModel
-import by.off.photomap.presentation.viewmodel.photo.PhotoViewModel
-import by.off.photomap.presentation.viewmodel.timeline.TimelineViewModel
+import by.off.photomap.presentation.ui.map.MapViewModel
+import by.off.photomap.presentation.ui.photo.PhotoViewModel
+import by.off.photomap.presentation.ui.timeline.TimelineViewModel
 import dagger.Binds
 import dagger.Module
 import dagger.multibindings.IntoMap
@@ -28,4 +28,10 @@ abstract class PhotoScreenModule {
     @PerScreen
     @ViewModelKey(TimelineViewModel::class)
     internal abstract fun bindTimelineViewModel(timelineViewModel: TimelineViewModel): ViewModel
+
+    @Binds
+    @IntoMap
+    @PerScreen
+    @ViewModelKey(MapViewModel::class)
+    internal abstract fun bindMapViewModel(mapViewModel: MapViewModel): ViewModel
 }
