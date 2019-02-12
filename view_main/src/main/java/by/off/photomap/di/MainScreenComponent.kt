@@ -23,6 +23,7 @@ interface MainScreenComponent {
 
     interface Dependencies {
         fun userService(): UserService
+        fun photoService(): PhotoService
     }
 
     interface DependenciesProvider {

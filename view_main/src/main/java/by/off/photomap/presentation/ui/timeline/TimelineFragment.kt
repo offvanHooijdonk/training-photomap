@@ -4,10 +4,9 @@ import android.arch.lifecycle.Observer
 import android.content.Intent
 import android.databinding.DataBindingUtil
 import android.os.Bundle
+import android.support.v7.app.AlertDialog
 import android.support.v7.widget.LinearLayoutManager
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import by.off.photomap.core.ui.BaseFragment
 import by.off.photomap.core.ui.CallbackHolder
 import by.off.photomap.core.ui.ctx
@@ -28,6 +27,11 @@ class TimelineFragment : BaseFragment() {
     private lateinit var timelineAdapter: TimelineAdapter
     private val callbacks = mutableMapOf<String, CallbackHolder>()
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setHasOptionsMenu(true)
+    }
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         PhotoScreenComponent.get(ctx).inject(this)
 
@@ -41,6 +45,7 @@ class TimelineFragment : BaseFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        //setHasOptionsMenu(true)
         val lm = LinearLayoutManager(ctx)
         timelineAdapter = TimelineAdapter(ctx, ::onItemClick, ::requestThumbnail)
         recyclerTimeline.apply {
@@ -67,6 +72,22 @@ class TimelineFragment : BaseFragment() {
         super.onStart()
 
         viewModel.loadData()
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
+        inflater?.inflate(R.menu.timeline, menu)
+        super.onCreateOptionsMenu(menu, inflater)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+        super.onOptionsItemSelected(item)
+        when (item?.itemId) {
+            R.id.item_hash_tag_search -> {
+
+                return true
+            }
+        }
+        return false
     }
 
     private fun requestThumbnail(photoId: String, callback: (photoId: String, filePath: String?) -> Unit) {

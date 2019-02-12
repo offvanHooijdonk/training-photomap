@@ -9,12 +9,15 @@ import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentManager
 import android.support.v4.app.FragmentPagerAdapter
 import android.support.v4.view.ViewPager
+import android.support.v7.app.AlertDialog
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.widget.Toast
 import by.off.photomap.core.ui.BaseActivity
 import by.off.photomap.core.ui.ctx
+import by.off.photomap.core.ui.dto.CategoryInfo
 import by.off.photomap.core.utils.LOGCAT
 import by.off.photomap.core.utils.di.ViewModelFactory
 import by.off.photomap.di.MainScreenComponent
@@ -38,6 +41,7 @@ class MainActivity : BaseActivity() {
         get() = mainRoot
 
     private lateinit var viewModel: MainScreenViewModel
+    private val filteredCategories = BooleanArray(CategoryInfo.getTitlesOrdered().size) { true }
 
     val registeredFlags = mutableMapOf<Int, Int>()
 
@@ -64,17 +68,24 @@ class MainActivity : BaseActivity() {
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.main, menu)
+        super.onCreateOptionsMenu(menu)
         return true
     }
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+        super.onOptionsItemSelected(item)
         when (item?.itemId) {
             R.id.item_log_out -> {
                 Snackbar.make(mainRoot, "Please wait while we are logging you off", Snackbar.LENGTH_INDEFINITE).show() // todo implement some dialog here
                 viewModel.logOut()
+                return true
+            }
+            R.id.item_filter_categories -> {
+                startCategoryFilterDialog()
+                return true
             }
         }
-        return true
+        return false
     }
 
     fun setNavigationButtonMode(isOn: Boolean) { // todo implement with ViewModels
@@ -123,6 +134,28 @@ class MainActivity : BaseActivity() {
         return null
     }
 
+    private fun startCategoryFilterDialog() {
+        AlertDialog.Builder(ctx)
+            .setTitle("Filter categories")
+            .setMultiChoiceItems(R.array.categories, filteredCategories) { _, index, isChecked ->
+                filteredCategories[index] = isChecked
+            }
+            .setPositiveButton(android.R.string.ok) { dialog, _ ->
+                if (filteredCategories.contains(true)) {
+                    applyCategoryFilter()
+                    dialog.dismiss()
+                } else {
+                    Toast.makeText(ctx, "Pick at least one", Toast.LENGTH_LONG).show()
+                }
+            }
+            .setNegativeButton(android.R.string.cancel, null)
+            .show()
+    }
+
+    private fun applyCategoryFilter() {
+        val categories = CategoryInfo.getAllIds().takeWhile { filteredCategories.size > it && filteredCategories[it] }.toIntArray()
+        viewModel.filterCategories(categories)
+    }
 
     private inner class MainPagerAdapter(fm: FragmentManager) : FragmentPagerAdapter(fm) {
 

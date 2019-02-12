@@ -37,4 +37,6 @@ interface PhotoService {
     fun saveToTempFile(bitmap: Bitmap)
 
     fun update(photo: PhotoInfo)
+
+    fun setFilter(categories: IntArray)
 }

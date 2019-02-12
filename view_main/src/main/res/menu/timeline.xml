@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/item_hash_tag_search"
+        android:icon="@drawable/ic_search_24"
+        android:orderInCategory="50"
+        android:title="@string/search_by_hash_tags"
+        app:showAsAction="ifRoom" />
+</menu>

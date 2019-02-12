@@ -20,9 +20,9 @@ class PhotoServiceImpl @Inject constructor(
     private val parsePhotoService: ParsePhotoService,
     private val imageService: ImageService
 ) : PhotoService {
-
     override val thumbnailLiveData: LiveData<Pair<String, String?>>
         get() = thumbLD
+
     override val serviceLiveData: LiveData<Response<PhotoInfo>>
         get() = liveData
     override val serviceListLiveData: LiveData<ListResponse<PhotoInfo>>
@@ -31,12 +31,14 @@ class PhotoServiceImpl @Inject constructor(
         get() = loadLD
     override val serviceFileLiveData: LiveData<String>
         get() = fileLiveData
-
     private val liveData = MutableLiveData<Response<PhotoInfo>>()
+
     private val listLiveData = MutableLiveData<ListResponse<PhotoInfo>>()
     private val loadLD = MutableLiveData<Int>()
     private val fileLiveData = MutableLiveData<String>()
     private val thumbLD = MutableLiveData<Pair<String, String?>>()
+
+    private var filterCategories: IntArray? = null
 
     override fun save(photo: PhotoInfo, uriPhoto: Uri) {
         launchScopeIO {
@@ -132,9 +134,14 @@ class PhotoServiceImpl @Inject constructor(
         }
     }
 
+    override fun setFilter(categories: IntArray) {
+        filterCategories = categories
+    }
+
     override fun listOrderTime() {
         launchScopeIO {
-            val resultList = parsePhotoService.list(PhotoInfo.SHOT_TIMESTAMP, false)
+            Log.i(LOGCAT, "*=* Get list photos ${this@PhotoServiceImpl}")
+            val resultList = parsePhotoService.list(filterCategories, PhotoInfo.SHOT_TIMESTAMP, false)
             listLiveData.postValue(ListResponse(resultList))
         }
     }

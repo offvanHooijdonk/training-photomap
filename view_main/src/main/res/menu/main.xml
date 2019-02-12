@@ -1,8 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item android:id="@+id/item_filter_categories"
+        android:title="@string/menu_item_filter"
+        android:icon="@drawable/ic_filter_24"
+        android:orderInCategory="10"
+        app:showAsAction="ifRoom"/>
+
     <item
         android:id="@+id/item_log_out"
         android:title="@string/log_out"
+        android:orderInCategory="1000"
         app:showAsAction="never" />
 </menu>

@@ -17,4 +17,6 @@
     <string name="btn_from_camera">Camera</string>
     <string name="permission_explanation">Please consider granting location permission to find your current location</string>
     <string name="location_unknown_try_manual">Location is unknown, try pick some on the map manually.</string>
+    <string name="menu_item_filter">Filter</string>
+    <string name="search_by_hash_tags">Search by hash tags</string>
 </resources>

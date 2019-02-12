@@ -14,17 +14,21 @@ data class CategoryInfo(val id: Int, @StringRes val labelRes: Int, @ColorRes val
     )
 
     companion object {
-        const val ID_DEAFULT = 0
-        const val ID_FRIENDS = 1
-        const val ID_NATURE = 2
+        private const val ID_DEFAULT = 0
+        private const val ID_FRIENDS = 1
+        private const val ID_NATURE = 2
 
         private val categories by lazy {
             mapOf(
-                ID_DEAFULT to CategoryInfo(ID_DEAFULT, R.string.label_category_default, R.color.category_default, R.color.category_default_back),
+                ID_DEFAULT to CategoryInfo(ID_DEFAULT, R.string.label_category_default, R.color.category_default, R.color.category_default_back),
                 ID_FRIENDS to CategoryInfo(ID_FRIENDS, R.string.label_category_friends, R.color.category_friends, R.color.category_friends_back),
                 ID_NATURE to CategoryInfo(ID_NATURE, R.string.label_category_nature, R.color.category_nature, R.color.category_nature_back)
             )
         }
+
+        fun getDeafault() = ID_DEFAULT
+
+        fun getAllIds() = listOf(ID_DEFAULT, ID_FRIENDS, ID_NATURE)
 
         fun getTitlesOrdered(): List<Int> =
             categories.toSortedMap().mapTo(mutableListOf()) { entry -> entry.value.labelRes }

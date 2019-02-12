@@ -38,8 +38,6 @@ import javax.inject.Inject
 
 class MapFragment : BaseFragment(), MainActivity.ButtonPhotoListener, MainActivity.ButtonLocationListener, OnMapReadyCallback {
     companion object {
-        /*private const val OPTION_GALLERY = 0
-        private const val OPTION_MAKE_PHOTO = 1*/
         private const val PICKER_GALLERY = 1
         private const val PICKER_CAMERA = 2
         private const val EXTRA_CAMERA_DATA = "data"
@@ -212,16 +210,24 @@ class MapFragment : BaseFragment(), MainActivity.ButtonPhotoListener, MainActivi
     @SuppressLint("MissingPermission")
     private fun goToCurrentLocation() {
         locationClient.lastLocation.addOnCompleteListener { task ->
-            if (task.isSuccessful) {
-                val loc = task.result
-                if (loc != null) {
-                    (activity as MainActivity).setNavigationButtonMode(true)
-                    googleMap?.run {
-                        isMyLocationEnabled = true
-                        uiSettings?.isMyLocationButtonEnabled = false
-                        moveCameraToCurrent(LatLng(loc.latitude, loc.longitude))
-                    }
+            val loc = task.result
+            if (task.isSuccessful && loc != null) {
+                (activity as MainActivity).setNavigationButtonMode(true)
+                googleMap?.run {
+                    isMyLocationEnabled = true
+                    uiSettings?.isMyLocationButtonEnabled = false
+                    moveCameraToCurrent(LatLng(loc.latitude, loc.longitude))
                 }
+            } else {
+                (activity as MainActivity).setNavigationButtonMode(false)
+                /*locationClient.flushLocations()*/
+            }
+        }
+
+        locationClient.locationAvailability.addOnCompleteListener { task ->
+            val result = task.result
+            if (task.isSuccessful && result != null && !result.isLocationAvailable) {
+                showLocationNotEnabled()
             }
         }
 
@@ -241,9 +247,7 @@ class MapFragment : BaseFragment(), MainActivity.ButtonPhotoListener, MainActivi
     }
 
     override fun onLocationClicked() {
-        if (checkAndRequestLocationPermission(false)) {
-            goToCurrentLocation()
-        }
+        checkAndRequestLocationPermission(false)
     }
 
     private fun onCameraResponse(resultCode: Int, data: Intent?) {
@@ -271,19 +275,6 @@ class MapFragment : BaseFragment(), MainActivity.ButtonPhotoListener, MainActivi
             workingLocation = null
         }
     }
-
-    /*private fun startOptionsDialog() {
-        AlertDialog.Builder(ctx)
-            .setTitle("Photo")
-            .setAdapter(ArrayAdapter<String>(ctx, android.R.layout.select_dialog_item).apply {
-                addAll(ctx.resources.getStringArray(R.array.options_add_picture).asList())
-            }) { dialog, which ->
-                dialog.dismiss()
-                onOptionPicked(which)
-            }
-            .setCancelable(true)
-            .show()
-    }*/
 
     private fun onOptionPicked(position: Int) {
         when (position) {
@@ -315,6 +306,11 @@ class MapFragment : BaseFragment(), MainActivity.ButtonPhotoListener, MainActivi
         progressDialog = AlertDialog.Builder(ctx)
             .setView(R.layout.dialog_progress)
             .setCancelable(false)
+            .show()
+    }
+
+    private fun showLocationNotEnabled() {
+        Snackbar.make((activity as MainActivity).snackbarRoot, "Please check if your location is enabled.", Snackbar.LENGTH_LONG)
             .show()
     }
 

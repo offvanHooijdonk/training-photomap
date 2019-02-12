@@ -79,10 +79,13 @@ class ParsePhotoService @Inject constructor(private val ctx: Context, private va
         return Response(convertToPhoto(parseObject, user)) to parseObject.getParseFile(PhotoInfo.BIN_DATA)!!
     }
 
-    fun list(orderBy: String?, directionAsc: Boolean = true): MutableList<PhotoInfo> {
+    fun list(categories: IntArray?, orderBy: String?, directionAsc: Boolean = true): MutableList<PhotoInfo> {
         val list = ParseQuery.getQuery<ParseObject>(PhotoInfo.TABLE).apply {
             orderBy?.let {
                 if (directionAsc) addAscendingOrder(it) else addDescendingOrder(it)
+            }
+            categories?.let {
+                whereContainedIn(PhotoInfo.CATEGORY, categories.asList())
             }
         }.find()
 
