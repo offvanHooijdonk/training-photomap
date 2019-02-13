@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <View
+        android:id="@+id/overlayBack"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <android.support.constraint.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:id="@+id/blockSearchBar"
+            style="@style/SearchVarBlockFloat"
+            android:clickable="true"
+            android:elevation="6dp"
+            android:focusable="true"
+            android:layout_marginTop="@dimen/search_popup_margin"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <EditText
+                android:id="@+id/inputSearch"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@android:color/transparent"
+                android:hint="@string/search_input_hint"
+                android:imeOptions="actionSearch"
+                android:maxLines="1"
+                android:singleLine="true"
+                android:textColor="@color/search_text"
+                android:textColorHint="@color/search_hint" />
+        </LinearLayout>
+
+        <View
+            android:id="@+id/dividerSearchBar"
+            style="@style/DividerHorizontal"
+            android:layout_height="0dp"
+            app:layout_constraintEnd_toEndOf="@id/blockSearchBar"
+            app:layout_constraintStart_toStartOf="@id/blockSearchBar"
+            app:layout_constraintTop_toBottomOf="@id/blockSearchBar" />
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/listSearchResults"
+            style="@style/SearchResultsList"
+            android:layout_width="0dp"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="@id/blockSearchBar"
+            app:layout_constraintStart_toStartOf="@id/blockSearchBar"
+            app:layout_constraintTop_toBottomOf="@id/dividerSearchBar"
+            tools:visibility="visible" />
+
+        <LinearLayout
+            android:id="@+id/blockHint"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:background="@drawable/search_results"
+            android:clickable="true"
+            android:focusable="true"
+            android:gravity="center_vertical"
+            android:padding="16dp"
+            app:layout_constraintEnd_toEndOf="@id/blockSearchBar"
+            app:layout_constraintStart_toStartOf="@id/blockSearchBar"
+            app:layout_constraintTop_toBottomOf="@id/dividerSearchBar">
+
+            <TextView
+                android:id="@+id/txtSearchStartHint"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/search_sample_hint"
+                android:textColor="@color/search_hint" />
+
+            <android.support.design.chip.Chip
+                android:id="@+id/chipHintSample"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:text="@string/search_sample"
+                android:textAppearance="@style/ChipTextStyle"
+                app:chipBackgroundColor="@color/colorAccent" />
+        </LinearLayout>
+    </android.support.constraint.ConstraintLayout>
+</FrameLayout>

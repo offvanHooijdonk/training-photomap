@@ -76,7 +76,7 @@ class TimelineFragment : BaseFragment() {
         super.onOptionsItemSelected(item)
         when (item?.itemId) {
             R.id.item_hash_tag_search -> {
-
+                SearchTagsDialogFragment().show(childFragmentManager, "search_tags")
                 return true
             }
         }

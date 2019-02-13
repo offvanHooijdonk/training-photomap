@@ -9,4 +9,8 @@
 
     <color name="navigation_btn_mode_on">@color/colorAccent</color>
     <color name="navigation_btn_mode_off">#9E9E9E</color>
+
+    <color name="search_background">#ffffff</color>
+    <color name="search_hint">#66000000</color>
+    <color name="search_text">#cc000000</color>
 </resources>

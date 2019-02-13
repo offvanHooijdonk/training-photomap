@@ -19,4 +19,7 @@
     <string name="location_unknown_try_manual">Location is unknown, try pick some on the map manually.</string>
     <string name="menu_item_filter">Filter</string>
     <string name="search_by_hash_tags">Search by hash tags</string>
+    <string name="search_input_hint">#tags</string>
+    <string name="search_sample">Holidays</string>
+    <string name="search_sample_hint">Start a search, for instance</string>
 </resources>
