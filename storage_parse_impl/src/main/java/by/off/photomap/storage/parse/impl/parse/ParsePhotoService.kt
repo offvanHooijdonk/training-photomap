@@ -2,6 +2,7 @@ package by.off.photomap.storage.parse.impl.parse
 
 import android.content.Context
 import android.net.Uri
+import by.off.photomap.core.utils.di.scopes.PerFeature
 import by.off.photomap.model.PhotoInfo
 import by.off.photomap.storage.parse.Response
 import by.off.photomap.storage.parse.impl.convertToPhoto
@@ -12,6 +13,7 @@ import java.io.File
 import java.io.FileOutputStream
 import javax.inject.Inject
 
+@PerFeature
 class ParsePhotoService @Inject constructor(private val ctx: Context, private val imageService: ImageService) {
     companion object {
         private const val RESIZE_WIDTH = 240

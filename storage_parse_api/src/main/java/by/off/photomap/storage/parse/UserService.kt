@@ -5,6 +5,7 @@ import by.off.photomap.model.UserInfo
 
 interface UserService {
     val serviceLiveData: LiveData<Response<UserInfo>>
+    val logoutLiveData: LiveData<Response<UserInfo>>
 
     /**
      * Works with [serviceLiveData]. Posts <code>null</code> if nobody is logged in

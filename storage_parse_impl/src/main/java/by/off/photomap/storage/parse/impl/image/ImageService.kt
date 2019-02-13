@@ -5,12 +5,14 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
 import android.provider.MediaStore
+import by.off.photomap.core.utils.di.scopes.PerFeature
 import by.off.photomap.model.PhotoInfo
 import by.off.photomap.storage.parse.Response
 import java.io.*
 import java.util.*
 import javax.inject.Inject
 
+@PerFeature
 class ImageService @Inject constructor(private val ctx: Context) {
     private val contentColumns = arrayOf(
         MediaStore.Images.Media.LATITUDE,

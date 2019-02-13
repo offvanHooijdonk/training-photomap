@@ -9,7 +9,7 @@ import by.off.photomap.storage.parse.UserService
 import javax.inject.Inject
 
 class MainScreenViewModel @Inject constructor(private val userService: UserService, private val photoService: PhotoService): ViewModel() {
-    val liveData = userService.serviceLiveData.map { onResponse(it) }
+    val liveData = userService.logoutLiveData.map { onResponse(it) }
 
     fun logOut() {
         userService.logOut()
@@ -20,8 +20,8 @@ class MainScreenViewModel @Inject constructor(private val userService: UserServi
         photoService.listOrderTime()
     }
 
-    private fun onResponse(response: Response<UserInfo>): Exception? {
-        return response.error
+    private fun onResponse(response: Response<UserInfo>): Response<UserInfo> {
+        return response
     }
 
 }

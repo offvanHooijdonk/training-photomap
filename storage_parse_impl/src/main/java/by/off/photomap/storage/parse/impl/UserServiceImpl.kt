@@ -2,6 +2,7 @@ package by.off.photomap.storage.parse.impl
 
 import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.MutableLiveData
+import by.off.photomap.core.utils.di.scopes.PerFeature
 import by.off.photomap.core.utils.launchScopeIO
 import by.off.photomap.model.UserInfo
 import by.off.photomap.storage.parse.*
@@ -14,11 +15,15 @@ import com.parse.ParseUser
 import javax.inject.Inject
 
 // TODO log errors before returning response
+@PerFeature
 class UserServiceImpl @Inject constructor() : UserService {
     override val serviceLiveData: LiveData<Response<UserInfo>>
         get() = liveData
+    override val logoutLiveData: LiveData<Response<UserInfo>>
+        get() = logoutLD
 
     private val liveData = MutableLiveData<Response<UserInfo>>()
+    private val logoutLD = MutableLiveData<Response<UserInfo>>()
 
     override fun logIn()/*: LiveData<Response<UserInfo>>*/ {
         launchScopeIO {
@@ -77,7 +82,7 @@ class UserServiceImpl @Inject constructor() : UserService {
                 Response<UserInfo>(error = e)
             }
 
-            liveData.postValue(response)
+            logoutLD.postValue(response)
         }
     }
 

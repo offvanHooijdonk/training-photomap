@@ -6,6 +6,7 @@ import android.graphics.Bitmap
 import android.net.Uri
 import android.util.Log
 import by.off.photomap.core.utils.LOGCAT
+import by.off.photomap.core.utils.di.scopes.PerFeature
 import by.off.photomap.core.utils.launchScopeIO
 import by.off.photomap.model.PhotoInfo
 import by.off.photomap.storage.parse.ListResponse
@@ -16,6 +17,7 @@ import by.off.photomap.storage.parse.impl.parse.ParsePhotoService
 import com.parse.ParseFile
 import javax.inject.Inject
 
+@PerFeature
 class PhotoServiceImpl @Inject constructor(
     private val parsePhotoService: ParsePhotoService,
     private val imageService: ImageService
@@ -55,6 +57,7 @@ class PhotoServiceImpl @Inject constructor(
                         }
                         loadLD.postValue(perCent)
                         liveData.postValue(response)
+                        if (response.data != null) listOrderTime()
                     }
                     else -> {
                         loadLD.postValue(perCent)
@@ -79,6 +82,7 @@ class PhotoServiceImpl @Inject constructor(
                         }
                         loadLD.postValue(perCent)
                         liveData.postValue(response)
+                        if (response.data != null) listOrderTime()
                     }
                     else -> {
                         loadLD.postValue(perCent)
@@ -90,7 +94,6 @@ class PhotoServiceImpl @Inject constructor(
 
     override fun update(photo: PhotoInfo) {
         launchScopeIO {
-
             val response = try {
                 parsePhotoService.saveObject(photo, null, null)
                 Response(photo)
@@ -98,6 +101,8 @@ class PhotoServiceImpl @Inject constructor(
                 Response<PhotoInfo>(error = e)
             }
             liveData.postValue(response)
+        }.invokeOnCompletion { errorCause ->
+            if (errorCause == null) listOrderTime()
         }
     }
 
@@ -140,7 +145,6 @@ class PhotoServiceImpl @Inject constructor(
 
     override fun listOrderTime() {
         launchScopeIO {
-            Log.i(LOGCAT, "*=* Get list photos ${this@PhotoServiceImpl}")
             val resultList = parsePhotoService.list(filterCategories, PhotoInfo.SHOT_TIMESTAMP, false)
             listLiveData.postValue(ListResponse(resultList))
         }

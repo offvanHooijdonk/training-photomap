@@ -107,16 +107,6 @@ class MapFragment : BaseFragment(), MainActivity.ButtonPhotoListener, MainActivi
         stateRestored = savedInstanceState != null
     }
 
-    override fun onStart() { // TODO save marker selected and location picked for the case of
-        super.onStart()
-
-        if (!stateRestored) {
-            viewModel.loadData()
-        } else {
-            stateRestored = false
-        }
-    }
-
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         outState.putBoolean("save_instance", true) // todo save current position, zoom, mode etc.
@@ -220,13 +210,13 @@ class MapFragment : BaseFragment(), MainActivity.ButtonPhotoListener, MainActivi
                 }
             } else {
                 (activity as MainActivity).setNavigationButtonMode(false)
-                /*locationClient.flushLocations()*/
             }
         }
 
         locationClient.locationAvailability.addOnCompleteListener { task ->
             val result = task.result
             if (task.isSuccessful && result != null && !result.isLocationAvailable) {
+                locationClient.flushLocations()
                 showLocationNotEnabled()
             }
         }

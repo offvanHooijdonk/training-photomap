@@ -4,7 +4,6 @@ import android.arch.lifecycle.Observer
 import android.content.Intent
 import android.databinding.DataBindingUtil
 import android.os.Bundle
-import android.support.v7.app.AlertDialog
 import android.support.v7.widget.LinearLayoutManager
 import android.view.*
 import by.off.photomap.core.ui.BaseFragment
@@ -53,7 +52,7 @@ class TimelineFragment : BaseFragment() {
             this.adapter = timelineAdapter
         }
 
-        viewModel.liveData.observe(this, Observer {})
+        viewModel.liveData.observe({ this.lifecycle }, {})
         viewModel.thumbnailLiveData.observe(this, Observer { data ->
             if (data != null) {
                 val id = data.first
@@ -66,12 +65,6 @@ class TimelineFragment : BaseFragment() {
         })
         refreshLayout.setOnRefreshListener { viewModel.loadData() }
         refreshLayout.setupDefaults()
-    }
-
-    override fun onStart() {
-        super.onStart()
-
-        viewModel.loadData()
     }
 
     override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {

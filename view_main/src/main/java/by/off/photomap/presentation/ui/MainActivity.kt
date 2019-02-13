@@ -42,6 +42,7 @@ class MainActivity : BaseActivity() {
 
     private lateinit var viewModel: MainScreenViewModel
     private val filteredCategories = BooleanArray(CategoryInfo.getTitlesOrdered().size) { true }
+    private var liveCatFilter = BooleanArray(3)
 
     val registeredFlags = mutableMapOf<Int, Int>()
 
@@ -95,11 +96,11 @@ class MainActivity : BaseActivity() {
 
     private fun initModelObserve() {
         viewModel = getViewModel(MainScreenViewModel::class.java)
-        viewModel.liveData.observe(this, Observer { error ->
-            if (error == null) {
+        viewModel.liveData.observe(this, Observer { response ->
+            if (response?.data != null) {
                 finish() // TODO place SplashActivity to this module and navigate to it here
-            } else {
-                Snackbar.make(mainRoot, error.message ?: "Some errorMessage occurred", Snackbar.LENGTH_LONG).show()
+            } else if (response?.error != null) {
+                Snackbar.make(mainRoot, response.error?.message ?: "Some errorMessage occurred", Snackbar.LENGTH_LONG).show()
             }
         })
     }
@@ -135,12 +136,16 @@ class MainActivity : BaseActivity() {
     }
 
     private fun startCategoryFilterDialog() {
+        val catNames = mutableListOf<String>()
+        CategoryInfo.getTitlesOrdered().map { res -> ctx.getString(res) ?: ctx.getString(R.string.label_category_default) }.toCollection(catNames)
+        liveCatFilter = filteredCategories.copyOf()
         AlertDialog.Builder(ctx)
             .setTitle("Filter categories")
-            .setMultiChoiceItems(R.array.categories, filteredCategories) { _, index, isChecked ->
-                filteredCategories[index] = isChecked
+            .setMultiChoiceItems(catNames.toTypedArray(), liveCatFilter) { _, index, isChecked ->
+                liveCatFilter[index] = isChecked
             }
             .setPositiveButton(android.R.string.ok) { dialog, _ ->
+                liveCatFilter.forEachIndexed { i, value -> filteredCategories[i] = value }
                 if (filteredCategories.contains(true)) {
                     applyCategoryFilter()
                     dialog.dismiss()
@@ -153,7 +158,7 @@ class MainActivity : BaseActivity() {
     }
 
     private fun applyCategoryFilter() {
-        val categories = CategoryInfo.getAllIds().takeWhile { filteredCategories.size > it && filteredCategories[it] }.toIntArray()
+        val categories = CategoryInfo.getAllIds().filter { filteredCategories.size > it && filteredCategories[it] }.toIntArray()
         viewModel.filterCategories(categories)
     }
 

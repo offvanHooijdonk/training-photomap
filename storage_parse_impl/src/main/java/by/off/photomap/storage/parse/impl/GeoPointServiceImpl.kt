@@ -6,10 +6,12 @@ import android.content.Context
 import android.location.Geocoder
 import android.util.Log
 import by.off.photomap.core.utils.LOGCAT
+import by.off.photomap.core.utils.di.scopes.PerFeature
 import by.off.photomap.core.utils.launchScopeIO
 import by.off.photomap.storage.parse.GeoPointService
 import javax.inject.Inject
 
+@PerFeature
 class GeoPointServiceImpl @Inject constructor(ctx: Context) : GeoPointService {
     override val placeLiveData: LiveData<String>
         get() = placeLD

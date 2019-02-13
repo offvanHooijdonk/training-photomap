@@ -9,6 +9,6 @@ import com.parse.ParseFile
 import java.io.ByteArrayOutputStream
 import javax.inject.Inject
 
-class ParseUserService @Inject constructor(private val ctx: Context) {
+class ParseUserService @Inject constructor(/*private val ctx: Context*/) {
 
 }
