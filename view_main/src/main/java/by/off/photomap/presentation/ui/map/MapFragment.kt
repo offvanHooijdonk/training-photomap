@@ -46,12 +46,16 @@ class MapFragment : BaseFragment(), MainActivity.ButtonPhotoListener, MainActivi
         private const val DEFAULT_ZOOM = 15.0f
         private const val CAMERA_ANIM_DURATION = 650
         private const val LOCATION_REQUEST_INTERVAL = 2000L
+        private const val TAG_DIALOG_ADD_PHOTO = "DIALOG_ADD_PHOTO"
     }
+
 
     @Inject
     override lateinit var viewModelFactory: ViewModelFactory
-
+    private lateinit var viewModel: MapViewModel
+    // locations
     private val locationClient: FusedLocationProviderClient by lazy { LocationServices.getFusedLocationProviderClient(ctx) }
+    // callbacks
     private val locationCallback = object : LocationCallback() {
         override fun onLocationResult(result: LocationResult?) {
             result?.let {
@@ -60,17 +64,20 @@ class MapFragment : BaseFragment(), MainActivity.ButtonPhotoListener, MainActivi
         }
     }
     private val locationRequest = LocationRequest.create().setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY).setInterval(LOCATION_REQUEST_INTERVAL)
-    private val hueMap = mutableMapOf<Int, Float>() // category to hue
-    private lateinit var viewModel: MapViewModel
-    private var progressDialog: AlertDialog? = null
+    // map
     private var googleMap: GoogleMap? = null
     private var markerIdPicked: String? = null
-    private var dialogAddPhoto: DialogFragment? = null
-    private val callbacks = mutableMapOf<String, CallbackHolder>()
     private var latLongCurrent: LatLng? = null
     private var workingLocation: LatLng? = null
-    private val markers = mutableListOf<Marker>()
     private var isCurrentLocationMode = false
+    // views
+    private var progressDialog: AlertDialog? = null
+    private var dialogAddPhoto: DialogFragment? = null
+    // helpers
+    private val callbacks = mutableMapOf<String, CallbackHolder>()
+    private val markers = mutableListOf<Marker>()
+
+    private val hueMap = mutableMapOf<Int, Float>() // category to hue
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         PhotoScreenComponent.get(ctx).inject(this)
@@ -81,31 +88,10 @@ class MapFragment : BaseFragment(), MainActivity.ButtonPhotoListener, MainActivi
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        viewModel.fileLiveData.observe(this, Observer { filePath ->
-            filePath?.let {
-                progressDialog?.dismiss()
-                PhotoViewEditActivity.IntentBuilder(ctx)
-                    .withFile(filePath)
-                    .withGeoPoint(workingLocation)
-                    .start()
-                workingLocation = null
-            }
-        })
+        initLiveData()
 
-        viewModel.listLiveData.observe(this, Observer { listResponse ->
-            listResponse?.let {
-                updateMarkers(it.list)
-            }
-        })
-
-        viewModel.thumbLiveData.observe(this, Observer { response ->
-            response?.let {
-                val photoId = it.first
-                callbacks[photoId]?.callback?.invoke(photoId, it.second)
-                callbacks.remove(photoId)
-            }
-        })
         (childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment).getMapAsync(this)
+
         markerIdPicked = savedInstanceState?.getString(EXTRA_SAVED_MARKER_OPENED)
         isCurrentLocationMode = savedInstanceState?.getBoolean(EXTRA_SAVED_CURRENT_LOCATION_MODE) ?: true
     }
@@ -130,7 +116,7 @@ class MapFragment : BaseFragment(), MainActivity.ButtonPhotoListener, MainActivi
             gMap.setOnInfoWindowClickListener(::onMarkerPopupClick)
             gMap.setOnMapLongClickListener {
                 workingLocation = it
-                startLocationDialog(it)
+                startPhotoOnLocationDialog(it)
             }
             gMap.uiSettings?.isMapToolbarEnabled = false
 
@@ -161,7 +147,7 @@ class MapFragment : BaseFragment(), MainActivity.ButtonPhotoListener, MainActivi
         val latLong = latLongCurrent
         if (latLong != null) {
             workingLocation = latLong
-            startLocationDialog(latLong)
+            startPhotoOnLocationDialog(latLong)
         } else {
             Snackbar.make((activity as MainActivity).snackbarRoot, R.string.location_unknown_try_manual, Snackbar.LENGTH_LONG).show()
         }
@@ -172,18 +158,37 @@ class MapFragment : BaseFragment(), MainActivity.ButtonPhotoListener, MainActivi
         checkAndRequestLocationPermission(false)
     }
 
-    private fun startLocationDialog(geoPoint: LatLng) {
+    private fun initLiveData() {
+        viewModel.fileLiveData.observe(this, Observer { filePath -> onCameraImageSaved(filePath) })// saving Camera image
+
+        viewModel.listLiveData.observe(this, Observer { listResponse ->
+            listResponse?.let {
+                updateMarkers(it.list)
+            }
+        })
+
+        viewModel.thumbLiveData.observe(this, Observer { response ->
+            response?.let {
+                val photoId = it.first
+                callbacks[photoId]?.callback?.invoke(photoId, it.second)
+                callbacks.remove(photoId)
+            }
+        })
+    }
+
+    private fun startPhotoOnLocationDialog(geoPoint: LatLng) {
         workingLocation?.let {
             dialogAddPhoto = AddPhotoBottomSheet.createNewDialog(it)
                 .apply {
                     onAddClicked = ::onOptionPicked
                     placeLiveData = viewModel.placeLiveData
                 }
-            dialogAddPhoto?.show(childFragmentManager, "")
+            dialogAddPhoto?.show(childFragmentManager, TAG_DIALOG_ADD_PHOTO)
             viewModel.loadPlaceInfo(geoPoint)
         }
     }
 
+    // region Markers
     private fun updateMarkers(photoList: List<PhotoInfo>) {
         val gMap = googleMap
         gMap?.let {
@@ -201,19 +206,15 @@ class MapFragment : BaseFragment(), MainActivity.ButtonPhotoListener, MainActivi
         }
     }
 
-    private fun checkAndRequestLocationPermission(force: Boolean): Boolean {
-        val granted = checkPermission(PERMISSION_LOCATION)
-        if (granted) {
-            if (isCurrentLocationMode) goToCurrentLocation()
-        } else {
-            requestPermission(PERMISSION_LOCATION, force, { showPermissionExplanation() }) { isGranted ->
-                if (isGranted && isCurrentLocationMode) goToCurrentLocation()
-            }
-        }
-
-        return granted
+    private fun onMarkerPopupClick(marker: Marker) {
+        val photo = marker.tag as PhotoInfo
+        PhotoViewEditActivity.IntentBuilder(ctx)
+            .withPhotoId(photo.id)
+            .start()
     }
+    // endregion Markers
 
+    // region Map Navigation
     @SuppressLint("MissingPermission")
     private fun goToCurrentLocation() {
         locationClient.lastLocation.addOnCompleteListener { task ->
@@ -253,6 +254,24 @@ class MapFragment : BaseFragment(), MainActivity.ButtonPhotoListener, MainActivi
         }
     }
 
+    private fun showLocationNotEnabled() {
+        Snackbar.make((activity as MainActivity).snackbarRoot, "Please check if your location is enabled.", Snackbar.LENGTH_LONG)
+            .show()
+    }
+    // endregion Map Navigation
+
+    // region Camera/Gallery callbacks
+    private fun onCameraImageSaved(filePath: String?) {
+        filePath?.let {
+            progressDialog?.dismiss() // todo to method
+            PhotoViewEditActivity.IntentBuilder(ctx)
+                .withFile(filePath)
+                .withGeoPoint(workingLocation)
+                .start()
+            workingLocation = null
+        }
+    }
+
     private fun onCameraResponse(resultCode: Int, data: Intent?) {
         if (data?.extras == null) workingLocation = null
         data?.extras?.let { extras ->
@@ -284,12 +303,19 @@ class MapFragment : BaseFragment(), MainActivity.ButtonPhotoListener, MainActivi
             AddPhotoBottomSheet.OPTION_MAKE_PHOTO -> startCamera()
         }
     }
+    // endregion Camera/Gallery callbacks
 
-    private fun onMarkerPopupClick(marker: Marker) {
-        val photo = marker.tag as PhotoInfo
-        PhotoViewEditActivity.IntentBuilder(ctx)
-            .withPhotoId(photo.id)
-            .start()
+    private fun checkAndRequestLocationPermission(force: Boolean): Boolean {
+        val granted = checkPermission(PERMISSION_LOCATION)
+        if (granted) {
+            if (isCurrentLocationMode) goToCurrentLocation()
+        } else {
+            requestPermission(PERMISSION_LOCATION, force, { showPermissionExplanation() }) { isGranted ->
+                if (isGranted && isCurrentLocationMode) goToCurrentLocation()
+            }
+        }
+
+        return granted
     }
 
     private fun startCamera() {
@@ -308,11 +334,6 @@ class MapFragment : BaseFragment(), MainActivity.ButtonPhotoListener, MainActivi
         progressDialog = AlertDialog.Builder(ctx)
             .setView(R.layout.dialog_progress)
             .setCancelable(false)
-            .show()
-    }
-
-    private fun showLocationNotEnabled() {
-        Snackbar.make((activity as MainActivity).snackbarRoot, "Please check if your location is enabled.", Snackbar.LENGTH_LONG)
             .show()
     }
 

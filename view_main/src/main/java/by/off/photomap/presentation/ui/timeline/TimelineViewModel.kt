@@ -20,6 +20,7 @@ class TimelineViewModel @Inject constructor(private val photoService: PhotoServi
     val listData = ObservableArrayList<PhotoInfo>()
 
     init {
+        isRefreshing.set(true)
         photoService.listOrderTime()
         Log.i(LOGCAT, "Init Timeline ViewModel")
     }
