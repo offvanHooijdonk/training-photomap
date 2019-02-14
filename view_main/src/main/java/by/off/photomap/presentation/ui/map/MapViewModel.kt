@@ -24,10 +24,6 @@ class MapViewModel @Inject constructor(private val photoService: PhotoService, p
         photoService.requestThumbnail(id)
     }
 
-    fun loadData() {
-        photoService.listOrderTime()
-    }
-
     fun saveTempFile(bitmap: Bitmap) {
         photoService.saveToTempFile(bitmap)
     }

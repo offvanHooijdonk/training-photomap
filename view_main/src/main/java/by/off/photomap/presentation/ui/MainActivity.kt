@@ -10,7 +10,6 @@ import android.support.v4.app.FragmentManager
 import android.support.v4.app.FragmentPagerAdapter
 import android.support.v4.view.ViewPager
 import android.support.v7.app.AlertDialog
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -18,7 +17,7 @@ import android.widget.Toast
 import by.off.photomap.core.ui.BaseActivity
 import by.off.photomap.core.ui.ctx
 import by.off.photomap.core.ui.dto.CategoryInfo
-import by.off.photomap.core.utils.LOGCAT
+import by.off.photomap.core.ui.getColorVal
 import by.off.photomap.core.utils.di.ViewModelFactory
 import by.off.photomap.di.MainScreenComponent
 import by.off.photomap.presentation.ui.map.MapFragment
@@ -91,7 +90,7 @@ class MainActivity : BaseActivity() {
 
     fun setNavigationButtonMode(isOn: Boolean) { // todo implement with ViewModels
         val colorRes = if (isOn) R.color.navigation_btn_mode_on else R.color.navigation_btn_mode_off
-        fabLocation.backgroundTintList = ColorStateList.valueOf(ctx.resources.getColor(colorRes))
+        fabLocation.backgroundTintList = ColorStateList.valueOf(ctx.getColorVal(colorRes))
     }
 
     private fun initModelObserve() {

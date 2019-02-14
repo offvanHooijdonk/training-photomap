@@ -35,7 +35,6 @@ class MarkerAdapter(
             } else {
                 view.imgThumb.setImageURI(Uri.parse(thumbCache[photo.id]))
             }
-
             return view
         }
         return null

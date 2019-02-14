@@ -14,11 +14,8 @@ import android.support.v7.app.AppCompatActivity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import by.off.photomap.core.ui.BaseFragment
-import by.off.photomap.core.ui.CallbackHolder
-import by.off.photomap.core.ui.ctx
+import by.off.photomap.core.ui.*
 import by.off.photomap.core.ui.dto.CategoryInfo
-import by.off.photomap.core.ui.hue
 import by.off.photomap.core.utils.di.ViewModelFactory
 import by.off.photomap.di.PhotoScreenComponent
 import by.off.photomap.model.PhotoInfo
@@ -43,6 +40,9 @@ class MapFragment : BaseFragment(), MainActivity.ButtonPhotoListener, MainActivi
         private const val EXTRA_CAMERA_DATA = "data"
         private const val PERMISSION_LOCATION = Manifest.permission.ACCESS_FINE_LOCATION
 
+        private const val EXTRA_SAVED_CURRENT_LOCATION_MODE = "EXTRA_SAVED_CURRENT_LOCATION_MODE"
+        private const val EXTRA_SAVED_MARKER_OPENED = "EXTRA_SAVED_MARKER_OPENED"
+
         private const val DEFAULT_ZOOM = 15.0f
         private const val CAMERA_ANIM_DURATION = 650
         private const val LOCATION_REQUEST_INTERVAL = 2000L
@@ -64,11 +64,13 @@ class MapFragment : BaseFragment(), MainActivity.ButtonPhotoListener, MainActivi
     private lateinit var viewModel: MapViewModel
     private var progressDialog: AlertDialog? = null
     private var googleMap: GoogleMap? = null
+    private var markerIdPicked: String? = null
     private var dialogAddPhoto: DialogFragment? = null
     private val callbacks = mutableMapOf<String, CallbackHolder>()
     private var latLongCurrent: LatLng? = null
     private var workingLocation: LatLng? = null
-    private var stateRestored = false
+    private val markers = mutableListOf<Marker>()
+    private var isCurrentLocationMode = false
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         PhotoScreenComponent.get(ctx).inject(this)
@@ -104,23 +106,27 @@ class MapFragment : BaseFragment(), MainActivity.ButtonPhotoListener, MainActivi
             }
         })
         (childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment).getMapAsync(this)
-        stateRestored = savedInstanceState != null
+        markerIdPicked = savedInstanceState?.getString(EXTRA_SAVED_MARKER_OPENED)
+        isCurrentLocationMode = savedInstanceState?.getBoolean(EXTRA_SAVED_CURRENT_LOCATION_MODE) ?: true
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        outState.putBoolean("save_instance", true) // todo save current position, zoom, mode etc.
+        outState.putString(EXTRA_SAVED_MARKER_OPENED, markerIdPicked)
+        outState.putBoolean(EXTRA_SAVED_CURRENT_LOCATION_MODE, isCurrentLocationMode)
     }
 
     override fun onMapReady(gMap: GoogleMap?) {
         gMap?.also {
-
             googleMap = gMap
             viewModel.listLiveData.value?.let { updateMarkers(it.list) }
             gMap.setInfoWindowAdapter(MarkerAdapter(ctx) { photoId, callback ->
                 callbacks[photoId] = CallbackHolder(photoId, callback)
                 viewModel.requestThumbnail(photoId)
             })
+            markers.firstOrNull { marker -> markerIdPicked == (marker.tag as PhotoInfo).id }?.showInfoWindow()
+            markers.clear()
+
             gMap.setOnInfoWindowClickListener(::onMarkerPopupClick)
             gMap.setOnMapLongClickListener {
                 workingLocation = it
@@ -133,7 +139,12 @@ class MapFragment : BaseFragment(), MainActivity.ButtonPhotoListener, MainActivi
                 if (reason == GoogleMap.OnCameraMoveStartedListener.REASON_GESTURE) {
                     (activity as MainActivity).setNavigationButtonMode(false)
                     locationClient.removeLocationUpdates(locationCallback)
+                    isCurrentLocationMode = false
                 }
+            }
+            gMap.setOnMarkerClickListener { marker ->
+                markerIdPicked = (marker.tag as PhotoInfo?)?.id
+                false
             }
         }
     }
@@ -154,6 +165,11 @@ class MapFragment : BaseFragment(), MainActivity.ButtonPhotoListener, MainActivi
         } else {
             Snackbar.make((activity as MainActivity).snackbarRoot, R.string.location_unknown_try_manual, Snackbar.LENGTH_LONG).show()
         }
+    }
+
+    override fun onLocationClicked() {
+        isCurrentLocationMode = true
+        checkAndRequestLocationPermission(false)
     }
 
     private fun startLocationDialog(geoPoint: LatLng) {
@@ -179,6 +195,7 @@ class MapFragment : BaseFragment(), MainActivity.ButtonPhotoListener, MainActivi
                     val marker = gMap.addMarker(MarkerOptions().position(LatLng(lat, lon)).title(photo.description))
                     marker.setIcon(BitmapDescriptorFactory.defaultMarker(getCategoryHue(photo.category)))
                     marker.tag = photo
+                    markers.add(marker)
                 }
             }
         }
@@ -187,10 +204,10 @@ class MapFragment : BaseFragment(), MainActivity.ButtonPhotoListener, MainActivi
     private fun checkAndRequestLocationPermission(force: Boolean): Boolean {
         val granted = checkPermission(PERMISSION_LOCATION)
         if (granted) {
-            goToCurrentLocation()
+            if (isCurrentLocationMode) goToCurrentLocation()
         } else {
             requestPermission(PERMISSION_LOCATION, force, { showPermissionExplanation() }) { isGranted ->
-                if (isGranted) goToCurrentLocation()
+                if (isGranted && isCurrentLocationMode) goToCurrentLocation()
             }
         }
 
@@ -236,10 +253,6 @@ class MapFragment : BaseFragment(), MainActivity.ButtonPhotoListener, MainActivi
         }
     }
 
-    override fun onLocationClicked() {
-        checkAndRequestLocationPermission(false)
-    }
-
     private fun onCameraResponse(resultCode: Int, data: Intent?) {
         if (data?.extras == null) workingLocation = null
         data?.extras?.let { extras ->
@@ -253,17 +266,16 @@ class MapFragment : BaseFragment(), MainActivity.ButtonPhotoListener, MainActivi
     }
 
     private fun onGalleryResponse(resultCode: Int, data: Intent?) {
-        if (resultCode == AppCompatActivity.RESULT_OK && data?.data != null) {
+        val imageUri = data?.data
+        if (resultCode == AppCompatActivity.RESULT_OK && imageUri != null) {
             dialogAddPhoto?.dismiss()
-            val imageUri = data.data
             PhotoViewEditActivity.IntentBuilder(ctx)
                 .withUri(imageUri)
                 .withGeoPoint(workingLocation)
                 .start()
-            workingLocation = null
-        } else {
-            workingLocation = null
+
         }
+        workingLocation = null
     }
 
     private fun onOptionPicked(position: Int) {
@@ -311,6 +323,6 @@ class MapFragment : BaseFragment(), MainActivity.ButtonPhotoListener, MainActivi
     }
 
     private fun getCategoryHue(category: Int) = hueMap[category] ?: let {
-        hue(ctx.resources.getColor(CategoryInfo.getMarkerColor(category))).also { hueMap[category] = it }
+        hue(ctx.getColorVal(CategoryInfo.getMarkerColor(category))).also { hueMap[category] = it }
     }
 }

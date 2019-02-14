@@ -5,7 +5,9 @@ import android.animation.AnimatorListenerAdapter
 import android.animation.ObjectAnimator
 import android.content.Context
 import android.location.Location
+import android.os.Build
 import android.support.annotation.ColorInt
+import android.support.annotation.ColorRes
 import android.support.design.widget.Snackbar
 import android.support.v4.app.Fragment
 import android.support.v4.widget.SwipeRefreshLayout
@@ -49,6 +51,13 @@ fun Snackbar.colorError() =
     this.apply {
         view.findViewById<TextView>(android.support.design.R.id.snackbar_text)
             .setTextColor(this.context.resources.getColor(R.color.snackbar_error_text))
+    }
+
+fun Context.getColorVal(@ColorRes colorRes: Int) =
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+        this.getColor(colorRes)
+    } else {
+        this.resources.getColor(colorRes)
     }
 
 val AppCompatActivity.ctx: Context
