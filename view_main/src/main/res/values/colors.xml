@@ -12,5 +12,30 @@
 
     <color name="search_background">#ffffff</color>
     <color name="search_hint">#66000000</color>
+    <color name="search_controls">#000000</color>
     <color name="search_text">#cc000000</color>
+
+    <color name="tag_1">@color/colorAccentDark</color>
+    <color name="tag_2">#00BFA5</color>
+    <color name="tag_3">#651FFF</color>
+    <color name="tag_4">#D500F9</color>
+    <color name="tag_5">#2979FF</color>
+    <color name="tag_6">#00B8D4</color>
+    <color name="tag_7">#00E676</color>
+    <color name="tag_8">#FFB300</color>
+    <color name="tag_9">#FF3D00</color>
+    <color name="tag_10">#FF9100</color>
+
+    <array name="tag_colors">
+        <item>@color/tag_1</item>
+        <item>@color/tag_2</item>
+        <item>@color/tag_3</item>
+        <item>@color/tag_4</item>
+        <item>@color/tag_5</item>
+        <item>@color/tag_6</item>
+        <item>@color/tag_7</item>
+        <item>@color/tag_8</item>
+        <item>@color/tag_9</item>
+        <item>@color/tag_10</item>
+    </array>
 </resources>

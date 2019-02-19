@@ -6,8 +6,11 @@ import by.off.photomap.core.utils.di.scopes.PerFeature
 import by.off.photomap.core.utils.launchScopeIO
 import by.off.photomap.model.UserInfo
 import by.off.photomap.storage.parse.*
-import by.off.photomap.storage.parse.RegistrationFailedException.Field.EMAIL
-import by.off.photomap.storage.parse.RegistrationFailedException.Field.USER_NAME
+import by.off.photomap.storage.parse.exception.AuthenticationFailedException
+import by.off.photomap.storage.parse.exception.RegistrationFailedException
+import by.off.photomap.storage.parse.exception.RegistrationFailedException.Field.EMAIL
+import by.off.photomap.storage.parse.exception.RegistrationFailedException.Field.USER_NAME
+import by.off.photomap.storage.parse.exception.UserNotFoundException
 import com.parse.ParseException
 import com.parse.ParseObject
 import com.parse.ParseQuery

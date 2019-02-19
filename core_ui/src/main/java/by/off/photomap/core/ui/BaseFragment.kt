@@ -12,6 +12,9 @@ import by.off.photomap.core.utils.di.ViewModelFactory
 abstract class BaseFragment : Fragment() {
     companion object {
         const val PERMISSION_REQUEST_LATEST = 1
+
+        fun <T : ViewModel> getViewModel(fr: Fragment, factory: ViewModelFactory, modelClass: Class<T>) =
+            ViewModelProviders.of(fr, factory)[modelClass]
     }
 
     abstract var viewModelFactory: ViewModelFactory

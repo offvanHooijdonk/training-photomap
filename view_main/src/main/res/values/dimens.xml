@@ -9,5 +9,5 @@
     <dimen name="add_photo_btn_image">40dp</dimen>
     <dimen name="bottom_sheet_corner">8dp</dimen>
     <dimen name="search_bar_corner">4dp</dimen>
-    <dimen name="search_popup_margin">4dp</dimen>
+    <dimen name="search_popup_margin">6dp</dimen>
 </resources>

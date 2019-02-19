@@ -12,8 +12,7 @@ import android.view.View
 import android.widget.ImageView
 import android.widget.Spinner
 import android.widget.TextView
-import by.off.photomap.core.ui.DateHelper
-import by.off.photomap.core.ui.colorError
+import by.off.photomap.core.ui.*
 import by.off.photomap.core.ui.dto.CategoryInfo
 import by.off.photomap.core.utils.LOGCAT
 import by.off.photomap.model.PhotoInfo
@@ -44,6 +43,18 @@ fun setTextInpuLayoutError(til: TextInputLayout, errorMessage: String?) {
 fun setChipCategoryLabelColor(chip: Chip, categoryId: Int) {
     chip.setText(CategoryInfo(categoryId).labelRes)
     chip.setChipBackgroundColorResource(CategoryInfo(categoryId).backColorRes)
+}
+
+private var tagColors: IntArray? = null
+
+@BindingAdapter("tagText")
+fun setChipTagText(chip: Chip, tag: String) {
+    chip.text = tag
+
+    val colors = tagColors ?: chip.context.resources.getIntArray(R.array.tag_colors).also { tagColors = it }
+    val colorIndex = tag.hashCode() % colors.size
+
+    chip.setChipBackgroundColorResource(colors[colorIndex])
 }
 
 @BindingAdapter("filePath")
@@ -80,6 +91,24 @@ fun setCategoryLabelColor(textView: TextView, categoryId: Int) {
 @BindingAdapter("timestampShort")
 fun setTimestampShort(textView: TextView, timestamp: Date) {
     textView.text = DateHelper.formatDateShort(timestamp)
+}
+
+@BindingAdapter("latitude")
+fun setLatitudeText(textView: TextView, latitude: Double?) {
+    latitude?.also { textView.text = formatLatitude(latitude, textView.context) }
+}
+
+@BindingAdapter("longitude")
+fun setLongitudeText(textView: TextView, longitude: Double?) {
+    longitude?.also { textView.text = formatLongitude(longitude, textView.context) }
+}
+
+@BindingAdapter("place")
+fun setPlaceDescription(textView: TextView, description: String?) {
+    if (description?.isNotEmpty() == true) {
+        textView.text = description
+        textView.fadeIn()
+    }
 }
 
 @BindingAdapter("snackbar")

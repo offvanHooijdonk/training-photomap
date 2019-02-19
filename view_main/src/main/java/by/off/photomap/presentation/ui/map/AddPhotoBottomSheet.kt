@@ -1,26 +1,32 @@
 package by.off.photomap.presentation.ui.map
 
-import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.Observer
-import android.location.Location
+import android.databinding.DataBindingUtil
 import android.os.Bundle
-import android.os.Handler
+import android.support.design.widget.BottomSheetBehavior
 import android.support.design.widget.BottomSheetDialogFragment
-import android.support.v4.app.DialogFragment
-import android.support.v4.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
-import by.off.photomap.core.ui.*
+import by.off.photomap.core.ui.BaseFragment
+import by.off.photomap.core.ui.ctx
+import by.off.photomap.core.ui.isLandscape
+import by.off.photomap.core.utils.di.ViewModelFactory
+import by.off.photomap.di.PhotoScreenComponent
 import by.off.photomap.presentation.ui.R
+import by.off.photomap.presentation.ui.databinding.DialogAddPhotoBinding
 import com.google.android.gms.maps.model.LatLng
 import kotlinx.android.synthetic.main.dialog_add_photo.*
+import javax.inject.Inject
 
 class AddPhotoBottomSheet : BottomSheetDialogFragment() {
-    private lateinit var latLong: LatLng
     var onAddClicked: ((option: Int) -> Unit)? = null
-    var placeLiveData: LiveData<GeoResponse>? = null
+
+    @Inject
+    lateinit var viewModelFactory: ViewModelFactory
+
+    private lateinit var viewModel: AddPhotoDialogViewModel
+    private val latLong: LatLng? by lazy { arguments?.getParcelable<LatLng>(ARG_GEO_POINT) }
 
     companion object {
         const val OPTION_GALLERY = 0
@@ -37,45 +43,42 @@ class AddPhotoBottomSheet : BottomSheetDialogFragment() {
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.dialog_add_photo, container, false)
+        PhotoScreenComponent.get(ctx).inject(this)
+        viewModel = BaseFragment.getViewModel(this, viewModelFactory, AddPhotoDialogViewModel::class.java)
+        val binding = DataBindingUtil.inflate<DialogAddPhotoBinding>(inflater, R.layout.dialog_add_photo, container, false)
+        binding.model = viewModel
+
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-
-        val data = arguments?.getParcelable<LatLng>(ARG_GEO_POINT)
-        if (data != null) {
-            latLong = data
-        } else {
+        if (latLong == null) {
             // todo show something?
             dismiss()
             return
         }
+        latLong?.also {
+            val parent = parentFragment
+            if (parent is MapFragment) parent.onAddPhotoDialogCreated(this)
 
-        progressPlaceLoad.show()
+            viewModel.loadPlaceInfo(it)
 
-        txtLat.text = formatLatitude(latLong.latitude, ctx)
-        txtLong.text = formatLongitude(latLong.longitude, ctx)
+            txtFromGallery.setOnClickListener { onAddClicked?.invoke(OPTION_GALLERY) }
+            txtFromCamera.setOnClickListener { onAddClicked?.invoke(OPTION_MAKE_PHOTO) }
 
-        txtFromGallery.setOnClickListener {
-            //dismiss()
-            onAddClicked?.invoke(OPTION_GALLERY)
+            viewModel.placeLiveData.observe(this, Observer {})
+
+            dialog.setOnShowListener { adjustSheetPeek() }
         }
-        txtFromCamera.setOnClickListener {
-            //dismiss()
-            onAddClicked?.invoke(OPTION_MAKE_PHOTO)
-        }
+    }
 
-        placeLiveData?.observe(this, Observer {
-            it?.let { response ->
-                if (!response.read) {
-                    progressPlaceLoad.hide()
-                    txtPlaceInfo.apply { fadeIn() }.setText(R.string.fish_text)
-                    txtPlaceInfo.text = response.info
-                    response.read = true
-                }
+    private fun adjustSheetPeek() {
+        if (ctx.isLandscape()) {
+            (view?.parent as View?)?.let {
+                BottomSheetBehavior.from(it).peekHeight = it.height
             }
-        })
+        }
     }
 }

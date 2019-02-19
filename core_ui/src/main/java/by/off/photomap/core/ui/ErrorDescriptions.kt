@@ -1,10 +1,9 @@
 package by.off.photomap.core.ui
 
 import android.content.Context
-import android.support.annotation.StringRes
-import by.off.photomap.storage.parse.AuthenticationFailedException
-import by.off.photomap.storage.parse.RegistrationFailedException
-import by.off.photomap.storage.parse.UserNotFoundException
+import by.off.photomap.storage.parse.exception.AuthenticationFailedException
+import by.off.photomap.storage.parse.exception.RegistrationFailedException
+import by.off.photomap.storage.parse.exception.UserNotFoundException
 
 object ErrorDescriptions {
     fun getDescripitionRes(ctx: Context, e: Exception): String =

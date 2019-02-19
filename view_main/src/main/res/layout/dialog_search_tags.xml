@@ -11,6 +11,7 @@
         android:layout_height="match_parent" />
 
     <android.support.constraint.ConstraintLayout
+        android:id="@+id/blockSearchContent"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
@@ -20,11 +21,21 @@
             android:clickable="true"
             android:elevation="6dp"
             android:focusable="true"
-            android:layout_marginTop="@dimen/search_popup_margin"
             android:gravity="center_vertical"
             android:orientation="horizontal"
+            android:padding="8dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
+
+            <ImageView
+                android:id="@+id/imgBack"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:alpha="0.4"
+                android:background="?selectableItemBackgroundBorderless"
+                android:src="@drawable/ic_back_24"
+                android:tint="@color/search_controls" />
 
             <EditText
                 android:id="@+id/inputSearch"
@@ -38,6 +49,24 @@
                 android:singleLine="true"
                 android:textColor="@color/search_text"
                 android:textColorHint="@color/search_hint" />
+
+            <ImageView
+                android:id="@+id/imgSearch"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:alpha="0.4"
+                android:background="?selectableItemBackgroundBorderless"
+                android:src="@drawable/ic_search_24"
+                android:tint="@color/search_controls" />
+
+            <ProgressBar
+                android:id="@+id/progressSearch"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_marginStart="8dp"
+                android:padding="2dp"
+                android:visibility="gone" />
         </LinearLayout>
 
         <View
@@ -67,9 +96,11 @@
             android:focusable="true"
             android:gravity="center_vertical"
             android:padding="16dp"
+            android:visibility="gone"
             app:layout_constraintEnd_toEndOf="@id/blockSearchBar"
             app:layout_constraintStart_toStartOf="@id/blockSearchBar"
-            app:layout_constraintTop_toBottomOf="@id/dividerSearchBar">
+            app:layout_constraintTop_toBottomOf="@id/dividerSearchBar"
+            tools:visibility="visible">
 
             <TextView
                 android:id="@+id/txtSearchStartHint"

@@ -4,6 +4,7 @@ import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
 import android.animation.ObjectAnimator
 import android.content.Context
+import android.content.res.Configuration
 import android.location.Location
 import android.os.Build
 import android.support.annotation.ColorInt
@@ -15,6 +16,7 @@ import android.support.v7.app.AppCompatActivity
 import android.view.View
 import android.widget.TextView
 
+// region VISIBILITY
 fun View.show() {
     this.visibility = View.VISIBLE
 }
@@ -28,11 +30,13 @@ fun View.invisible() {
 }
 
 fun View.fadeAway(duration: Long = 150) {
-    fade(this, 1.0f, 0.0f, duration) { this.hide() }
+    this.hide()
+    fade(this, 1.0f, 0.0f, duration) { }
 }
 
 fun View.fadeIn(duration: Long = 250) {
-    fade(this, 0.0f, 1.0f, duration) { this.show() }
+    this.show()
+    fade(this, 0.0f, 1.0f, duration) { }
 }
 
 private fun fade(view: View, start: Float, end: Float, duration: Long, onFinish: () -> Unit) {
@@ -46,7 +50,25 @@ private fun fade(view: View, start: Float, end: Float, duration: Long, onFinish:
         })
     }.start()
 }
+// endregion
 
+// region ACTIVITY/FRAGMENT
+val AppCompatActivity.ctx: Context
+    get() = this
+
+val Fragment.ctx: Context
+    get() = this.requireContext()
+
+fun SwipeRefreshLayout.setupDefaults() {
+    this.setColorSchemeResources(R.color.refresh_1, R.color.refresh_2, R.color.refresh_3)
+}
+
+fun Context.isLandscape() = resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
+
+fun Context.isPortrait() = resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT
+// endregion
+
+// region COLORS
 fun Snackbar.colorError() =
     this.apply {
         view.findViewById<TextView>(android.support.design.R.id.snackbar_text)
@@ -59,16 +81,6 @@ fun Context.getColorVal(@ColorRes colorRes: Int) =
     } else {
         this.resources.getColor(colorRes)
     }
-
-val AppCompatActivity.ctx: Context
-    get() = this
-
-val Fragment.ctx: Context
-    get() = this.requireContext()
-
-fun SwipeRefreshLayout.setupDefaults() {
-    this.setColorSchemeResources(R.color.refresh_1, R.color.refresh_2, R.color.refresh_3)
-}
 
 fun hue(@ColorInt color: Int): Float {
     val r = (color / 0xFFFF).let { if (it < 0) 255 + it else it }
@@ -85,7 +97,9 @@ fun hue(@ColorInt color: Int): Float {
             } * 60
             ).let { if (it < 0) it + 360.0f else it }
 }
+// endregion
 
+// region FORMATS
 fun formatLatitude(value: Double, ctx: Context) =
     StringBuilder().append(formatGeoCoordinate(value)).append(" ").append(
         if (value >= 0) ctx.getString(R.string.lat_north) else ctx.getString(R.string.lat_south)
@@ -110,3 +124,4 @@ private fun formatGeoCoordinate(value: Double): String {
         coordString
     }
 }
+// endregion

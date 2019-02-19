@@ -3,6 +3,7 @@
     <dimen name="activity_margin_vertical">16dp</dimen>
     <dimen name="activity_margin_horizontal">16dp</dimen>
     <dimen name="item_margin_vertical">16dp</dimen>
+    <dimen name="item_margin_vertical_dense">8dp</dimen>
     <dimen name="item_margin_horizontal">16dp</dimen>
     <dimen name="item_icon_margin_end">16dp</dimen>
     <dimen name="item_bottom_divider_margin_start">72dp</dimen>

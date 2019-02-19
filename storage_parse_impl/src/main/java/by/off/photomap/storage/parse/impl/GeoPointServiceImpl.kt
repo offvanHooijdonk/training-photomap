@@ -23,14 +23,8 @@ class GeoPointServiceImpl @Inject constructor(ctx: Context) : GeoPointService {
         launchScopeIO {
             var placeInfo = ""
             try {
-                val addressList = geoCoder.getFromLocation(lat, lon, 5)
-                addrs@ for (ad in addressList) {
-                    for (i in 0..ad.maxAddressLineIndex) {
-                        if (ad.getAddressLine(i) != null) {
-                            placeInfo = ad.getAddressLine(i)
-                            break@addrs
-                        }
-                    }
+                geoCoder.getFromLocation(lat, lon, 5).firstOrNull { it.maxAddressLineIndex >= 0 }?.also { adr ->
+                    placeInfo = adr.getAddressLine(0)
                 }
             } catch (e: Exception) {
                 // todo create Response object?

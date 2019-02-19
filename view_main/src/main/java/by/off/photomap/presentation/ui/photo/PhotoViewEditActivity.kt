@@ -220,7 +220,7 @@ class PhotoViewEditActivity : BaseActivity() {
             if (requiredSet)
                 ctx.startActivity(intent)
             else
-                Toast.makeText(ctx, "Required data not provided!", Toast.LENGTH_LONG).show()
+                Toast.makeText(ctx, R.string.intent_start_no_data, Toast.LENGTH_LONG).show()
         }
     }
 }

@@ -49,7 +49,6 @@ class MapFragment : BaseFragment(), MainActivity.ButtonPhotoListener, MainActivi
         private const val TAG_DIALOG_ADD_PHOTO = "DIALOG_ADD_PHOTO"
     }
 
-
     @Inject
     override lateinit var viewModelFactory: ViewModelFactory
     private lateinit var viewModel: MapViewModel
@@ -72,7 +71,7 @@ class MapFragment : BaseFragment(), MainActivity.ButtonPhotoListener, MainActivi
     private var isCurrentLocationMode = false
     // views
     private var progressDialog: AlertDialog? = null
-    private var dialogAddPhoto: DialogFragment? = null
+    private var dialogAddPhoto: AddPhotoBottomSheet? = null
     // helpers
     private val callbacks = mutableMapOf<String, CallbackHolder>()
     private val markers = mutableListOf<Marker>()
@@ -158,6 +157,11 @@ class MapFragment : BaseFragment(), MainActivity.ButtonPhotoListener, MainActivi
         checkAndRequestLocationPermission(false)
     }
 
+    fun onAddPhotoDialogCreated(addPhotoBottomSheet: AddPhotoBottomSheet) {
+        dialogAddPhoto = addPhotoBottomSheet
+        dialogAddPhoto?.onAddClicked = ::onOptionPicked
+    }
+
     private fun initLiveData() {
         viewModel.fileLiveData.observe(this, Observer { filePath -> onCameraImageSaved(filePath) })// saving Camera image
 
@@ -178,13 +182,10 @@ class MapFragment : BaseFragment(), MainActivity.ButtonPhotoListener, MainActivi
 
     private fun startPhotoOnLocationDialog(geoPoint: LatLng) {
         workingLocation?.let {
-            dialogAddPhoto = AddPhotoBottomSheet.createNewDialog(it)
-                .apply {
-                    onAddClicked = ::onOptionPicked
-                    placeLiveData = viewModel.placeLiveData
-                }
-            dialogAddPhoto?.show(childFragmentManager, TAG_DIALOG_ADD_PHOTO)
-            viewModel.loadPlaceInfo(geoPoint)
+            dialogAddPhoto = AddPhotoBottomSheet.createNewDialog(it).also { dialog ->
+                //dialog.onAddClicked = ::onOptionPicked
+                dialog.show(childFragmentManager, TAG_DIALOG_ADD_PHOTO)
+            }
         }
     }
 

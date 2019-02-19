@@ -22,4 +22,7 @@
     <string name="search_input_hint">#tags</string>
     <string name="search_sample">Holidays</string>
     <string name="search_sample_hint">Start a search, for instance</string>
+    <string name="logoff_progress_msg">Please wait while we are logging you off</string>
+    <string name="pick_category_least_one">Pick at least one category</string>
+    <string name="intent_start_no_data">Required data not provided!</string>
 </resources>

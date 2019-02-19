@@ -15,6 +15,7 @@ import by.off.photomap.di.PhotoScreenComponent
 import by.off.photomap.presentation.ui.R
 import by.off.photomap.presentation.ui.databinding.ScreenTimelineBinding
 import by.off.photomap.presentation.ui.photo.PhotoViewEditActivity
+import by.off.photomap.presentation.ui.timeline.search.SearchTagsDialogFragment
 import kotlinx.android.synthetic.main.screen_timeline.*
 import javax.inject.Inject
 
@@ -76,7 +77,8 @@ class TimelineFragment : BaseFragment() {
         super.onOptionsItemSelected(item)
         when (item?.itemId) {
             R.id.item_hash_tag_search -> {
-                SearchTagsDialogFragment().show(childFragmentManager, "search_tags")
+                val itemView = requireActivity().findViewById<View>(R.id.item_hash_tag_search)
+                SearchTagsDialogFragment.newInstance(itemView).show(childFragmentManager, "search_tags")
                 return true
             }
         }

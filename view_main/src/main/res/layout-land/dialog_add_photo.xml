@@ -21,13 +21,14 @@
         android:paddingStart="@dimen/activity_margin_horizontal"
         android:paddingTop="@dimen/activity_margin_vertical"
         android:paddingEnd="@dimen/activity_margin_horizontal"
-        android:paddingBottom="32dp">
+        android:paddingBottom="@dimen/activity_margin_vertical">
 
         <TextView
             android:id="@+id/txtLat"
             latitude="@{model.placeGeoPoint.latitude}"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
+            app:layout_constraintEnd_toStartOf="@id/guideCenterVertical"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             tools:text="@string/fish_lat" />
@@ -35,22 +36,23 @@
         <TextView
             android:id="@+id/txtLong"
             longitude="@{model.placeGeoPoint.longitude}"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/activity_margin_horizontal"
-            app:layout_constraintStart_toEndOf="@id/txtLat"
-            app:layout_constraintTop_toTopOf="@id/txtLat"
+            app:layout_constraintStart_toStartOf="@id/txtLat"
+            app:layout_constraintTop_toBottomOf="@id/txtLat"
+            app:layout_constraintEnd_toStartOf="@id/guideCenterVertical"
             tools:text="@string/fish_long" />
 
         <TextView
             android:id="@+id/txtPlaceInfo"
             place="@{model.placeDescription}"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:textColor="@color/item_primary_text"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/txtLat"
+            app:layout_constraintEnd_toStartOf="@id/guideCenterVertical"
+            app:layout_constraintTop_toBottomOf="@id/txtLong"
             tools:text="@string/fish_text" />
 
         <ProgressBar
@@ -62,19 +64,24 @@
             app:layout_goneMarginTop="8dp"
             tools:visibility="visible" />
 
-        <android.support.constraint.Barrier
+        <!--<android.support.constraint.Barrier
             android:id="@+id/barrierDescription"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:barrierDirection="bottom"
-            app:constraint_referenced_ids="txtPlaceInfo, progressPlaceLoad" />
+            app:constraint_referenced_ids="txtPlaceInfo, progressPlaceLoad" />-->
+
+        <android.support.constraint.Guideline
+            android:id="@+id/guideCenterVertical"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.5"/>
 
         <TextView
             android:id="@+id/txtFromGallery"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/activity_margin_vertical"
-            android:layout_marginBottom="16dp"
             android:background="?selectableItemBackgroundBorderless"
             android:drawableTop="@drawable/ic_from_gallery"
             android:drawablePadding="4dp"
@@ -83,8 +90,8 @@
             android:textAllCaps="true"
             android:textColor="@color/colorAccent"
             app:layout_constraintEnd_toStartOf="@id/txtFromCamera"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/barrierDescription" />
+            app:layout_constraintStart_toStartOf="@id/guideCenterVertical"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:id="@+id/txtFromCamera"

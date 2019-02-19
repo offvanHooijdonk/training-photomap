@@ -70,13 +70,14 @@ class MainActivity : BaseActivity() {
         menuInflater.inflate(R.menu.main, menu)
         super.onCreateOptionsMenu(menu)
         return true
+
     }
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         super.onOptionsItemSelected(item)
         when (item?.itemId) {
             R.id.item_log_out -> {
-                Snackbar.make(mainRoot, "Please wait while we are logging you off", Snackbar.LENGTH_INDEFINITE).show() // todo implement some dialog here
+                Snackbar.make(mainRoot, R.string.logoff_progress_msg, Snackbar.LENGTH_INDEFINITE).show() // todo implement some dialog here
                 viewModel.logOut()
                 return true
             }
@@ -99,7 +100,7 @@ class MainActivity : BaseActivity() {
             if (response?.data != null) {
                 finish() // TODO place SplashActivity to this module and navigate to it here
             } else if (response?.error != null) {
-                Snackbar.make(mainRoot, response.error?.message ?: "Some errorMessage occurred", Snackbar.LENGTH_LONG).show()
+                Snackbar.make(mainRoot, response.error?.message ?: getString(R.string.error_unknown), Snackbar.LENGTH_LONG).show()
             }
         })
     }
@@ -149,7 +150,7 @@ class MainActivity : BaseActivity() {
                     applyCategoryFilter()
                     dialog.dismiss()
                 } else {
-                    Toast.makeText(ctx, "Pick at least one", Toast.LENGTH_LONG).show()
+                    Toast.makeText(ctx, R.string.pick_category_least_one, Toast.LENGTH_LONG).show()
                 }
             }
             .setNegativeButton(android.R.string.cancel, null)
