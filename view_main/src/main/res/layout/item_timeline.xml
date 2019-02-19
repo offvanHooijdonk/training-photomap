@@ -3,11 +3,13 @@
 
     <data>
 
-        <import type="by.off.photomap.core.ui.dto.CategoryInfo" />
+        <import type="by.off.photomap.model.PhotoInfo" />
+
+        <import type="android.view.View" />
 
         <variable
-            name="item"
-            type="by.off.photomap.model.PhotoInfo" />
+            name="model"
+            type="by.off.photomap.presentation.ui.timeline.ItemViewModel" />
     </data>
 
     <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
@@ -18,12 +20,13 @@
 
         <TextView
             android:id="@+id/txtPeriod"
+            period="@{model.photo.shotTimestamp}"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/item_margin_horizontal"
             android:layout_marginTop="8dp"
-            android:visibility="gone"
             android:textAllCaps="true"
+            android:visibility="@{model.showMonth ? View.VISIBLE : View.GONE}"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             tools:text="@string/fish_text_short"
@@ -57,7 +60,7 @@
                 android:layout_marginStart="@dimen/item_icon_margin_end"
                 android:ellipsize="end"
                 android:maxLines="1"
-                android:text="@{item.description}"
+                android:text="@{model.photo.description}"
                 android:textColor="@color/item_primary_text"
                 android:textSize="16sp"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -67,7 +70,7 @@
 
             <TextView
                 android:id="@+id/txtPhotoTimestamp"
-                timestampShort="@{item.shotTimestamp}"
+                timestampShort="@{model.photo.shotTimestamp}"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
@@ -77,7 +80,7 @@
 
             <TextView
                 android:id="@+id/txtPhotoCategory"
-                category="@{item.category}"
+                category="@{model.photo.category}"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
@@ -85,10 +88,11 @@
                 app:layout_constraintTop_toBottomOf="@id/txtPhotoTimestamp"
                 tools:text="@string/fish_text_short" />
         </android.support.constraint.ConstraintLayout>
+
         <View
             style="@style/DividerHorizontal"
             android:layout_marginStart="@dimen/item_bottom_divider_margin_start"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"/>
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
     </android.support.constraint.ConstraintLayout>
 </layout>

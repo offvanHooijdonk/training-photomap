@@ -89,8 +89,13 @@ fun setCategoryLabelColor(textView: TextView, categoryId: Int) {
 }
 
 @BindingAdapter("timestampShort")
-fun setTimestampShort(textView: TextView, timestamp: Date) {
+fun setTimelinestampShort(textView: TextView, timestamp: Date) {
     textView.text = DateHelper.formatDateShort(timestamp)
+}
+
+@BindingAdapter("period")
+fun setTimelinePeriod(textView: TextView, timestamp: Date) {
+    textView.text = DateHelper.formatTimelineDate(timestamp, textView.context)
 }
 
 @BindingAdapter("latitude")

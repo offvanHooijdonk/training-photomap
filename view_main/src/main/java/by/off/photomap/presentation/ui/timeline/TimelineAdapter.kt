@@ -22,37 +22,29 @@ class TimelineAdapter(
         private val requestThumbnail: (photoId: String, callback: (photoId: String, filePath: String?) -> Unit) -> Unit
 ) :
     RecyclerView.Adapter<TimelineAdapter.ViewHolder>() {
-    companion object {
-        const val TYPE_JUST_DATA = 0
-        const val TYPE_WITH_PERIOD = 1
-    }
 
     private val thumbCache = mutableMapOf<String, String>()
 
     private var photos: List<PhotoInfo> = emptyList()
 
     override fun onCreateViewHolder(container: ViewGroup, type: Int): ViewHolder =
-        ViewHolder(DataBindingUtil.inflate(LayoutInflater.from(ctx), R.layout.item_timeline, container, false))
+        ViewHolder(DataBindingUtil.inflate(LayoutInflater.from(ctx), R.layout.item_timeline, container, false),
+            ItemViewModel(null, type))
 
     override fun getItemCount(): Int = photos.size
 
     override fun getItemViewType(position: Int): Int {
         return when {
-            position == 0 -> TYPE_WITH_PERIOD
-            !isSameMonth(photos[position], photos[position - 1]) -> TYPE_WITH_PERIOD
-            else -> TYPE_JUST_DATA
+            position == 0 -> ItemViewModel.TYPE_WITH_PERIOD
+            !isSameMonth(photos[position], photos[position - 1]) -> ItemViewModel.TYPE_WITH_PERIOD
+            else -> ItemViewModel.TYPE_JUST_DATA
         }
     }
 
     override fun onBindViewHolder(vh: ViewHolder, position: Int) {
         val photo = photos[position]
-        val showDateHeader = getItemViewType(position) == TYPE_WITH_PERIOD
-        vh.bind(photo)
+        vh.bind(photo, getItemViewType(position))
         with(vh.binding) {
-            if (showDateHeader) {
-                txtPeriod.show()
-                txtPeriod.text = DateHelper.formatTimelineDate(photo.shotTimestamp, ctx)
-            }
             imgThumb.setImageResource(R.drawable.ic_photo_placeholder_24)
             imgThumb.tag = photo.id
             if (thumbCache[photo.id] != null) {
@@ -66,10 +58,12 @@ class TimelineAdapter(
         }
     }
 
-    inner class ViewHolder(val binding: ItemTimelineBinding) : RecyclerView.ViewHolder(binding.root) {
-        fun bind(item: PhotoInfo) {
+    inner class ViewHolder(val binding: ItemTimelineBinding, val model: ItemViewModel) : RecyclerView.ViewHolder(binding.root) {
+        fun bind(item: PhotoInfo, type: Int) {
             binding.invalidateAll()
-            binding.item = item
+            model.photoInfo = item
+            model.itemType = type
+            binding.model = model
         }
 
         fun callbackThumbnail(id: String, filePath: String?) {
