@@ -20,11 +20,6 @@ import javax.inject.Inject
 class MapViewModel @Inject constructor(private val photoService: PhotoService, private val geoPointService: GeoPointService) : ViewModel() {
     val fileLiveData: LiveData<String> = photoService.serviceFileLiveData
     val listLiveData = photoService.serviceListLiveData.map { onListResponse(it) }
-    val thumbLiveData = photoService.thumbnailLiveData
-
-    fun requestThumbnail(id: String) {
-        photoService.requestThumbnail(id)
-    }
 
     fun saveTempFile(bitmap: Bitmap) {
         photoService.saveToTempFile(bitmap)

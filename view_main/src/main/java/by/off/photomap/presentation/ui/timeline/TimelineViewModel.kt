@@ -14,7 +14,6 @@ import javax.inject.Inject
 
 class TimelineViewModel @Inject constructor(private val photoService: PhotoService) : ViewModel() {
     val liveData = photoService.serviceListLiveData.map { onData(it) }
-    val thumbnailLiveData = photoService.thumbnailLiveData
     val isRefreshing = ObservableBoolean(false)
 
     val listData = ObservableArrayList<PhotoInfo>()
@@ -28,10 +27,6 @@ class TimelineViewModel @Inject constructor(private val photoService: PhotoServi
     fun loadData() {
         isRefreshing.set(true)
         photoService.listOrderTime()
-    }
-
-    fun requestThumbnail(photoId: String) {
-        photoService.requestThumbnail(photoId)
     }
 
     private fun onData(response: ListResponse<PhotoInfo>): ListResponse<PhotoInfo> {

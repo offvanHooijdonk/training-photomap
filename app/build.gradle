@@ -32,6 +32,7 @@ dependencies {
     implementation project(":view_main")
     implementation project(":storage_parse_api")
     implementation project(":storage_parse_impl")
+    implementation project(":thumb_loader")
 
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 

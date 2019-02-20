@@ -2,21 +2,19 @@ package by.off.photomap.presentation.ui.map
 
 import android.content.Context
 import android.net.Uri
+import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.ImageView
 import by.off.photomap.core.ui.DateHelper
 import by.off.photomap.model.PhotoInfo
 import by.off.photomap.presentation.ui.R
+import by.off.photomap.util.thumbs.Thumbs
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.Marker
 import kotlinx.android.synthetic.main.item_marker.view.*
 
-class MarkerAdapter(
-    private val ctx: Context,
-    private val requestThumbnail: (photoId: String, callback: (photoId: String, filePath: String?) -> Unit) -> Unit
-) : GoogleMap.InfoWindowAdapter {
-    private val thumbCache = mutableMapOf<String, String>()
+class MarkerAdapter(private val ctx: Context) : GoogleMap.InfoWindowAdapter {
 
     override fun getInfoContents(marker: Marker?): View? {
         marker?.let {
@@ -25,16 +23,14 @@ class MarkerAdapter(
             view.txtDescription.text = photo.description
             view.txtTimestamp.text = DateHelper.formatDateShort(photo.shotTimestamp)
 
-            if (thumbCache[photo.id] == null) {
-                requestThumbnail(photo.id) { photoId, filePath ->
-                    filePath?.let {
-                        thumbCache[photoId] = filePath
-                        marker.showInfoWindow()
-                    }
-                }
-            } else {
-                view.imgThumb.setImageURI(Uri.parse(thumbCache[photo.id]))
+            Thumbs.loadById(photo.id, view.imgThumb)
+            view.imgThumb.setOnKeyListener { _, keyCode, _ ->
+                if (keyCode == KeyEvent.KEYCODE_INFO) {
+                    marker.showInfoWindow()
+                    true
+                } else false
             }
+
             return view
         }
         return null

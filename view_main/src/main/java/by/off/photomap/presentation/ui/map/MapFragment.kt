@@ -9,13 +9,15 @@ import android.graphics.Bitmap
 import android.os.Bundle
 import android.provider.MediaStore
 import android.support.design.widget.Snackbar
-import android.support.v4.app.DialogFragment
 import android.support.v7.app.AppCompatActivity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import by.off.photomap.core.ui.*
+import by.off.photomap.core.ui.BaseFragment
+import by.off.photomap.core.ui.ctx
 import by.off.photomap.core.ui.dto.CategoryInfo
+import by.off.photomap.core.ui.getColorVal
+import by.off.photomap.core.ui.hue
 import by.off.photomap.core.utils.di.ViewModelFactory
 import by.off.photomap.di.PhotoScreenComponent
 import by.off.photomap.model.PhotoInfo
@@ -73,9 +75,7 @@ class MapFragment : BaseFragment(), MainActivity.ButtonPhotoListener, MainActivi
     private var progressDialog: AlertDialog? = null
     private var dialogAddPhoto: AddPhotoBottomSheet? = null
     // helpers
-    private val callbacks = mutableMapOf<String, CallbackHolder>()
     private val markers = mutableListOf<Marker>()
-
     private val hueMap = mutableMapOf<Int, Float>() // category to hue
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -105,10 +105,8 @@ class MapFragment : BaseFragment(), MainActivity.ButtonPhotoListener, MainActivi
         gMap?.also {
             googleMap = gMap
             viewModel.listLiveData.value?.let { updateMarkers(it.list) }
-            gMap.setInfoWindowAdapter(MarkerAdapter(ctx) { photoId, callback ->
-                callbacks[photoId] = CallbackHolder(photoId, callback)
-                viewModel.requestThumbnail(photoId)
-            })
+            gMap.setInfoWindowAdapter(MarkerAdapter(ctx))
+
             markers.firstOrNull { marker -> markerIdPicked == (marker.tag as PhotoInfo).id }?.showInfoWindow()
             markers.clear()
 
@@ -168,14 +166,6 @@ class MapFragment : BaseFragment(), MainActivity.ButtonPhotoListener, MainActivi
         viewModel.listLiveData.observe(this, Observer { listResponse ->
             listResponse?.let {
                 updateMarkers(it.list)
-            }
-        })
-
-        viewModel.thumbLiveData.observe(this, Observer { response ->
-            response?.let {
-                val photoId = it.first
-                callbacks[photoId]?.callback?.invoke(photoId, it.second)
-                callbacks.remove(photoId)
             }
         })
     }

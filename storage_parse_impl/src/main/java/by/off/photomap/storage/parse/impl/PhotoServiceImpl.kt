@@ -22,8 +22,6 @@ class PhotoServiceImpl @Inject constructor(
     private val parsePhotoService: ParsePhotoService,
     private val imageService: ImageService
 ) : PhotoService {
-    override val thumbnailLiveData: LiveData<Pair<String, String?>>
-        get() = thumbLD
 
     override val serviceLiveData: LiveData<Response<PhotoInfo>>
         get() = liveData
@@ -38,7 +36,6 @@ class PhotoServiceImpl @Inject constructor(
     private val listLiveData = MutableLiveData<ListResponse<PhotoInfo>>()
     private val loadLD = MutableLiveData<Int>()
     private val fileLiveData = MutableLiveData<String>()
-    private val thumbLD = MutableLiveData<Pair<String, String?>>()
 
     private var filterCategories: IntArray? = null
 
@@ -154,13 +151,6 @@ class PhotoServiceImpl @Inject constructor(
         launchScopeIO {
             val filePath = imageService.saveBitmapToTempFile(bitmap)
             fileLiveData.postValue(filePath)
-        }
-    }
-
-    override fun requestThumbnail(photoId: String) {
-        launchScopeIO {
-            val filePath = parsePhotoService.downloadImageSync(photoId)
-            thumbLD.postValue(photoId to filePath)
         }
     }
 

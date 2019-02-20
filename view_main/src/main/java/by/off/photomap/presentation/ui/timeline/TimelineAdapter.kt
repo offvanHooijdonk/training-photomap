@@ -2,34 +2,29 @@ package by.off.photomap.presentation.ui.timeline
 
 import android.content.Context
 import android.databinding.DataBindingUtil
-import android.graphics.BitmapFactory
 import android.net.Uri
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import by.off.photomap.core.ui.DateHelper
-import by.off.photomap.core.ui.show
 import by.off.photomap.model.PhotoInfo
 import by.off.photomap.presentation.ui.R
 import by.off.photomap.presentation.ui.databinding.ItemTimelineBinding
 import kotlinx.android.synthetic.main.item_timeline.view.*
 import java.util.*
 
-//
 class TimelineAdapter(
     private val ctx: Context,
-    private val onClick: (position: Int, photoId: String) -> Unit,
-        private val requestThumbnail: (photoId: String, callback: (photoId: String, filePath: String?) -> Unit) -> Unit
+    private val onClick: (position: Int, photoId: String) -> Unit
 ) :
     RecyclerView.Adapter<TimelineAdapter.ViewHolder>() {
-
-    private val thumbCache = mutableMapOf<String, String>()
 
     private var photos: List<PhotoInfo> = emptyList()
 
     override fun onCreateViewHolder(container: ViewGroup, type: Int): ViewHolder =
-        ViewHolder(DataBindingUtil.inflate(LayoutInflater.from(ctx), R.layout.item_timeline, container, false),
-            ItemViewModel(null, type))
+        ViewHolder(
+            DataBindingUtil.inflate(LayoutInflater.from(ctx), R.layout.item_timeline, container, false),
+            ItemViewModel(null, type)
+        )
 
     override fun getItemCount(): Int = photos.size
 
@@ -44,17 +39,9 @@ class TimelineAdapter(
     override fun onBindViewHolder(vh: ViewHolder, position: Int) {
         val photo = photos[position]
         vh.bind(photo, getItemViewType(position))
-        with(vh.binding) {
-            imgThumb.setImageResource(R.drawable.ic_photo_placeholder_24)
-            imgThumb.tag = photo.id
-            if (thumbCache[photo.id] != null) {
-                imgThumb.setImageURI(Uri.parse(thumbCache[photo.id]))
-            } else {
-                requestThumbnail(photo.id, vh::callbackThumbnail)
-            }
-            itemRoot.setOnClickListener {
-                onClick(position, photo.id)
-            }
+
+        vh.binding.itemRoot.setOnClickListener {
+            onClick(position, photo.id)
         }
     }
 
@@ -64,13 +51,6 @@ class TimelineAdapter(
             model.photoInfo = item
             model.itemType = type
             binding.model = model
-        }
-
-        fun callbackThumbnail(id: String, filePath: String?) {
-            if (filePath != null && itemView.imgThumb.tag == id) {
-                itemView.imgThumb.setImageURI(Uri.parse(filePath))
-                thumbCache[id] = filePath
-            }
         }
     }
 

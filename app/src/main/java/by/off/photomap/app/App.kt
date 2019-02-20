@@ -7,6 +7,7 @@ import by.off.photomap.di.LoginScreenComponent
 import by.off.photomap.di.MainScreenComponent
 import by.off.photomap.di.PhotoScreenComponent
 import by.off.photomap.storage.parse.impl.ParseHelper
+import by.off.photomap.util.thumbs.Thumbs
 
 class App : Application(),
     LoginScreenComponent.DependenciesProvider, PhotoScreenComponent.DependenciesProvider, MainScreenComponent.DependenciesProvider {
@@ -23,6 +24,8 @@ class App : Application(),
         appContext = applicationContext
         ParseHelper.initParse(this)
         di = AppComponent.component
+
+        Thumbs.initLoader(applicationContext)
     }
 
     override fun provideLoginScreenDependencies(): LoginScreenComponent.Dependencies = di

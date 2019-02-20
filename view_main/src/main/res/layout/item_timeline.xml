@@ -47,6 +47,7 @@
 
             <de.hdodenhof.circleimageview.CircleImageView
                 android:id="@+id/imgThumb"
+                thumbPhotoId="@{model.photo.id}"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
                 android:src="@drawable/ic_photo_placeholder_24"

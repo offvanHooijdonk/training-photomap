@@ -17,6 +17,8 @@ import by.off.photomap.core.ui.dto.CategoryInfo
 import by.off.photomap.core.utils.LOGCAT
 import by.off.photomap.model.PhotoInfo
 import by.off.photomap.presentation.ui.timeline.TimelineAdapter
+import by.off.photomap.util.thumbs.Thumbs
+import de.hdodenhof.circleimageview.CircleImageView
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -73,6 +75,11 @@ fun setImageFile(imageView: ImageView, filePath: String?) {
             imageView.setImageResource(R.drawable.ic_warning_24)
         }
     }
+}
+
+@BindingAdapter("thumbPhotoId")
+fun setThumbPhotoId(imageView: ImageView, photoId: String) {
+    Thumbs.loadById(photoId, imageView)
 }
 
 @BindingAdapter("items")

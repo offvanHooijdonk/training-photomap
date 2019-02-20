@@ -9,7 +9,6 @@ interface PhotoService {
     val serviceLiveData: LiveData<Response<PhotoInfo>>
 
     val serviceListLiveData: LiveData<ListResponse<PhotoInfo>>
-    val thumbnailLiveData: LiveData<Pair<String, String?>>
     val serviceFileLiveData: LiveData<String>
     val loadImageLiveData: LiveData<Int>
 
@@ -31,8 +30,6 @@ interface PhotoService {
     fun loadById(id: String)
 
     fun listOrderTime()
-
-    fun requestThumbnail(photoId: String)
 
     fun saveToTempFile(bitmap: Bitmap)
 

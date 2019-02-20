@@ -1,13 +1,11 @@
 package by.off.photomap.presentation.ui.timeline
 
-import android.arch.lifecycle.Observer
 import android.content.Intent
 import android.databinding.DataBindingUtil
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
 import android.view.*
 import by.off.photomap.core.ui.BaseFragment
-import by.off.photomap.core.ui.CallbackHolder
 import by.off.photomap.core.ui.ctx
 import by.off.photomap.core.ui.setupDefaults
 import by.off.photomap.core.utils.di.ViewModelFactory
@@ -25,7 +23,6 @@ class TimelineFragment : BaseFragment() {
 
     private lateinit var viewModel: TimelineViewModel
     private lateinit var timelineAdapter: TimelineAdapter
-    private val callbacks = mutableMapOf<String, CallbackHolder>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -47,23 +44,14 @@ class TimelineFragment : BaseFragment() {
 
         //setHasOptionsMenu(true)
         val lm = LinearLayoutManager(ctx)
-        timelineAdapter = TimelineAdapter(ctx, ::onItemClick, ::requestThumbnail)
+        timelineAdapter = TimelineAdapter(ctx, ::onItemClick)
         recyclerTimeline.apply {
             layoutManager = lm
             this.adapter = timelineAdapter
         }
 
         viewModel.liveData.observe({ this.lifecycle }, {})
-        viewModel.thumbnailLiveData.observe(this, Observer { data ->
-            if (data != null) {
-                val id = data.first
-                val callback = callbacks[id]
-                callback?.let {
-                    callbacks.remove(id)
-                    callback.callback(id, data.second)
-                }
-            }
-        })
+
         refreshLayout.setOnRefreshListener { viewModel.loadData() }
         refreshLayout.setupDefaults()
     }
@@ -83,11 +71,6 @@ class TimelineFragment : BaseFragment() {
             }
         }
         return false
-    }
-
-    private fun requestThumbnail(photoId: String, callback: (photoId: String, filePath: String?) -> Unit) {
-        callbacks[photoId] = CallbackHolder(photoId, callback)
-        viewModel.requestThumbnail(photoId)
     }
 
     private fun onItemClick(position: Int, id: String) {
