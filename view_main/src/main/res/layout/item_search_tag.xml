@@ -1,22 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:paddingStart="@dimen/item_margin_horizontal"
-    android:paddingTop="@dimen/item_margin_vertical_dense"
-    android:paddingEnd="@dimen/item_margin_horizontal"
-    android:paddingBottom="@dimen/item_margin_vertical_dense">
+<layout>
 
-    <android.support.design.chip.Chip
-        android:id="@+id/chipTag"
-        android:layout_width="wrap_content"
+    <data>
+
+        <variable
+            name="model"
+            type="by.off.photomap.presentation.ui.timeline.search.ResultItemViewModel" />
+    </data>
+
+    <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:ellipsize="end"
-        android:maxLines="1"
-        android:textAppearance="@style/ChipTextStyle"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:text="@string/fish_text" />
-</android.support.constraint.ConstraintLayout>
+        android:paddingStart="@dimen/item_margin_horizontal"
+        android:paddingTop="@dimen/item_margin_vertical_dense"
+        android:paddingEnd="@dimen/item_margin_horizontal"
+        android:paddingBottom="@dimen/item_margin_vertical_dense">
+
+        <android.support.design.chip.Chip
+            android:id="@+id/chipTag"
+            tagText="@{model.tagText}"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:textAppearance="@style/ChipTextStyle"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="@string/fish_text" />
+    </android.support.constraint.ConstraintLayout>
+</layout>

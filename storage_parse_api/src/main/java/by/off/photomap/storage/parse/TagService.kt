@@ -4,4 +4,6 @@ import android.arch.lifecycle.LiveData
 
 interface TagService {
     val tagLiveData: LiveData<List<String>>
+
+    fun filter(text: String)
 }

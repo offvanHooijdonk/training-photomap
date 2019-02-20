@@ -17,7 +17,7 @@ class TagServiceImpl @Inject constructor() : TagService {
 
     private val tagLD = MutableLiveData<List<String>>()
 
-    fun filter(text: String) {
+    override fun filter(text: String) {
         launchScopeIO {
             val list = ParseQuery.getQuery<ParseObject>(TagInfo.TABLE).whereContains(TagInfo.TAG_TITLE, text.toLowerCase()).setLimit(20).find()
 

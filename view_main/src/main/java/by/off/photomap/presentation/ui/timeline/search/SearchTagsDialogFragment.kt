@@ -1,17 +1,22 @@
 package by.off.photomap.presentation.ui.timeline.search
 
+import android.arch.lifecycle.Observer
 import android.content.Context
 import android.os.Bundle
 import android.support.v4.app.DialogFragment
 import android.support.v7.widget.LinearLayoutManager
 import android.view.*
 import android.view.inputmethod.InputMethodManager
+import by.off.photomap.core.ui.BaseFragment
 import by.off.photomap.core.ui.ctx
 import by.off.photomap.core.ui.hide
 import by.off.photomap.core.ui.show
 import by.off.photomap.core.utils.PrefHelper
+import by.off.photomap.core.utils.di.ViewModelFactory
+import by.off.photomap.di.PhotoScreenComponent
 import by.off.photomap.presentation.ui.R
 import kotlinx.android.synthetic.main.dialog_search_tags.*
+import javax.inject.Inject
 
 class SearchTagsDialogFragment : DialogFragment(), ViewTreeObserver.OnPreDrawListener {
     private val imm: InputMethodManager by lazy { ctx.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager }
@@ -36,9 +41,15 @@ class SearchTagsDialogFragment : DialogFragment(), ViewTreeObserver.OnPreDrawLis
     private val resultList = mutableListOf<Result>()
     private val adapter by lazy { SearchResultsAdapter(ctx, resultList) }
 
+    @Inject
+    lateinit var viewModelFactory: ViewModelFactory
+    private lateinit var viewModel: SearchTagViewModel
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        PhotoScreenComponent.get(ctx).inject(this)
+        viewModel = BaseFragment.getViewModel(this, viewModelFactory, SearchTagViewModel::class.java)
         setStyle(android.support.v4.app.DialogFragment.STYLE_NO_FRAME, R.style.AppTheme_SearchDialog)
     }
 
@@ -49,6 +60,14 @@ class SearchTagsDialogFragment : DialogFragment(), ViewTreeObserver.OnPreDrawLis
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        viewModel.resetData()
+        viewModel.searchLiveData.observe(this, Observer { list ->
+            list?.let {
+                resultList.clear()
+                resultList.addAll(it.map { s -> Result(null, s) })
+            }
+            adapter.notifyDataSetChanged()
+        })
         setupLayout()
     }
 
@@ -72,7 +91,10 @@ class SearchTagsDialogFragment : DialogFragment(), ViewTreeObserver.OnPreDrawLis
     }
 
     private fun searchFull() {
-        PrefHelper.addSearchHistoryEntry(ctx, inputSearch.text.toString())
+        val text = inputSearch.text.toString().trim()
+        if (text.isNotEmpty()) PrefHelper.addSearchHistoryEntry(ctx, inputSearch.text.toString())
+
+        viewModel.filterTags(text)
     }
 
     // region Layout
@@ -99,7 +121,7 @@ class SearchTagsDialogFragment : DialogFragment(), ViewTreeObserver.OnPreDrawLis
                     closeDialog()
                     true
                 }
-                (keyCode == KeyEvent.KEYCODE_ENTER && event.getAction() == KeyEvent.ACTION_DOWN) -> {
+                (keyCode == KeyEvent.KEYCODE_ENTER && event.action == KeyEvent.ACTION_DOWN) -> {
                     searchFull()
                     true
                 }
@@ -115,7 +137,7 @@ class SearchTagsDialogFragment : DialogFragment(), ViewTreeObserver.OnPreDrawLis
     }
 
     private fun displayHistoryItems() {
-        val historyItems = PrefHelper.getSearchHistory(ctx).sorted().map { Result(historyItem = it) }.toList()
+        val historyItems = PrefHelper.getSearchHistory(ctx).map { Result(historyItem = it) }.toList()
         resultList.apply { clear(); addAll(historyItems) }
         adapter.notifyDataSetChanged()
     }

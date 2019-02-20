@@ -2,12 +2,16 @@ package by.off.photomap.storage.parse.impl.parse
 
 import android.content.Context
 import android.net.Uri
+import android.util.Log
+import by.off.photomap.core.utils.LOGCAT
 import by.off.photomap.core.utils.di.scopes.PerFeature
 import by.off.photomap.model.PhotoInfo
+import by.off.photomap.model.TagInfo
 import by.off.photomap.storage.parse.Response
 import by.off.photomap.storage.parse.impl.convertToPhoto
 import by.off.photomap.storage.parse.impl.convertToUser
 import by.off.photomap.storage.parse.impl.image.ImageService
+import by.off.photomap.storage.parse.impl.findHashTags
 import com.parse.*
 import java.io.File
 import java.io.FileOutputStream
@@ -70,6 +74,8 @@ class ParsePhotoService @Inject constructor(private val ctx: Context, private va
         parse.put(PhotoInfo.SHOT_TIMESTAMP, photoInfo.shotTimestamp)
         parse.put(PhotoInfo.LOCATION, ParseGeoPoint(photoInfo.latitude ?: 0.0, photoInfo.longitude ?: 0.0))
         parse.save()
+
+        saveHashTags(photoInfo.description, parse.objectId)
     }
 
     /**
@@ -119,19 +125,15 @@ class ParsePhotoService @Inject constructor(private val ctx: Context, private va
         }
     }
 
-    fun downloadImageSync(photoId: String): String {
-        val parseObject = ParseQuery.getQuery<ParseObject>(PhotoInfo.TABLE).get(photoId)
-        val parseFile = parseObject.getParseFile(PhotoInfo.THUMBNAIL_DATA)!!
-        val filePath = "${ctx.filesDir.absolutePath}/${parseFile.name}_thumb"
-        val imageFile = File(filePath)
-        if (imageFile.createNewFile()) {
-            val data = parseFile.data
-            FileOutputStream(imageFile).use {
-                it.write(data)
-            }
+    private fun saveHashTags(description: String, photoId: String) {
+        Log.i(LOGCAT, "Saving hashtags for photo $photoId")
+        val tagList = findHashTags(description)
+        for (tag in tagList) {
+            ParseObject(TagInfo.TABLE).apply {
+                put(TagInfo.TAG_TITLE, tag)
+                put(TagInfo.PHOTO_ID, ParseObject(PhotoInfo.TABLE).apply { objectId = photoId })
+            }.save()
         }
-
-        return filePath
     }
 
     private fun saveParseFile(parseFile: ParseFile, progressCallback: ((Int, ParseFile) -> Unit)?) {

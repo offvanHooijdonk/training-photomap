@@ -18,13 +18,13 @@ import by.off.photomap.core.utils.LOGCAT
 import by.off.photomap.model.PhotoInfo
 import by.off.photomap.presentation.ui.timeline.TimelineAdapter
 import by.off.photomap.util.thumbs.Thumbs
-import de.hdodenhof.circleimageview.CircleImageView
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
 import java.util.*
+import kotlin.math.absoluteValue
 
 @BindingAdapter("enabled")
 fun setSpinnerEnabled(spinner: Spinner, enabledFlag: Boolean) {
@@ -47,16 +47,16 @@ fun setChipCategoryLabelColor(chip: Chip, categoryId: Int) {
     chip.setChipBackgroundColorResource(CategoryInfo(categoryId).backColorRes)
 }
 
-private var tagColors: IntArray? = null
+private var tagColors = listOf(R.color.tag_1, R.color.tag_2, R.color.tag_3, R.color.tag_4,
+    R.color.tag_5, R.color.tag_6, R.color.tag_7, R.color.tag_8, R.color.tag_9, R.color.tag_10)
 
 @BindingAdapter("tagText")
 fun setChipTagText(chip: Chip, tag: String) {
     chip.text = tag
 
-    val colors = tagColors ?: chip.context.resources.getIntArray(R.array.tag_colors).also { tagColors = it }
-    val colorIndex = tag.hashCode() % colors.size
+    val colorIndex = tag.hashCode().absoluteValue % tagColors.size
 
-    chip.setChipBackgroundColorResource(colors[colorIndex])
+    chip.setChipBackgroundColorResource(tagColors[colorIndex])
 }
 
 @BindingAdapter("filePath")
@@ -91,12 +91,12 @@ fun setTimelineList(rv: RecyclerView, list: List<PhotoInfo>?) {
 @BindingAdapter("category")
 fun setCategoryLabelColor(textView: TextView, categoryId: Int) {
     textView.setText(CategoryInfo(categoryId).labelRes)
-    val catColor = textView.context.resources.getColor(CategoryInfo(categoryId).textColorRes)
+    val catColor = textView.context.getColorVal(CategoryInfo(categoryId).textColorRes)
     textView.setTextColor(catColor)
 }
 
 @BindingAdapter("timestampShort")
-fun setTimelinestampShort(textView: TextView, timestamp: Date) {
+fun setTimelineStampShort(textView: TextView, timestamp: Date) {
     textView.text = DateHelper.formatDateShort(timestamp)
 }
 

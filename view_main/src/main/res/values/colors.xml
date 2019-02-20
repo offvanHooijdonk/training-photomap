@@ -25,17 +25,4 @@
     <color name="tag_8">#FFB300</color>
     <color name="tag_9">#FF3D00</color>
     <color name="tag_10">#FF9100</color>
-
-    <array name="tag_colors">
-        <item>@color/tag_1</item>
-        <item>@color/tag_2</item>
-        <item>@color/tag_3</item>
-        <item>@color/tag_4</item>
-        <item>@color/tag_5</item>
-        <item>@color/tag_6</item>
-        <item>@color/tag_7</item>
-        <item>@color/tag_8</item>
-        <item>@color/tag_9</item>
-        <item>@color/tag_10</item>
-    </array>
 </resources>

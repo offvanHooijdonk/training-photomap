@@ -1,49 +1,61 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:paddingStart="@dimen/item_margin_horizontal"
-    android:paddingTop="@dimen/item_margin_vertical_dense"
-    android:paddingEnd="@dimen/item_margin_horizontal"
-    android:paddingBottom="@dimen/item_margin_vertical_dense">
+<layout>
 
-    <ImageView
-        android:id="@+id/imgHistory"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:alpha="0.4"
-        android:src="@drawable/ic_history_24"
-        android:tint="@color/search_controls"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+    <data>
 
-    <TextView
-        android:id="@+id/txtHistory"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/item_margin_horizontal"
-        android:layout_marginEnd="@dimen/item_margin_horizontal"
-        android:ellipsize="end"
-        android:maxLines="1"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/imgInferHistory"
-        app:layout_constraintStart_toEndOf="@id/imgHistory"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:text="@string/fish_text_short" />
+        <variable
+            name="model"
+            type="by.off.photomap.presentation.ui.timeline.search.ResultItemViewModel" />
+    </data>
 
-    <ImageView
-        android:id="@+id/imgInferHistory"
-        android:layout_width="wrap_content"
+    <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:alpha="0.4"
-        android:background="?selectableItemBackgroundBorderless"
-        android:rotation="45"
-        android:src="@drawable/ic_back_24"
-        android:tint="@color/search_controls"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-</android.support.constraint.ConstraintLayout>
+        android:paddingStart="@dimen/item_margin_horizontal"
+        android:paddingTop="@dimen/item_margin_vertical_dense"
+        android:paddingEnd="@dimen/item_margin_horizontal"
+        android:paddingBottom="@dimen/item_margin_vertical_dense">
+
+        <ImageView
+            android:id="@+id/imgHistory"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:alpha="0.4"
+            android:src="@drawable/ic_history_24"
+            android:tint="@color/search_controls"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/txtHistory"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/item_margin_horizontal"
+            android:layout_marginEnd="@dimen/item_margin_horizontal"
+            android:ellipsize="end"
+            android:textSize="14sp"
+            android:maxLines="1"
+            android:text="@{model.historyItemText}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/imgInferHistory"
+            app:layout_constraintStart_toEndOf="@id/imgHistory"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="@string/fish_text_short" />
+
+        <ImageView
+            android:id="@+id/imgInferHistory"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:alpha="0.4"
+            android:background="?selectableItemBackgroundBorderless"
+            android:rotation="45"
+            android:src="@drawable/ic_back_24"
+            android:tint="@color/search_controls"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+    </android.support.constraint.ConstraintLayout>
+</layout>
