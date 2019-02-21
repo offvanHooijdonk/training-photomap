@@ -2,6 +2,7 @@ package by.off.photomap.presentation.ui.timeline.search
 
 import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.ViewModel
+import android.databinding.ObservableBoolean
 import by.off.photomap.core.utils.map
 import by.off.photomap.core.utils.switchMap
 import by.off.photomap.storage.parse.TagService
@@ -11,7 +12,10 @@ class SearchTagViewModel @Inject constructor(private val tagService: TagService)
     val searchLiveData = tagService.tagLiveData.switchMap { switchToLocalLD(it) }.map { onResponse(it) }
     private val switchLD = MutableLiveData<List<String>>()
 
+    val searchProgress = ObservableBoolean(false)
+
     fun filterTags(text: String) {
+        searchProgress.set(true)
         tagService.filter(text)
     }
 
@@ -20,6 +24,7 @@ class SearchTagViewModel @Inject constructor(private val tagService: TagService)
     }
 
     private fun onResponse(list: List<String>?): List<String>? {
+        searchProgress.set(false)
         return list
     }
 

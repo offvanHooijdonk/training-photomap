@@ -10,8 +10,14 @@ import android.view.ViewGroup
 import by.off.photomap.presentation.ui.R
 import by.off.photomap.presentation.ui.databinding.ItemSearchHistoryBinding
 import by.off.photomap.presentation.ui.databinding.ItemSearchTagBinding
+import kotlinx.android.synthetic.main.item_search_history.view.*
 
-class SearchResultsAdapter(private val ctx: Context, private val items: List<Result>) : RecyclerView.Adapter<SearchResultsAdapter.ViewHolder>() {
+class SearchResultsAdapter(
+    private val ctx: Context,
+    private val items: List<Result>,
+    private val onInfer: (String) -> Unit,
+    private val onClick: (Int) -> Unit
+) : RecyclerView.Adapter<SearchResultsAdapter.ViewHolder>() {
     companion object {
         private const val TYPE_TAG = 0
         private const val TYPE_HISTORY = 1
@@ -21,7 +27,8 @@ class SearchResultsAdapter(private val ctx: Context, private val items: List<Res
         val binding = DataBindingUtil.inflate<ViewDataBinding>(
             LayoutInflater.from(ctx),
             if (type == TYPE_HISTORY) R.layout.item_search_history else R.layout.item_search_tag,
-            container, false
+            container,
+            false
         )
 
         return ViewHolder(binding, ResultItemViewModel(), type, binding.root)
@@ -31,7 +38,13 @@ class SearchResultsAdapter(private val ctx: Context, private val items: List<Res
 
     override fun onBindViewHolder(vh: ViewHolder, position: Int) {
         val result = items[position]
-        val value = if (getItemViewType(position) == TYPE_TAG) result.tag!! else result.historyItem!!
+        var value = ""// = if (getItemViewType(position) == TYPE_TAG) result.tag!! else result.historyItem!!
+        if (getItemViewType(position) == TYPE_TAG) {
+            value = result.tag!!
+        } else {
+            value = result.historyItem!!
+            vh.itemView.imgInferHistory.setOnClickListener { onInfer(value) }
+        }
         vh.bind(value)
     }
 
@@ -54,7 +67,6 @@ class SearchResultsAdapter(private val ctx: Context, private val items: List<Res
         }
     }
 }
-
 
 data class Result(val historyItem: String? = null, val tag: String? = null) {
     init {

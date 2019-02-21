@@ -2,16 +2,14 @@ package by.off.photomap.storage.parse.impl.parse
 
 import android.content.Context
 import android.net.Uri
-import android.util.Log
-import by.off.photomap.core.utils.LOGCAT
 import by.off.photomap.core.utils.di.scopes.PerFeature
 import by.off.photomap.model.PhotoInfo
 import by.off.photomap.model.TagInfo
 import by.off.photomap.storage.parse.Response
 import by.off.photomap.storage.parse.impl.convertToPhoto
 import by.off.photomap.storage.parse.impl.convertToUser
-import by.off.photomap.storage.parse.impl.image.ImageService
 import by.off.photomap.storage.parse.impl.findHashTags
+import by.off.photomap.storage.parse.impl.image.ImageService
 import com.parse.*
 import java.io.File
 import java.io.FileOutputStream
@@ -125,13 +123,16 @@ class ParsePhotoService @Inject constructor(private val ctx: Context, private va
         }
     }
 
-    private fun saveHashTags(description: String, photoId: String) {
-        Log.i(LOGCAT, "Saving hashtags for photo $photoId")
+    private fun saveHashTags(description: String, photoId: String) { // TODO before save - delete old ones associated
+        val photoObject = ParseObject(PhotoInfo.TABLE).apply { objectId = photoId }
+
+        ParseQuery.getQuery<ParseObject>(TagInfo.TABLE).whereEqualTo(TagInfo.PHOTO_ID, photoObject).find()
+            .forEach { it.delete() }
         val tagList = findHashTags(description)
         for (tag in tagList) {
             ParseObject(TagInfo.TABLE).apply {
                 put(TagInfo.TAG_TITLE, tag.toLowerCase())
-                put(TagInfo.PHOTO_ID, ParseObject(PhotoInfo.TABLE).apply { objectId = photoId })
+                put(TagInfo.PHOTO_ID, photoObject)
             }.save()
         }
     }

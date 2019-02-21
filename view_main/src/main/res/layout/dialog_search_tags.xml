@@ -1,124 +1,141 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
 
-    <View
-        android:id="@+id/overlayBack"
+<layout>
+
+    <data>
+
+        <import type="android.view.View" />
+
+        <variable
+            name="model"
+            type="by.off.photomap.presentation.ui.timeline.search.SearchTagViewModel" />
+    </data>
+
+    <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
-
-    <android.support.constraint.ConstraintLayout
-        android:id="@+id/blockSearchContent"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-        <LinearLayout
-            android:id="@+id/blockSearchBar"
-            style="@style/SearchVarBlockFloat"
-            android:clickable="true"
-            android:elevation="6dp"
-            android:focusable="true"
-            android:gravity="center_vertical"
-            android:orientation="horizontal"
-            android:padding="8dp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
-
-            <ImageView
-                android:id="@+id/imgBack"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="8dp"
-                android:alpha="0.4"
-                android:background="?selectableItemBackgroundBorderless"
-                android:src="@drawable/ic_back_24"
-                android:tint="@color/search_controls" />
-
-            <EditText
-                android:id="@+id/inputSearch"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:background="@android:color/transparent"
-                android:hint="@string/search_input_hint"
-                android:imeOptions="actionSearch"
-                android:layout_marginTop="4dp"
-                android:layout_marginBottom="4dp"
-                android:maxLines="1"
-                android:singleLine="true"
-                android:textColor="@color/search_text"
-                android:textColorHint="@color/search_hint" />
-
-            <ImageView
-                android:id="@+id/imgSearch"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:alpha="0.4"
-                android:background="?selectableItemBackgroundBorderless"
-                android:src="@drawable/ic_search_24"
-                android:tint="@color/search_controls" />
-
-            <ProgressBar
-                android:id="@+id/progressSearch"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:layout_marginStart="8dp"
-                android:padding="2dp"
-                android:visibility="gone" />
-        </LinearLayout>
+        android:layout_height="match_parent">
 
         <View
-            android:id="@+id/dividerSearchBar"
-            style="@style/DividerHorizontal"
-            android:layout_height="0dp"
-            app:layout_constraintEnd_toEndOf="@id/blockSearchBar"
-            app:layout_constraintStart_toStartOf="@id/blockSearchBar"
-            app:layout_constraintTop_toBottomOf="@id/blockSearchBar" />
+            android:id="@+id/overlayBack"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
 
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/listSearchResults"
-            style="@style/SearchResultsList"
-            android:layout_width="0dp"
-            android:visibility="gone"
-            app:layout_constraintEnd_toEndOf="@id/blockSearchBar"
-            app:layout_constraintStart_toStartOf="@id/blockSearchBar"
-            app:layout_constraintTop_toBottomOf="@id/dividerSearchBar"
-            tools:visibility="visible" />
+        <android.support.constraint.ConstraintLayout
+            android:id="@+id/blockSearchContent"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
-        <LinearLayout
-            android:id="@+id/blockHint"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:background="@drawable/search_results"
-            android:clickable="true"
-            android:focusable="true"
-            android:gravity="center_vertical"
-            android:padding="16dp"
-            android:visibility="gone"
-            app:layout_constraintEnd_toEndOf="@id/blockSearchBar"
-            app:layout_constraintStart_toStartOf="@id/blockSearchBar"
-            app:layout_constraintTop_toBottomOf="@id/dividerSearchBar"
-            tools:visibility="visible">
+            <LinearLayout
+                android:id="@+id/blockSearchBar"
+                style="@style/SearchVarBlockFloat"
+                android:clickable="true"
+                android:elevation="6dp"
+                android:focusable="true"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:padding="8dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
 
-            <TextView
-                android:id="@+id/txtSearchStartHint"
-                android:layout_width="wrap_content"
+                <ImageView
+                    android:id="@+id/imgBack"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="8dp"
+                    android:alpha="0.4"
+                    android:background="?selectableItemBackgroundBorderless"
+                    android:src="@drawable/ic_back_24"
+                    android:tint="@color/search_controls" />
+
+                <EditText
+                    android:id="@+id/inputSearch"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginBottom="4dp"
+                    android:layout_weight="1"
+                    android:background="@android:color/transparent"
+                    android:hint="@string/search_input_hint"
+                    android:imeOptions="actionSearch"
+                    android:maxLines="1"
+                    android:singleLine="true"
+                    android:textColor="@color/search_text"
+                    android:textColorHint="@color/search_hint" />
+
+                <ImageView
+                    android:id="@+id/imgSearch"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:alpha="0.4"
+                    android:background="?selectableItemBackgroundBorderless"
+                    android:src="@drawable/ic_search_24"
+                    android:tint="@color/search_controls"
+                    android:visibility="@{model.searchProgress ? View.GONE : View.VISIBLE}" />
+
+                <ProgressBar
+                    android:id="@+id/progressSearch"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_marginStart="8dp"
+                    android:alpha="0.4"
+                    android:indeterminateTint="@color/search_controls"
+                    android:padding="2dp"
+                    android:visibility="@{model.searchProgress ? View.VISIBLE : View.GONE}"
+                    tools:visibility="visible" />
+            </LinearLayout>
+
+            <View
+                android:id="@+id/dividerSearchBar"
+                style="@style/DividerHorizontal"
+                android:layout_height="0dp"
+                app:layout_constraintEnd_toEndOf="@id/blockSearchBar"
+                app:layout_constraintStart_toStartOf="@id/blockSearchBar"
+                app:layout_constraintTop_toBottomOf="@id/blockSearchBar" />
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/listSearchResults"
+                style="@style/SearchResultsList"
+                android:layout_width="0dp"
+                android:visibility="gone"
+                app:layout_constraintEnd_toEndOf="@id/blockSearchBar"
+                app:layout_constraintStart_toStartOf="@id/blockSearchBar"
+                app:layout_constraintTop_toBottomOf="@id/dividerSearchBar"
+                tools:visibility="visible" />
+
+            <LinearLayout
+                android:id="@+id/blockHint"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:text="@string/search_sample_hint"
-                android:textColor="@color/search_hint" />
+                android:background="@drawable/search_results"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center_vertical"
+                android:padding="16dp"
+                android:visibility="gone"
+                app:layout_constraintEnd_toEndOf="@id/blockSearchBar"
+                app:layout_constraintStart_toStartOf="@id/blockSearchBar"
+                app:layout_constraintTop_toBottomOf="@id/dividerSearchBar"
+                tools:visibility="visible">
 
-            <android.support.design.chip.Chip
-                android:id="@+id/chipHintSample"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:text="@string/search_sample"
-                android:textAppearance="@style/ChipTextStyle"
-                app:chipBackgroundColor="@color/colorAccent" />
-        </LinearLayout>
-    </android.support.constraint.ConstraintLayout>
-</FrameLayout>
+                <TextView
+                    android:id="@+id/txtSearchStartHint"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/search_sample_hint"
+                    android:textColor="@color/search_hint" />
+
+                <android.support.design.chip.Chip
+                    android:id="@+id/chipHintSample"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:text="@string/search_sample"
+                    android:textAppearance="@style/ChipTextStyle"
+                    app:chipBackgroundColor="@color/colorAccent" />
+            </LinearLayout>
+        </android.support.constraint.ConstraintLayout>
+    </FrameLayout>
+</layout>
