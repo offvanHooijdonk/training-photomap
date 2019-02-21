@@ -11,6 +11,7 @@ interface PhotoService {
     val serviceListLiveData: LiveData<ListResponse<PhotoInfo>>
     val serviceFileLiveData: LiveData<String>
     val loadImageLiveData: LiveData<Int>
+    val tempFileLiveData: LiveData<String>
 
     /**
      * Works with [serviceLiveData] and [loadImageLiveData]
@@ -34,6 +35,5 @@ interface PhotoService {
     fun saveToTempFile(bitmap: Bitmap)
 
     fun update(photo: PhotoInfo)
-
     fun setFilter(categories: IntArray)
 }

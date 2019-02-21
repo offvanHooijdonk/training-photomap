@@ -2,14 +2,12 @@ package by.off.photomap.presentation.ui.timeline
 
 import android.content.Context
 import android.databinding.DataBindingUtil
-import android.net.Uri
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import by.off.photomap.model.PhotoInfo
 import by.off.photomap.presentation.ui.R
 import by.off.photomap.presentation.ui.databinding.ItemTimelineBinding
-import kotlinx.android.synthetic.main.item_timeline.view.*
 import java.util.*
 
 class TimelineAdapter(

@@ -18,7 +18,7 @@ import com.google.android.gms.maps.model.LatLng
 import javax.inject.Inject
 
 class MapViewModel @Inject constructor(private val photoService: PhotoService, private val geoPointService: GeoPointService) : ViewModel() {
-    val fileLiveData: LiveData<String> = photoService.serviceFileLiveData
+    val fileLiveData: LiveData<String> = photoService.tempFileLiveData
     val listLiveData = photoService.serviceListLiveData.map { onListResponse(it) }
 
     fun saveTempFile(bitmap: Bitmap) {

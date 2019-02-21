@@ -8,6 +8,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.support.design.widget.Snackbar
 import android.support.v7.app.AlertDialog
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.ArrayAdapter
@@ -16,6 +17,7 @@ import by.off.photomap.core.ui.BaseActivity
 import by.off.photomap.core.ui.colorError
 import by.off.photomap.core.ui.ctx
 import by.off.photomap.core.ui.dto.CategoryInfo
+import by.off.photomap.core.utils.LOGCAT
 import by.off.photomap.core.utils.di.ViewModelFactory
 import by.off.photomap.di.PhotoScreenComponent
 import by.off.photomap.presentation.ui.R
@@ -102,6 +104,8 @@ class PhotoViewEditActivity : BaseActivity() {
         val passedFile = intent.extras?.getString(EXTRA_CAMERA_FILE)
         val lat = intent.extras?.getDouble(EXTRA_LATITUDE)
         val lon = intent.extras?.getDouble(EXTRA_LONGITUDE)
+
+        Log.i(LOGCAT, "Photo Edit start uri=$uri , ID=$passedId , file=$passedFile")
 
         val latLong = if (lat != null && lon != null) lat to lon else null
         when {

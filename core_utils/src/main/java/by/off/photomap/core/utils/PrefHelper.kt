@@ -17,7 +17,7 @@ object PrefHelper {
 
     fun addSearchHistoryEntry(ctx: Context, entry: String) {
         val historyList = getSearchHistory(ctx).toMutableList()
-        if (!historyList.map { it.toLowerCase() }.contains(entry.toLowerCase())) {
+        if (!historyList.map { it.toLowerCase() }.contains(entry.toLowerCase())) { // todo if contains - still need to reorder items
             if (historyList.size >= MAX_HISTORY) {
                 historyList.removeAt(historyList.size - 1)
             }

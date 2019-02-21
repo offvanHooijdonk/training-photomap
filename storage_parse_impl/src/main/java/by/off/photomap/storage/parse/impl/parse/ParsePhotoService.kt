@@ -130,7 +130,7 @@ class ParsePhotoService @Inject constructor(private val ctx: Context, private va
         val tagList = findHashTags(description)
         for (tag in tagList) {
             ParseObject(TagInfo.TABLE).apply {
-                put(TagInfo.TAG_TITLE, tag)
+                put(TagInfo.TAG_TITLE, tag.toLowerCase())
                 put(TagInfo.PHOTO_ID, ParseObject(PhotoInfo.TABLE).apply { objectId = photoId })
             }.save()
         }

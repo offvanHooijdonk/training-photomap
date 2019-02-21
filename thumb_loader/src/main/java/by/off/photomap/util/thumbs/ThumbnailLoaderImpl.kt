@@ -3,9 +3,12 @@ package by.off.photomap.util.thumbs
 import android.arch.lifecycle.*
 import android.content.Context
 import android.net.Uri
+import android.support.annotation.DrawableRes
 import android.view.KeyEvent
 import android.view.View
 import android.widget.ImageView
+import by.off.photomap.core.ui.fadeIn
+import by.off.photomap.core.ui.invisible
 import by.off.photomap.core.utils.launchScopeIO
 import by.off.photomap.model.PhotoInfo
 import com.parse.ParseObject
@@ -29,8 +32,10 @@ internal class ThumbnailLoaderImpl(ctx: Context) : ThumbnailLoader, LifecycleOwn
         private var tempFilesPath = ""
     }
 
-    private val lifecycleRegistry = LifecycleRegistry(this)
+    @DrawableRes
+    var placeholderRes = R.drawable.ic_placeholder_default_24
 
+    private val lifecycleRegistry = LifecycleRegistry(this)
     private val views = mutableMapOf<String, ImageView>()
     private val cachedFiles = mutableMapOf<String, String>()
 
@@ -61,8 +66,10 @@ internal class ThumbnailLoaderImpl(ctx: Context) : ThumbnailLoader, LifecycleOwn
     override fun loadById(photoId: String, imageView: ImageView) {
         val cachedFile = getCachedFileIfExists(photoId)
         if (cachedFile != null) {
-            setFileToImageView(cachedFile, imageView)
+            imageView.setImageDrawable(null)
+            setFileToImageView(cachedFile, imageView, false)
         } else {
+            setPlaceHolder(imageView)
             val key = composeKey(photoId, imageView)
             views[key] = imageView
             setupImageView(photoId, imageView)
@@ -98,12 +105,16 @@ internal class ThumbnailLoaderImpl(ctx: Context) : ThumbnailLoader, LifecycleOwn
     private fun applyFileIfViewAwaits(photoId: String, viewKey: String, filePath: String) {
         val imageView = views[viewKey]
         if (imageView != null && imageView.getTag(TAG_PHOTO_ID) == photoId) {
-            setFileToImageView(filePath, imageView)
+            setFileToImageView(filePath, imageView, true)
             views.remove(viewKey)
         }
     }
 
-    private fun setFileToImageView(filePath: String, imageView: ImageView) {
+    private fun setFileToImageView(filePath: String, imageView: ImageView, animate: Boolean) {
+        if (animate) {
+            imageView.invisible()
+            imageView.fadeIn()
+        }
         imageView.setImageURI(Uri.parse(filePath))
         imageView.dispatchKeyEvent(KeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_INFO))
     }
@@ -120,6 +131,8 @@ internal class ThumbnailLoaderImpl(ctx: Context) : ThumbnailLoader, LifecycleOwn
             override fun onViewAttachedToWindow(v: View?) {}
         })
     }
+
+    private fun setPlaceHolder(imageView: ImageView) = imageView.setImageResource(placeholderRes)
 
     private fun composeKey(photoId: String, view: View) = "$photoId|${view.hashCode()}"
     // endregion

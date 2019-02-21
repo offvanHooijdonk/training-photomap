@@ -1,6 +1,8 @@
 package by.off.photomap.presentation.ui.photo
 
-import android.arch.lifecycle.*
+import android.arch.lifecycle.LiveData
+import android.arch.lifecycle.MutableLiveData
+import android.arch.lifecycle.ViewModel
 import android.databinding.ObservableBoolean
 import android.databinding.ObservableField
 import android.databinding.ObservableInt
@@ -68,7 +70,7 @@ class PhotoViewModel @Inject constructor(private val photoService: PhotoService)
         this.latLong = latLong
     }
 
-    fun save() {
+    fun save() { // TODO refactor
         if (validate()) {
             saveInProgress = true
             progressIndeterminate.set(false)
@@ -96,39 +98,42 @@ class PhotoViewModel @Inject constructor(private val photoService: PhotoService)
 
     fun onBackRequested() {
         Log.i(LOGCAT, "Original hash ${originalPhotoInfo?.hashCode()} vs new hash ${photoInfo.get()?.hashCode()}")
-        handleBackLiveData.value = modeLiveData.value == MODE.CREATE || modeLiveData.value == MODE.EDIT && originalPhotoInfo?.hashCode() != photoInfo.get()?.hashCode()
+        handleBackLiveData.value =
+            modeLiveData.value == MODE.CREATE || modeLiveData.value == MODE.EDIT && originalPhotoInfo?.hashCode() != photoInfo.get()?.hashCode()
     }
 
     private fun onLoadStatus(perCent: Int) {
         progressPerCent.set(perCent)
     }
 
-    private fun onResponse(response: Response<PhotoInfo>) {
-        var exitScreen = false
-        inProgress.set(false)
-        progressPerCent.set(0)
-        saveEnableLiveData.postValue(true)
-        //Log.i(LOGCAT, "Data arrived ${response.data}")
+    private fun onResponse(response: Response<PhotoInfo>?) {
+        response?.let {
+            var exitScreen = false
+            inProgress.set(false)
+            progressPerCent.set(0)
+            saveEnableLiveData.postValue(true)
+            //Log.i(LOGCAT, "Data arrived ${response.data}")
 
-        val error = response.error
-        val data = response.data
-        when {
-            saveInProgress && data != null -> exitScreen = true
-            !saveInProgress && data != null -> {
-                handleLoadedData(data)
+            val error = response.error
+            val data = response.data
+            when {
+                saveInProgress && data != null -> exitScreen = true
+                !saveInProgress && data != null -> {
+                    handleLoadedData(data)
+                }
+                error != null -> errorMessage.set(error.message)
             }
-            error != null -> errorMessage.set(error.message)
-        }
-        saveInProgress = false
+            saveInProgress = false
 
-        if (exitScreen) {
-            modeLiveData.value = MODE.CLOSE
+            if (exitScreen) {
+                modeLiveData.value = MODE.CLOSE
+            }
         }
     }
 
     private fun onImageFile(filePath: String) {
-        downloadInProgress.set(false)
         this.filePath.set(filePath)
+        downloadInProgress.set(false)
     }
 
     private fun handleLoadedData(data: PhotoInfo) {

@@ -6,6 +6,7 @@ import android.graphics.Bitmap
 import android.net.Uri
 import android.util.Log
 import by.off.photomap.core.utils.LOGCAT
+import by.off.photomap.core.utils.SingleMutableLiveData
 import by.off.photomap.core.utils.di.scopes.PerFeature
 import by.off.photomap.core.utils.launchScopeIO
 import by.off.photomap.model.PhotoInfo
@@ -31,11 +32,14 @@ class PhotoServiceImpl @Inject constructor(
         get() = loadLD
     override val serviceFileLiveData: LiveData<String>
         get() = fileLiveData
-    private val liveData = MutableLiveData<Response<PhotoInfo>>()
+    override val tempFileLiveData: LiveData<String>
+        get() = tempFileLD
 
+    private val liveData = SingleMutableLiveData<Response<PhotoInfo>>()
     private val listLiveData = MutableLiveData<ListResponse<PhotoInfo>>()
-    private val loadLD = MutableLiveData<Int>()
-    private val fileLiveData = MutableLiveData<String>()
+    private val loadLD = SingleMutableLiveData<Int>()
+    private val fileLiveData = SingleMutableLiveData<String>()
+    private val tempFileLD = MutableLiveData<String>()
 
     private var filterCategories: IntArray? = null
 
@@ -150,7 +154,7 @@ class PhotoServiceImpl @Inject constructor(
     override fun saveToTempFile(bitmap: Bitmap) {
         launchScopeIO {
             val filePath = imageService.saveBitmapToTempFile(bitmap)
-            fileLiveData.postValue(filePath)
+            tempFileLD.postValue(filePath)
         }
     }
 

@@ -74,10 +74,8 @@ class TimelineFragment : BaseFragment() {
     }
 
     private fun onItemClick(position: Int, id: String) {
-        startActivity(
-            Intent(ctx, PhotoViewEditActivity::class.java).apply {
-                putExtra(PhotoViewEditActivity.EXTRA_PHOTO_ID, id)
-            }
-        )
+        PhotoViewEditActivity.IntentBuilder(ctx)
+            .withPhotoId(id)
+            .start()
     }
 }
