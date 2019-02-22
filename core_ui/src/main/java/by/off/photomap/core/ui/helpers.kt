@@ -3,10 +3,13 @@ package by.off.photomap.core.ui
 import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
 import android.animation.ObjectAnimator
+import android.arch.lifecycle.ViewModel
+import android.arch.lifecycle.ViewModelProviders
 import android.content.Context
 import android.content.res.Configuration
 import android.location.Location
 import android.os.Build
+import android.preference.PreferenceManager
 import android.support.annotation.ColorInt
 import android.support.annotation.ColorRes
 import android.support.design.widget.Snackbar
@@ -15,6 +18,7 @@ import android.support.v4.widget.SwipeRefreshLayout
 import android.support.v7.app.AppCompatActivity
 import android.view.View
 import android.widget.TextView
+import by.off.photomap.core.utils.di.ViewModelFactory
 
 // region VISIBILITY
 fun View.show() {
@@ -52,7 +56,7 @@ private fun fade(view: View, start: Float, end: Float, duration: Long, onFinish:
 }
 // endregion
 
-// region ACTIVITY/FRAGMENT
+// region ACTIVITY/FRAGMENT/CONTEXT
 val AppCompatActivity.ctx: Context
     get() = this
 
@@ -66,6 +70,9 @@ fun SwipeRefreshLayout.setupDefaults() {
 fun Context.isLandscape() = resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
 
 fun Context.isPortrait() = resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT
+
+fun <T : ViewModel> Fragment.getViewModel(factory: ViewModelFactory, modelClass: Class<T>) =
+    ViewModelProviders.of(this, factory)[modelClass]
 // endregion
 
 // region COLORS

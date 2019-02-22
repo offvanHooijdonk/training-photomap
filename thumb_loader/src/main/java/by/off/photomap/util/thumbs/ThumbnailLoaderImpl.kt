@@ -140,7 +140,7 @@ internal class ThumbnailLoaderImpl(ctx: Context) : ThumbnailLoader, LifecycleOwn
     // region Cache
     private fun cacheFile(photoId: String, filePath: String) {
         CoroutineScope(Dispatchers.Default).launch {
-            if (cachedFiles.size > CACHE_LIMIT) cachedFiles.keys.take(CACHE_LIMIT / 2).forEach { key -> cachedFiles.remove(key) }
+            if (cachedFiles.size > CACHE_LIMIT) cachedFiles.keys.take(CACHE_LIMIT / 2).let { cachedFiles.minusAssign(it) }
         }.invokeOnCompletion {
             cachedFiles[photoId] = filePath
         }

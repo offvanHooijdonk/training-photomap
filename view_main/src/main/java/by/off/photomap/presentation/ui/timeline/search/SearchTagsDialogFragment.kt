@@ -10,10 +10,7 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.view.*
 import android.view.inputmethod.InputMethodManager
-import by.off.photomap.core.ui.BaseFragment
-import by.off.photomap.core.ui.ctx
-import by.off.photomap.core.ui.hide
-import by.off.photomap.core.ui.show
+import by.off.photomap.core.ui.*
 import by.off.photomap.core.utils.PrefHelper
 import by.off.photomap.core.utils.di.ViewModelFactory
 import by.off.photomap.di.PhotoScreenComponent
@@ -61,7 +58,7 @@ class SearchTagsDialogFragment : DialogFragment(), ViewTreeObserver.OnPreDrawLis
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         PhotoScreenComponent.get(ctx).inject(this)
-        viewModel = BaseFragment.getViewModel(this, viewModelFactory, SearchTagViewModel::class.java)
+        viewModel = getViewModel(viewModelFactory, SearchTagViewModel::class.java)
         return DataBindingUtil.inflate<DialogSearchTagsBinding>(inflater, R.layout.dialog_search_tags, container, false)
             .apply {
                 model = viewModel

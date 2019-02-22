@@ -10,6 +10,7 @@ import android.view.View
 import android.view.ViewGroup
 import by.off.photomap.core.ui.BaseFragment
 import by.off.photomap.core.ui.ctx
+import by.off.photomap.core.ui.getViewModel
 import by.off.photomap.core.ui.isLandscape
 import by.off.photomap.core.utils.di.ViewModelFactory
 import by.off.photomap.di.PhotoScreenComponent
@@ -44,7 +45,7 @@ class AddPhotoBottomSheet : BottomSheetDialogFragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         PhotoScreenComponent.get(ctx).inject(this)
-        viewModel = BaseFragment.getViewModel(this, viewModelFactory, AddPhotoDialogViewModel::class.java)
+        viewModel = getViewModel(viewModelFactory, AddPhotoDialogViewModel::class.java)
         val binding = DataBindingUtil.inflate<DialogAddPhotoBinding>(inflater, R.layout.dialog_add_photo, container, false)
         binding.model = viewModel
 

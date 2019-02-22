@@ -10,20 +10,20 @@ object PrefHelper {
     private const val HISTORY_SEPARATOR = "|"
 
     fun getSearchHistory(ctx: Context): List<String> =
-        getPref(ctx).getString(KEY_SEARCH_HISTORY, "")?.let {
+        ctx.getPrefManager().getString(KEY_SEARCH_HISTORY, "")?.let {
             if (it.isNotEmpty()) it.split(HISTORY_SEPARATOR) else emptyList()
         } ?: emptyList()
 
 
     fun addSearchHistoryEntry(ctx: Context, entry: String) {
         val historyList = getSearchHistory(ctx).toMutableList()
-        if (!historyList.map { it.toLowerCase() }.contains(entry.toLowerCase())) { // todo if contains - still need to reorder items
+        if (historyList.find { it.equals(entry, true) } != null) { // todo if contains - still need to reorder items
             if (historyList.size >= MAX_HISTORY) {
-                historyList.removeAt(historyList.size - 1)
+                historyList.removeAt(MAX_HISTORY - 1)
             }
             historyList.add(0, entry)
 
-            getPref(ctx).edit().putString(KEY_SEARCH_HISTORY, historyToString(historyList)).apply()
+            ctx.getPrefManager().edit().putString(KEY_SEARCH_HISTORY, historyToString(historyList)).apply()
         }
 
     }
@@ -31,5 +31,4 @@ object PrefHelper {
     private fun historyToString(list: List<String>) =
         list.reduceIndexed { index, acc, s -> acc + (if (index > 0) HISTORY_SEPARATOR else "") + s }
 
-    private fun getPref(ctx: Context) = PreferenceManager.getDefaultSharedPreferences(ctx)
 }
