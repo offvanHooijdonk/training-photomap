@@ -20,12 +20,15 @@
 
         <android.support.design.chip.Chip
             android:id="@+id/chipTag"
-            tagText="@{model.tagText}"
+            searchText="@{model.searchText}"
+            tagText="@{model.valueText}"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:ellipsize="end"
             android:maxLines="1"
+            android:text="@{model.valueText}"
             android:textAppearance="@style/ChipTextStyle"
+            android:textSize="16sp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             tools:text="@string/fish_text" />

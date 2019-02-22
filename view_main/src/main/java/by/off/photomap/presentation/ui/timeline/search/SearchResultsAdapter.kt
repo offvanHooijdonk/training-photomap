@@ -23,6 +23,8 @@ class SearchResultsAdapter(
         private const val TYPE_HISTORY = 1
     }
 
+    var searchText: String = ""
+
     override fun onCreateViewHolder(container: ViewGroup, type: Int): ViewHolder {
         val binding = DataBindingUtil.inflate<ViewDataBinding>(
             LayoutInflater.from(ctx),
@@ -38,14 +40,14 @@ class SearchResultsAdapter(
 
     override fun onBindViewHolder(vh: ViewHolder, position: Int) {
         val result = items[position]
-        var value = ""// = if (getItemViewType(position) == TYPE_TAG) result.tag!! else result.historyItem!!
+        val value: String
         if (getItemViewType(position) == TYPE_TAG) {
             value = result.tag!!
         } else {
             value = result.historyItem!!
             vh.itemView.imgInferHistory.setOnClickListener { onInfer(value) }
         }
-        vh.bind(value)
+        vh.bind(value, searchText)
     }
 
     override fun getItemViewType(position: Int): Int =
@@ -56,10 +58,12 @@ class SearchResultsAdapter(
         }
 
     class ViewHolder(val binding: ViewDataBinding, private val viewModel: ResultItemViewModel, val type: Int, view: View) : RecyclerView.ViewHolder(view) {
-        fun bind(value: String) {
+        fun bind(value: String, searchText: String) {
             binding.invalidateAll()
 
-            if (type == TYPE_TAG) viewModel.tagText.set(value) else viewModel.historyItemText.set(value)
+            viewModel.valueText.set(value)
+            viewModel.searchText.set(searchText)
+
             when (binding) {
                 is ItemSearchTagBinding -> binding.model = viewModel
                 is ItemSearchHistoryBinding -> binding.model = viewModel

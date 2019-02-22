@@ -31,14 +31,15 @@
 
         <TextView
             android:id="@+id/txtHistory"
+            searchText="@{model.searchText}"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/item_margin_horizontal"
             android:layout_marginEnd="@dimen/item_margin_horizontal"
             android:ellipsize="end"
-            android:textSize="14sp"
             android:maxLines="1"
-            android:text="@{model.historyItemText}"
+            android:text="@{model.valueText}"
+            android:textSize="16sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/imgInferHistory"
             app:layout_constraintStart_toEndOf="@id/imgHistory"

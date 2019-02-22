@@ -3,12 +3,12 @@ package by.off.photomap.storage.parse.impl.parse
 import android.content.Context
 import android.net.Uri
 import by.off.photomap.core.utils.di.scopes.PerFeature
+import by.off.photomap.core.utils.findHashTags
 import by.off.photomap.model.PhotoInfo
 import by.off.photomap.model.TagInfo
 import by.off.photomap.storage.parse.Response
 import by.off.photomap.storage.parse.impl.convertToPhoto
 import by.off.photomap.storage.parse.impl.convertToUser
-import by.off.photomap.storage.parse.impl.findHashTags
 import by.off.photomap.storage.parse.impl.image.ImageService
 import com.parse.*
 import java.io.File

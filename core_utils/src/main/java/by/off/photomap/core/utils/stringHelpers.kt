@@ -1,4 +1,4 @@
-package by.off.photomap.storage.parse.impl
+package by.off.photomap.core.utils
 
 private const val REGEX_HASH_TAG = "#[\\p{L}\\d]+"
 

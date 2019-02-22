@@ -10,4 +10,6 @@
     <dimen name="bottom_sheet_corner">8dp</dimen>
     <dimen name="search_bar_corner">4dp</dimen>
     <dimen name="search_popup_margin">6dp</dimen>
+    <dimen name="tag_row_margin_end">8dp</dimen>
+    <dimen name="tag_row_margin_bottom">8dp</dimen>
 </resources>

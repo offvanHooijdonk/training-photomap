@@ -6,6 +6,8 @@ import android.databinding.DataBindingUtil
 import android.os.Bundle
 import android.support.v4.app.DialogFragment
 import android.support.v7.widget.LinearLayoutManager
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.*
 import android.view.inputmethod.InputMethodManager
 import by.off.photomap.core.ui.BaseFragment
@@ -17,7 +19,9 @@ import by.off.photomap.core.utils.di.ViewModelFactory
 import by.off.photomap.di.PhotoScreenComponent
 import by.off.photomap.presentation.ui.R
 import by.off.photomap.presentation.ui.databinding.DialogSearchTagsBinding
+import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.dialog_search_tags.*
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 class SearchTagsDialogFragment : DialogFragment(), ViewTreeObserver.OnPreDrawListener {
@@ -26,6 +30,7 @@ class SearchTagsDialogFragment : DialogFragment(), ViewTreeObserver.OnPreDrawLis
     companion object {
         private const val ARG_ANIM_X = "anim_x"
         private const val ARG_ANIM_Y = "anim_y"
+        private const val THROTTLE_LIVE = 250L
 
         fun newInstance(viewAnimateOver: View?): SearchTagsDialogFragment {
             var (animX, animY) = if (viewAnimateOver != null) SearchRevealAnimator.getViewCenterLocation(viewAnimateOver) else 0 to 0
@@ -42,6 +47,8 @@ class SearchTagsDialogFragment : DialogFragment(), ViewTreeObserver.OnPreDrawLis
     private lateinit var revealAnimator: SearchRevealAnimator
     private val resultList = mutableListOf<Result>()
     private val adapter by lazy { SearchResultsAdapter(ctx, resultList, ::onInferHistory, ::onItemClick) }
+    private val liveQuerySubject = PublishSubject.create<String>().apply { throttleLast(THROTTLE_LIVE, TimeUnit.MILLISECONDS) }
+    private val obsFullQuery = PublishSubject.create<String>()
 
     @Inject
     lateinit var viewModelFactory: ViewModelFactory
@@ -72,6 +79,11 @@ class SearchTagsDialogFragment : DialogFragment(), ViewTreeObserver.OnPreDrawLis
             adapter.notifyDataSetChanged()
         })
         setupLayout()
+
+        liveQuerySubject.subscribe { text ->
+            adapter.searchText = text;
+            adapter.notifyDataSetChanged()
+        }
     }
 
     override fun onStart() {
@@ -103,6 +115,10 @@ class SearchTagsDialogFragment : DialogFragment(), ViewTreeObserver.OnPreDrawLis
 
     }
 
+    private fun searchLive() {
+        liveQuerySubject.onNext(inputSearch.text.toString().trim())
+    }
+
     private fun searchFull() {
         val text = inputSearch.text.toString().trim()
         if (text.isNotEmpty()) PrefHelper.addSearchHistoryEntry(ctx, inputSearch.text.toString())
@@ -123,17 +139,22 @@ class SearchTagsDialogFragment : DialogFragment(), ViewTreeObserver.OnPreDrawLis
         dialog.setOnKeyListener { _, keyCode, event ->
             when {
                 (keyCode == KeyEvent.KEYCODE_BACK && event.action == KeyEvent.ACTION_UP) -> {
-                    closeDialog()
-                    true
+                    closeDialog(); true
                 }
                 (keyCode == KeyEvent.KEYCODE_ENTER && event.action == KeyEvent.ACTION_DOWN) -> {
-                    searchFull()
-                    true
+                    searchFull();true
                 }
                 else -> false
             }
-
         }
+        inputSearch.addTextChangedListener(object : TextWatcher {
+            override fun afterTextChanged(s: Editable?) {
+                searchLive()
+            }
+
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+        })
     }
 
     private fun setupList() {

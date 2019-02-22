@@ -7,7 +7,12 @@ import android.support.design.chip.Chip
 import android.support.design.widget.Snackbar
 import android.support.design.widget.TextInputLayout
 import android.support.v7.widget.RecyclerView
+import android.text.Spannable
+import android.text.SpannableStringBuilder
+import android.text.style.StyleSpan
+import android.util.AttributeSet
 import android.util.Log
+import android.view.LayoutInflater
 import android.view.View
 import android.widget.ImageView
 import android.widget.Spinner
@@ -15,9 +20,11 @@ import android.widget.TextView
 import by.off.photomap.core.ui.*
 import by.off.photomap.core.ui.dto.CategoryInfo
 import by.off.photomap.core.utils.LOGCAT
+import by.off.photomap.core.utils.findHashTags
 import by.off.photomap.model.PhotoInfo
 import by.off.photomap.presentation.ui.timeline.TimelineAdapter
 import by.off.photomap.util.thumbs.Thumbs
+import com.google.android.flexbox.FlexboxLayout
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -47,17 +54,46 @@ fun setChipCategoryLabelColor(chip: Chip, categoryId: Int) {
     chip.setChipBackgroundColorResource(CategoryInfo(categoryId).backColorRes)
 }
 
-private var tagColors = listOf(R.color.tag_1, R.color.tag_2, R.color.tag_3, R.color.tag_4,
-    R.color.tag_5, R.color.tag_6, R.color.tag_7, R.color.tag_8, R.color.tag_9, R.color.tag_10)
+private var tagColors = listOf(
+    R.color.tag_1, R.color.tag_2, R.color.tag_3, R.color.tag_4,
+    R.color.tag_5, R.color.tag_6, R.color.tag_7, R.color.tag_8,
+    R.color.tag_9, R.color.tag_10, R.color.tag_11, R.color.tag_12,
+    R.color.tag_13, R.color.tag_14, R.color.tag_15, R.color.tag_16,
+    R.color.tag_17, R.color.tag_18, R.color.tag_19, R.color.tag_20,
+    R.color.tag_21, R.color.tag_22, R.color.tag_23, R.color.tag_24,
+    R.color.tag_25
+)
 
 @BindingAdapter("tagText")
 fun setChipTagText(chip: Chip, tag: String) {
     chip.text = tag
 
     val colorIndex = tag.hashCode().absoluteValue % tagColors.size
-
     chip.setChipBackgroundColorResource(tagColors[colorIndex])
 }
+
+@BindingAdapter("searchText")
+fun setSearchTextHighlight(textView: TextView, searchText: String) {
+    textView.text = decorateTextWithSearch(textView.text.toString(), searchText.trim())
+}
+
+@BindingAdapter("searchText")
+fun setSearchTextHighlightChip(chip: Chip, searchText: String) {
+    chip.text = decorateTextWithSearch(chip.text.toString(), searchText.trim())
+}
+
+private fun decorateTextWithSearch(text: String, search: String) =
+    if (search.isNotEmpty()) {
+        val value = text.toLowerCase()
+        val txt = search.toLowerCase()
+        val ssb = SpannableStringBuilder(value)
+        var lastIndex = 0
+        while (value.indexOf(txt, lastIndex).also { lastIndex = it } != -1) {
+            ssb.setSpan(StyleSpan(android.graphics.Typeface.BOLD), lastIndex, lastIndex + txt.length, Spannable.SPAN_INCLUSIVE_INCLUSIVE)
+            lastIndex += txt.length
+        }
+        ssb
+    } else search
 
 @BindingAdapter("filePath")
 fun setImageFile(imageView: ImageView, filePath: String?) {
@@ -73,6 +109,19 @@ fun setImageFile(imageView: ImageView, filePath: String?) {
             }
         } else {
             imageView.setImageResource(R.drawable.ic_warning_24)
+        }
+    }
+}
+
+@BindingAdapter("tagsContent")
+fun setPhotoTagsList(layout: FlexboxLayout, textWithTags: String?) {
+    textWithTags?.let {
+        val tagsList = findHashTags(textWithTags)
+        for (tag in tagsList) {
+            val chip = LayoutInflater.from(layout.context)
+                .inflate(R.layout.view_chip_tag, layout, false) as Chip
+            setChipTagText(chip, tag)
+            layout.addView(chip)
         }
     }
 }
