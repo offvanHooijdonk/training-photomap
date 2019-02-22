@@ -25,4 +25,5 @@
     <string name="logoff_progress_msg">Please wait while we are logging you off</string>
     <string name="pick_category_least_one">Pick at least one category</string>
     <string name="intent_start_no_data">Required data not provided!</string>
+    <string name="no_tags_found_for">No tags found for \'%1$s\'</string>
 </resources>

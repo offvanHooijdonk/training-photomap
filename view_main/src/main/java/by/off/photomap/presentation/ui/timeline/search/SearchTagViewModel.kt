@@ -3,6 +3,7 @@ package by.off.photomap.presentation.ui.timeline.search
 import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.ViewModel
 import android.databinding.ObservableBoolean
+import android.databinding.ObservableField
 import by.off.photomap.core.utils.map
 import by.off.photomap.core.utils.switchMap
 import by.off.photomap.storage.parse.TagService
@@ -13,9 +14,11 @@ class SearchTagViewModel @Inject constructor(private val tagService: TagService)
     private val switchLD = MutableLiveData<List<String>>()
 
     val searchProgress = ObservableBoolean(false)
+    val searchText = ObservableField<String>("")
 
     fun filterTags(text: String) {
         searchProgress.set(true)
+        searchText.set(text)
         tagService.filter(text)
     }
 

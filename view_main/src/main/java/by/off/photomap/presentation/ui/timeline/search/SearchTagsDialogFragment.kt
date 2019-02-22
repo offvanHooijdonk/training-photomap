@@ -4,6 +4,7 @@ import android.arch.lifecycle.Observer
 import android.content.Context
 import android.databinding.DataBindingUtil
 import android.os.Bundle
+import android.os.Handler
 import android.support.v4.app.DialogFragment
 import android.support.v7.widget.LinearLayoutManager
 import android.text.Editable
@@ -16,6 +17,7 @@ import by.off.photomap.core.utils.di.ViewModelFactory
 import by.off.photomap.di.PhotoScreenComponent
 import by.off.photomap.presentation.ui.R
 import by.off.photomap.presentation.ui.databinding.DialogSearchTagsBinding
+import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.dialog_search_tags.*
 import java.util.concurrent.TimeUnit
@@ -45,7 +47,9 @@ class SearchTagsDialogFragment : DialogFragment(), ViewTreeObserver.OnPreDrawLis
     private val resultList = mutableListOf<Result>()
     private val adapter by lazy { SearchResultsAdapter(ctx, resultList, ::onInferHistory, ::onItemClick) }
     private val liveQuerySubject = PublishSubject.create<String>().apply { throttleLast(THROTTLE_LIVE, TimeUnit.MILLISECONDS) }
-    private val obsFullQuery = PublishSubject.create<String>()
+    //private val obsFullQuery = PublishSubject.create<String>()
+    private var fullSearchGoing = false
+    private val cd = CompositeDisposable()
 
     @Inject
     lateinit var viewModelFactory: ViewModelFactory
@@ -71,16 +75,14 @@ class SearchTagsDialogFragment : DialogFragment(), ViewTreeObserver.OnPreDrawLis
         viewModel.resetData()
         viewModel.searchLiveData.observe(this, Observer { list ->
             list?.let {
-                updateSearchList(list)
+                onFullSearchResult(list)
             }
-            adapter.notifyDataSetChanged()
         })
         setupLayout()
 
         liveQuerySubject.subscribe { text ->
-            adapter.searchText = text;
-            adapter.notifyDataSetChanged()
-        }
+            onLiveSearch(text)
+        }.also { cd.add(it) }
     }
 
     override fun onStart() {
@@ -99,7 +101,17 @@ class SearchTagsDialogFragment : DialogFragment(), ViewTreeObserver.OnPreDrawLis
     }
 
     private fun onItemClick(i: Int) {
-
+        // todo distinguish between history and tag picked
+        val searchText = resultList.getOrNull(i)?.historyItem
+        inputSearch?.let {
+            fullSearchGoing = true
+            listSearchResults.hide()
+            inputSearch.text.apply {
+                clear()
+                insert(0, searchText)
+            }
+            searchFull()
+        }
     }
 
     private fun onInferHistory(text: String) {
@@ -108,19 +120,47 @@ class SearchTagsDialogFragment : DialogFragment(), ViewTreeObserver.OnPreDrawLis
         inputSearch.text.insert(0, text)
     }
 
-    private fun startSearch() {
-
+    private fun initSearch() {
+        searchLive()
     }
 
     private fun searchLive() {
         liveQuerySubject.onNext(inputSearch.text.toString().trim())
     }
 
+    private fun onLiveSearch(text: String) { // todo hide "No results" or "Hint" on live search
+        val search = text.trim()
+        adapter.searchText = search
+        resultList.clear()
+        resultList.addAll(findInHistory(search).map { Result(historyItem = it) })
+        if (resultList.isEmpty()) listSearchResults.hide() else if (!listSearchResults.isVisible()) listSearchResults.fadeIn()
+        adapter.notifyDataSetChanged()
+    }
+
+    // temp method
+    private fun findInHistory(text: String) =
+        PrefHelper.getSearchHistory(ctx).filter { it.contains(text, true) }
+
     private fun searchFull() {
         val text = inputSearch.text.toString().trim()
-        if (text.isNotEmpty()) PrefHelper.addSearchHistoryEntry(ctx, inputSearch.text.toString())
+        if (text.isNotEmpty()) {
+            PrefHelper.addSearchHistoryEntry(ctx, inputSearch.text.toString())
+            viewModel.filterTags(text)
+        }
+    }
 
-        viewModel.filterTags(text)
+    private fun onFullSearchResult(searchList: List<String>) {
+        if (searchList.isNotEmpty()) {
+            blockEmptyResults.hide()
+            listSearchResults.show()
+        } else {
+            listSearchResults.hide()
+            blockEmptyResults.show()
+        }
+        resultList.clear()
+        resultList.addAll(searchList.map { s -> Result(null, s) })
+        adapter.notifyDataSetChanged()
+        fullSearchGoing = false
     }
 
     // region Layout
@@ -131,7 +171,6 @@ class SearchTagsDialogFragment : DialogFragment(), ViewTreeObserver.OnPreDrawLis
         imgSearch.setOnClickListener { searchFull() }
 
         setupList()
-        updateSearchList(emptyList())
 
         dialog.setOnKeyListener { _, keyCode, event ->
             when {
@@ -145,8 +184,10 @@ class SearchTagsDialogFragment : DialogFragment(), ViewTreeObserver.OnPreDrawLis
             }
         }
         inputSearch.addTextChangedListener(object : TextWatcher {
-            override fun afterTextChanged(s: Editable?) {
-                searchLive()
+            override fun afterTextChanged(s: Editable?) { // todo validate for spaces?
+                if (!fullSearchGoing) {
+                    searchLive()
+                }
             }
 
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
@@ -159,41 +200,25 @@ class SearchTagsDialogFragment : DialogFragment(), ViewTreeObserver.OnPreDrawLis
         listSearchResults.adapter = adapter
     }
 
-    private fun updateSearchList(searchList: List<String>) {
-        if (searchList.isNotEmpty()) {
-            resultList.clear()
-            resultList.addAll(searchList.map { s -> Result(null, s) })
-        } else {
-            val historyEntries = PrefHelper.getSearchHistory(ctx)
-            if (historyEntries.isEmpty()) {
-                blockHint.show()
-                listSearchResults.hide()
-            } else {
-                blockHint.hide()
-                listSearchResults.show()
-
-                resultList.apply {
-                    clear()
-                    addAll(historyEntries.map { Result(historyItem = it) })
-                }
-                adapter.notifyDataSetChanged()
-            }
-        }
-    }
-
     private fun animateDialogIn() {
         val animX = arguments?.getInt(ARG_ANIM_X) ?: 0
         val animY = arguments?.getInt(ARG_ANIM_Y) ?: 0
 
-        revealAnimator = SearchRevealAnimator(blockSearchContent, animX, animY, {
-            startSearch()
+        revealAnimator = SearchRevealAnimator(inputSearch, animX, animY, {
+            initSearch()
             showKeyBoard(true)
         }) { performCloseActions() }
         revealAnimator.animate(true)
     }
 
     private fun closeDialog() {
-        revealAnimator.animate(false)
+        val fadeAwayDuration = 100L
+        listSearchResults.takeIf { isVisible }?.fadeAway(fadeAwayDuration)
+        blockHint.takeIf { isVisible }?.fadeAway(fadeAwayDuration)
+        blockEmptyResults.takeIf { isVisible }?.fadeAway(fadeAwayDuration)
+        Handler().postDelayed({
+            revealAnimator.animate(false)
+        }, fadeAwayDuration)
     }
 
     private fun performCloseActions() {

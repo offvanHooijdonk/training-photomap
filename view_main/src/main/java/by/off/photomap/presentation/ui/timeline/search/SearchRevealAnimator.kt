@@ -40,7 +40,7 @@ class SearchRevealAnimator(
         ViewAnimationUtils.createCircularReveal(viewAnim, animX, animY, startRadius, endRadius)
             .apply {
                 duration = if (isShow) DURATION_IN else DURATION_OUT
-                //interpolator = if (isShow) DecelerateInterpolator() else null
+                interpolator = if (isShow) DecelerateInterpolator() else null
                 addListener(object : AnimatorListenerAdapter() {
                     override fun onAnimationEnd(animation: Animator?) {
                         super.onAnimationEnd(animation)

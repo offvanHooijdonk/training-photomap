@@ -13,6 +13,7 @@
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="?selectableItemBackground"
         android:paddingStart="@dimen/item_margin_horizontal"
         android:paddingTop="@dimen/item_margin_vertical_dense"
         android:paddingEnd="@dimen/item_margin_horizontal"

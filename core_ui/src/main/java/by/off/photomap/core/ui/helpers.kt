@@ -9,7 +9,6 @@ import android.content.Context
 import android.content.res.Configuration
 import android.location.Location
 import android.os.Build
-import android.preference.PreferenceManager
 import android.support.annotation.ColorInt
 import android.support.annotation.ColorRes
 import android.support.design.widget.Snackbar
@@ -33,14 +32,18 @@ fun View.invisible() {
     this.visibility = View.INVISIBLE
 }
 
-fun View.fadeAway(duration: Long = 150) {
-    this.hide()
-    fade(this, 1.0f, 0.0f, duration) { }
+fun View.isVisible() = this.visibility == View.VISIBLE
+
+fun View.fadeAway(duration: Long = 150, onFinish: (() -> Unit)? = null) {
+    fade(this, 1.0f, 0.0f, duration) {
+        this.hide()
+        onFinish?.invoke()
+    }
 }
 
-fun View.fadeIn(duration: Long = 250) {
+fun View.fadeIn(duration: Long = 250, onFinish: (() -> Unit)? = null) {
     this.show()
-    fade(this, 0.0f, 1.0f, duration) { }
+    fade(this, 0.0f, 1.0f, duration) { onFinish?.invoke() }
 }
 
 private fun fade(view: View, start: Float, end: Float, duration: Long, onFinish: () -> Unit) {

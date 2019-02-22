@@ -47,6 +47,7 @@ class SearchResultsAdapter(
             value = result.historyItem!!
             vh.itemView.imgInferHistory.setOnClickListener { onInfer(value) }
         }
+        vh.binding.root.setOnClickListener { onClick(position) }
         vh.bind(value, searchText)
     }
 

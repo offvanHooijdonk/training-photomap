@@ -59,6 +59,7 @@
                     android:background="@android:color/transparent"
                     android:hint="@string/search_input_hint"
                     android:imeOptions="actionSearch"
+                    android:inputType="textFilter"
                     android:maxLines="1"
                     android:singleLine="true"
                     android:textColor="@color/search_text"
@@ -135,6 +136,25 @@
                     android:text="@string/search_sample"
                     android:textAppearance="@style/ChipTextStyle"
                     app:chipBackgroundColor="@color/colorAccent" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/blockEmptyResults"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:background="@drawable/search_results"
+                android:orientation="horizontal"
+                android:padding="16dp"
+                android:visibility="gone"
+                app:layout_constraintEnd_toEndOf="@id/blockSearchBar"
+                app:layout_constraintStart_toStartOf="@id/blockSearchBar"
+                app:layout_constraintTop_toBottomOf="@id/dividerSearchBar"
+                tools:visibility="visible">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@{@string/no_tags_found_for(model.searchText)}" />
             </LinearLayout>
         </android.support.constraint.ConstraintLayout>
     </FrameLayout>
