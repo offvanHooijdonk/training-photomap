@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:app="http://schemas.android.com/apk/res-auto">
+<layout xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <data>
 
@@ -12,17 +13,47 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <android.support.v4.widget.SwipeRefreshLayout
-            android:id="@+id/refreshLayout"
+        <android.support.constraint.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            app:refreshing="@{model.isRefreshing}">
+            android:layout_height="match_parent">
 
-            <android.support.v7.widget.RecyclerView
-                android:id="@+id/recyclerTimeline"
-                items="@{model.listData}"
+            <FrameLayout
+                android:id="@+id/blockTagFilter"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent" />
-        </android.support.v4.widget.SwipeRefreshLayout>
+                android:layout_height="wrap_content"
+                android:paddingStart="@dimen/activity_margin_horizontal"
+                android:paddingTop="@dimen/activity_margin_vertical"
+                android:paddingEnd="@dimen/activity_margin_horizontal"
+                android:paddingBottom="@dimen/activity_margin_vertical"
+                android:visibility="gone"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:visibility="visible">
+
+                <android.support.design.chip.Chip
+                    android:id="@+id/chipTagFilter"
+                    tagText="@{model.tagFilterValue}"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="@style/ChipTextStyle"
+                    app:closeIconVisible="true"
+                    app:closeIconTint="#ccffffff"
+                    tools:text="@string/fish_text_short" />
+            </FrameLayout>
+
+            <android.support.v4.widget.SwipeRefreshLayout
+                android:id="@+id/refreshLayout"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/blockTagFilter"
+                app:refreshing="@{model.isRefreshing}">
+
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/recyclerTimeline"
+                    items="@{model.listData}"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
+            </android.support.v4.widget.SwipeRefreshLayout>
+        </android.support.constraint.ConstraintLayout>
     </android.support.design.widget.CoordinatorLayout>
 </layout>

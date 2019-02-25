@@ -12,6 +12,7 @@ data class PhotoInfo(
     var longitude: Double? = null
 ) : DataObject {
     companion object {
+        const val ID = "objectId"
         const val TABLE = "Photo"
         const val BIN_DATA = "binData"
         const val THUMBNAIL_DATA = "thumbnail_data"

@@ -3,15 +3,12 @@ package by.off.photomap.storage.parse.impl.di
 import by.off.photomap.core.utils.di.scopes.PerFeature
 import by.off.photomap.storage.parse.GeoPointService
 import by.off.photomap.storage.parse.PhotoService
-import by.off.photomap.storage.parse.TagService
+import by.off.photomap.storage.parse.SearchTagService
 import by.off.photomap.storage.parse.UserService
 import by.off.photomap.storage.parse.impl.GeoPointServiceImpl
-import by.off.photomap.storage.parse.impl.image.ImageService
 import by.off.photomap.storage.parse.impl.PhotoServiceImpl
-import by.off.photomap.storage.parse.impl.TagServiceImpl
+import by.off.photomap.storage.parse.impl.SearchTagServiceImpl
 import by.off.photomap.storage.parse.impl.UserServiceImpl
-import by.off.photomap.storage.parse.impl.parse.ParsePhotoService
-import by.off.photomap.storage.parse.impl.parse.ParseUserService
 import dagger.Binds
 import dagger.Module
 
@@ -28,5 +25,5 @@ abstract class StorageModule {
     abstract fun provideGeoPointService(geoPointServiceImpl: GeoPointServiceImpl): GeoPointService
 
     @Binds
-    abstract fun provideTagServiceImpl(tagServiceImpl: TagServiceImpl): TagService
+    abstract fun provideTagServiceImpl(tagServiceImpl: SearchTagServiceImpl): SearchTagService
 }

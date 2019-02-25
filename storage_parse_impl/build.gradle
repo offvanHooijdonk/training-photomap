@@ -29,6 +29,7 @@ android {
 dependencies {
     implementation project(":model")
     implementation project(":storage_parse_api")
+    implementation project(":dao")
     implementation project(":core_utils")
 
     implementation fileTree(dir: 'libs', include: ['*.jar'])

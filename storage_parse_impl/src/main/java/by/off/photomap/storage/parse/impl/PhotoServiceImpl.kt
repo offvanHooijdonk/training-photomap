@@ -42,6 +42,7 @@ class PhotoServiceImpl @Inject constructor(
     private val tempFileLD = MutableLiveData<String>()
 
     private var filterCategories: IntArray? = null
+    override var filterTag: String? = null
 
     override fun save(photo: PhotoInfo, uriPhoto: Uri) {
         launchScopeIO {
@@ -140,14 +141,20 @@ class PhotoServiceImpl @Inject constructor(
         }
     }
 
-    override fun setFilter(categories: IntArray) {
+    override fun setCategoriesFilter(categories: IntArray) {
         filterCategories = categories
     }
 
     override fun listOrderTime() {
         launchScopeIO {
-            val resultList = parsePhotoService.list(filterCategories, PhotoInfo.SHOT_TIMESTAMP, false)
+            val resultList = parsePhotoService.list(filterCategories, filterTag, PhotoInfo.SHOT_TIMESTAMP, false)
             listLiveData.postValue(ListResponse(resultList))
+        }
+    }
+
+    override fun filterByTag(tagText: String) {
+        launchScopeIO {
+
         }
     }
 

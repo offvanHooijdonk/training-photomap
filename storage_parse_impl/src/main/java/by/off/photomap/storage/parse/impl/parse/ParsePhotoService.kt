@@ -85,7 +85,13 @@ class ParsePhotoService @Inject constructor(private val ctx: Context, private va
         return Response(convertToPhoto(parseObject, user)) to parseObject.getParseFile(PhotoInfo.BIN_DATA)!!
     }
 
-    fun list(categories: IntArray?, orderBy: String?, directionAsc: Boolean = true): MutableList<PhotoInfo> {
+    fun list(categories: IntArray?, tagText: String?, orderBy: String?, directionAsc: Boolean = true): MutableList<PhotoInfo> {
+        val listIds = if (tagText != null) {
+            ParseQuery.getQuery<ParseObject>(TagInfo.TABLE)
+                .whereEqualTo(TagInfo.TAG_TITLE, tagText.toLowerCase())
+                .find()
+                .mapNotNull { it.getParseObject(TagInfo.PHOTO_ID)?.objectId }
+        } else emptyList()
         val list = ParseQuery.getQuery<ParseObject>(PhotoInfo.TABLE).apply {
             orderBy?.let {
                 if (directionAsc) addAscendingOrder(it) else addDescendingOrder(it)
@@ -93,6 +99,7 @@ class ParsePhotoService @Inject constructor(private val ctx: Context, private va
             categories?.let {
                 whereContainedIn(PhotoInfo.CATEGORY, categories.asList())
             }
+            if (listIds.isNotEmpty()) whereContainedIn(PhotoInfo.ID, listIds)
         }.find()
 
         val resultList = mutableListOf<PhotoInfo>()

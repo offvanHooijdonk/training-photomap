@@ -1,13 +1,10 @@
 package by.off.photomap.presentation.ui.timeline
 
-import android.content.Intent
 import android.databinding.DataBindingUtil
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
 import android.view.*
-import by.off.photomap.core.ui.BaseFragment
-import by.off.photomap.core.ui.ctx
-import by.off.photomap.core.ui.setupDefaults
+import by.off.photomap.core.ui.*
 import by.off.photomap.core.utils.di.ViewModelFactory
 import by.off.photomap.di.PhotoScreenComponent
 import by.off.photomap.presentation.ui.R
@@ -17,7 +14,7 @@ import by.off.photomap.presentation.ui.timeline.search.SearchTagsDialogFragment
 import kotlinx.android.synthetic.main.screen_timeline.*
 import javax.inject.Inject
 
-class TimelineFragment : BaseFragment() {
+class TimelineFragment : BaseFragment(), SearchTagsDialogFragment.OnTagPickedListener {
     @Inject
     override lateinit var viewModelFactory: ViewModelFactory
 
@@ -54,6 +51,7 @@ class TimelineFragment : BaseFragment() {
 
         refreshLayout.setOnRefreshListener { viewModel.loadData() }
         refreshLayout.setupDefaults()
+        chipTagFilter.setOnCloseIconClickListener { clearTagFilter() }
     }
 
     override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
@@ -73,9 +71,23 @@ class TimelineFragment : BaseFragment() {
         return false
     }
 
+    override fun onTagPicked(tagText: String) {
+        viewModel.tagFilter = tagText
+        viewModel.loadData()
+
+        blockTagFilter.fadeIn(150) { }
+    }
+
     private fun onItemClick(position: Int, id: String) {
         PhotoViewEditActivity.IntentBuilder(ctx)
             .withPhotoId(id)
             .start()
+    }
+
+    private fun clearTagFilter() {
+        blockTagFilter.fadeAway(100) {
+            viewModel.tagFilter = ""
+            viewModel.loadData()
+        }
     }
 }

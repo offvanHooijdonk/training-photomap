@@ -1,9 +1,9 @@
 package by.off.photomap.presentation.ui.timeline
 
-import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.ViewModel
 import android.databinding.ObservableArrayList
 import android.databinding.ObservableBoolean
+import android.databinding.ObservableField
 import android.util.Log
 import by.off.photomap.core.utils.LOGCAT
 import by.off.photomap.core.utils.map
@@ -18,6 +18,10 @@ class TimelineViewModel @Inject constructor(private val photoService: PhotoServi
 
     val listData = ObservableArrayList<PhotoInfo>()
 
+    var tagFilter: String = ""
+        set(value) = tagFilterValue.set(value)
+    val tagFilterValue = ObservableField<String>("")
+
     init {
         isRefreshing.set(true)
         photoService.listOrderTime()
@@ -26,6 +30,7 @@ class TimelineViewModel @Inject constructor(private val photoService: PhotoServi
 
     fun loadData() {
         isRefreshing.set(true)
+        photoService.filterTag = tagFilterValue.get().takeUnless { it == null || it.isEmpty() }
         photoService.listOrderTime()
     }
 

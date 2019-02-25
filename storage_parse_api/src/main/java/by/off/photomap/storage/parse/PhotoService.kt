@@ -13,6 +13,8 @@ interface PhotoService {
     val loadImageLiveData: LiveData<Int>
     val tempFileLiveData: LiveData<String>
 
+    var filterTag: String?
+
     /**
      * Works with [serviceLiveData] and [loadImageLiveData]
      */
@@ -35,5 +37,6 @@ interface PhotoService {
     fun saveToTempFile(bitmap: Bitmap)
 
     fun update(photo: PhotoInfo)
-    fun setFilter(categories: IntArray)
+    fun setCategoriesFilter(categories: IntArray)
+    fun filterByTag(tagText: String)
 }

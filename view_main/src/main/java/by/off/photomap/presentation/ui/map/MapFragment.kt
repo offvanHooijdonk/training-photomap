@@ -184,6 +184,7 @@ class MapFragment : BaseFragment(), MainActivity.ButtonPhotoListener, MainActivi
         val gMap = googleMap
         gMap?.let {
             it.clear()
+            markers.clear()
             for (photo in photoList) {
                 val lat = photo.latitude
                 val lon = photo.longitude
@@ -218,7 +219,7 @@ class MapFragment : BaseFragment(), MainActivity.ButtonPhotoListener, MainActivi
                     moveCameraToCurrent(LatLng(loc.latitude, loc.longitude))
                 }
             } else {
-                (activity as MainActivity).setNavigationButtonMode(false)
+                (activity as? MainActivity)?.setNavigationButtonMode(false)
             }
         }
 

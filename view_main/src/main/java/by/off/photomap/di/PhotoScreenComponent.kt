@@ -2,7 +2,6 @@ package by.off.photomap.di
 
 import android.content.Context
 import by.off.photomap.core.utils.di.scopes.PerScreen
-import by.off.photomap.presentation.ui.MainActivity
 import by.off.photomap.presentation.ui.map.AddPhotoBottomSheet
 import by.off.photomap.presentation.ui.map.MapFragment
 import by.off.photomap.presentation.ui.photo.PhotoViewEditActivity
@@ -10,7 +9,7 @@ import by.off.photomap.presentation.ui.timeline.TimelineFragment
 import by.off.photomap.presentation.ui.timeline.search.SearchTagsDialogFragment
 import by.off.photomap.storage.parse.GeoPointService
 import by.off.photomap.storage.parse.PhotoService
-import by.off.photomap.storage.parse.TagService
+import by.off.photomap.storage.parse.SearchTagService
 import dagger.Component
 
 @Component(modules = [PhotoScreenModule::class], dependencies = [PhotoScreenComponent.Dependencies::class])
@@ -40,7 +39,7 @@ interface PhotoScreenComponent {
     interface Dependencies {
         fun photoService(): PhotoService
         fun geoPointService(): GeoPointService
-        fun tagService(): TagService
+        fun tagService(): SearchTagService
     }
 
     interface DependenciesProvider {

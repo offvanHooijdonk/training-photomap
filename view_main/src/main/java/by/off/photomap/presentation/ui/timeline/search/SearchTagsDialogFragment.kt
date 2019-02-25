@@ -12,9 +12,9 @@ import android.text.TextWatcher
 import android.view.*
 import android.view.inputmethod.InputMethodManager
 import by.off.photomap.core.ui.*
-import by.off.photomap.core.utils.PrefHelper
 import by.off.photomap.core.utils.di.ViewModelFactory
 import by.off.photomap.di.PhotoScreenComponent
+import by.off.photomap.model.TagInfo
 import by.off.photomap.presentation.ui.R
 import by.off.photomap.presentation.ui.databinding.DialogSearchTagsBinding
 import io.reactivex.disposables.CompositeDisposable
@@ -44,7 +44,7 @@ class SearchTagsDialogFragment : DialogFragment(), ViewTreeObserver.OnPreDrawLis
     }
 
     private lateinit var revealAnimator: SearchRevealAnimator
-    private val resultList = mutableListOf<Result>()
+    private val resultList = mutableListOf<TagInfo>()
     private val adapter by lazy { SearchResultsAdapter(ctx, resultList, ::onInferHistory, ::onItemClick) }
     private val liveQuerySubject = PublishSubject.create<String>().apply { throttleLast(THROTTLE_LIVE, TimeUnit.MILLISECONDS) }
     //private val obsFullQuery = PublishSubject.create<String>()
@@ -55,6 +55,7 @@ class SearchTagsDialogFragment : DialogFragment(), ViewTreeObserver.OnPreDrawLis
     lateinit var viewModelFactory: ViewModelFactory
 
     private lateinit var viewModel: SearchTagViewModel
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setStyle(android.support.v4.app.DialogFragment.STYLE_NO_FRAME, R.style.AppTheme_SearchDialog)
@@ -78,10 +79,15 @@ class SearchTagsDialogFragment : DialogFragment(), ViewTreeObserver.OnPreDrawLis
                 onFullSearchResult(list)
             }
         })
+        viewModel.historyLiveData.observe(this, Observer { list ->
+            list?.let {
+                onLiveSearchResult(list)
+            }
+        })
         setupLayout()
 
         liveQuerySubject.subscribe { text ->
-            onLiveSearch(text)
+            viewModel.searchHistory(text)
         }.also { cd.add(it) }
     }
 
@@ -101,16 +107,13 @@ class SearchTagsDialogFragment : DialogFragment(), ViewTreeObserver.OnPreDrawLis
     }
 
     private fun onItemClick(i: Int) {
-        // todo distinguish between history and tag picked
-        val searchText = resultList.getOrNull(i)?.historyItem
-        inputSearch?.let {
-            fullSearchGoing = true
-            listSearchResults.hide()
-            inputSearch.text.apply {
-                clear()
-                insert(0, searchText)
+        val item = resultList.getOrNull(i)
+        item?.let {
+            val text = item.text
+            when (item.type) {
+                TagInfo.TYPE_HISTORY -> onHistoryPicked(text)
+                TagInfo.TYPE_TAG -> onTagPicked(text)
             }
-            searchFull()
         }
     }
 
@@ -128,23 +131,33 @@ class SearchTagsDialogFragment : DialogFragment(), ViewTreeObserver.OnPreDrawLis
         liveQuerySubject.onNext(inputSearch.text.toString().trim())
     }
 
-    private fun onLiveSearch(text: String) { // todo hide "No results" or "Hint" on live search
-        val search = text.trim()
-        adapter.searchText = search
+    private fun onLiveSearchResult(list: List<TagInfo>) { // todo hide "No results" or "Hint" on live search
+        adapter.searchText = inputSearch.text.toString()
         resultList.clear()
-        resultList.addAll(findInHistory(search).map { Result(historyItem = it) })
+        resultList.addAll(list)
         if (resultList.isEmpty()) listSearchResults.hide() else if (!listSearchResults.isVisible()) listSearchResults.fadeIn()
         adapter.notifyDataSetChanged()
     }
 
-    // temp method
-    private fun findInHistory(text: String) =
-        PrefHelper.getSearchHistory(ctx).filter { it.contains(text, true) }
+    private fun onHistoryPicked(text: String) {
+        fullSearchGoing = true
+        listSearchResults.hide()
+        inputSearch.text.apply {
+            clear()
+            insert(0, text)
+        }
+        searchFull()
+    }
+
+    private fun onTagPicked(text: String) {
+        (parentFragment as? OnTagPickedListener)?.onTagPicked(text)
+
+        closeDialog()
+    }
 
     private fun searchFull() {
         val text = inputSearch.text.toString().trim()
         if (text.isNotEmpty()) {
-            PrefHelper.addSearchHistoryEntry(ctx, inputSearch.text.toString())
             viewModel.filterTags(text)
         }
     }
@@ -158,7 +171,7 @@ class SearchTagsDialogFragment : DialogFragment(), ViewTreeObserver.OnPreDrawLis
             blockEmptyResults.show()
         }
         resultList.clear()
-        resultList.addAll(searchList.map { s -> Result(null, s) })
+        resultList.addAll(searchList.map { TagInfo(it, TagInfo.TYPE_TAG) })
         adapter.notifyDataSetChanged()
         fullSearchGoing = false
     }
@@ -204,7 +217,7 @@ class SearchTagsDialogFragment : DialogFragment(), ViewTreeObserver.OnPreDrawLis
         val animX = arguments?.getInt(ARG_ANIM_X) ?: 0
         val animY = arguments?.getInt(ARG_ANIM_Y) ?: 0
 
-        revealAnimator = SearchRevealAnimator(inputSearch, animX, animY, {
+        revealAnimator = SearchRevealAnimator(blockSearchBar, animX, animY, {
             initSearch()
             showKeyBoard(true)
         }) { performCloseActions() }
@@ -247,5 +260,9 @@ class SearchTagsDialogFragment : DialogFragment(), ViewTreeObserver.OnPreDrawLis
         } else {
             imm.hideSoftInputFromWindow(inputSearch.windowToken, 0)
         }
+    }
+
+    interface OnTagPickedListener {
+        fun onTagPicked(tagText: String)
     }
 }

@@ -16,7 +16,7 @@ class MainScreenViewModel @Inject constructor(private val userService: UserServi
     }
 
     fun filterCategories(categories: IntArray) {
-        photoService.setFilter(categories)
+        photoService.setCategoriesFilter(categories)
         photoService.listOrderTime()
     }
 

@@ -7,6 +7,7 @@ import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import by.off.photomap.model.TagInfo
 import by.off.photomap.presentation.ui.R
 import by.off.photomap.presentation.ui.databinding.ItemSearchHistoryBinding
 import by.off.photomap.presentation.ui.databinding.ItemSearchTagBinding
@@ -14,21 +15,16 @@ import kotlinx.android.synthetic.main.item_search_history.view.*
 
 class SearchResultsAdapter(
     private val ctx: Context,
-    private val items: List<Result>,
+    private val items: List<TagInfo>,
     private val onInfer: (String) -> Unit,
     private val onClick: (Int) -> Unit
 ) : RecyclerView.Adapter<SearchResultsAdapter.ViewHolder>() {
-    companion object {
-        private const val TYPE_TAG = 0
-        private const val TYPE_HISTORY = 1
-    }
-
     var searchText: String = ""
 
     override fun onCreateViewHolder(container: ViewGroup, type: Int): ViewHolder {
         val binding = DataBindingUtil.inflate<ViewDataBinding>(
             LayoutInflater.from(ctx),
-            if (type == TYPE_HISTORY) R.layout.item_search_history else R.layout.item_search_tag,
+            if (type == TagInfo.TYPE_HISTORY) R.layout.item_search_history else R.layout.item_search_tag,
             container,
             false
         )
@@ -41,22 +37,15 @@ class SearchResultsAdapter(
     override fun onBindViewHolder(vh: ViewHolder, position: Int) {
         val result = items[position]
         val value: String
-        if (getItemViewType(position) == TYPE_TAG) {
-            value = result.tag!!
-        } else {
-            value = result.historyItem!!
+        value = result.text
+        if (getItemViewType(position) == TagInfo.TYPE_HISTORY) {
             vh.itemView.imgInferHistory.setOnClickListener { onInfer(value) }
         }
         vh.binding.root.setOnClickListener { onClick(position) }
         vh.bind(value, searchText)
     }
 
-    override fun getItemViewType(position: Int): Int =
-        when {
-            items[position].tag != null -> TYPE_TAG
-            items[position].historyItem != null -> TYPE_HISTORY
-            else -> TYPE_TAG
-        }
+    override fun getItemViewType(position: Int): Int = items[position].type
 
     class ViewHolder(val binding: ViewDataBinding, private val viewModel: ResultItemViewModel, val type: Int, view: View) : RecyclerView.ViewHolder(view) {
         fun bind(value: String, searchText: String) {
@@ -70,11 +59,5 @@ class SearchResultsAdapter(
                 is ItemSearchHistoryBinding -> binding.model = viewModel
             }
         }
-    }
-}
-
-data class Result(val historyItem: String? = null, val tag: String? = null) {
-    init {
-        if (historyItem == null && tag == null) throw IllegalStateException("Cannot both be null: historyItem and tag")
     }
 }
