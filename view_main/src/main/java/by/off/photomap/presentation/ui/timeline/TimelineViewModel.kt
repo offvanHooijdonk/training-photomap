@@ -15,6 +15,8 @@ import javax.inject.Inject
 class TimelineViewModel @Inject constructor(private val photoService: PhotoService) : ViewModel() {
     val liveData = photoService.serviceListLiveData.map { onData(it) }
     val isRefreshing = ObservableBoolean(false)
+    val isShowList = ObservableBoolean(true)
+    val isShowEmptyView = ObservableBoolean(false)
 
     val listData = ObservableArrayList<PhotoInfo>()
 
@@ -25,11 +27,12 @@ class TimelineViewModel @Inject constructor(private val photoService: PhotoServi
     init {
         isRefreshing.set(true)
         photoService.listOrderTime()
-        Log.i(LOGCAT, "Init Timeline ViewModel")
     }
 
     fun loadData() {
         isRefreshing.set(true)
+        isShowList.set(false)
+        isShowEmptyView.set(false)
         photoService.filterTag = tagFilterValue.get().takeUnless { it == null || it.isEmpty() }
         photoService.listOrderTime()
     }
@@ -40,6 +43,14 @@ class TimelineViewModel @Inject constructor(private val photoService: PhotoServi
         isRefreshing.set(false)
         listData.clear()
         listData.addAll(response.list)
+
+        if (listData.isEmpty()) {
+            isShowList.set(false)
+            isShowEmptyView.set(true)
+        } else {
+            isShowEmptyView.set(false)
+            isShowList.set(true)
+        }
 
         return response
     }

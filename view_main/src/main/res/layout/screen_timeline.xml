@@ -4,6 +4,8 @@
 
     <data>
 
+        <import type="android.view.View" />
+
         <variable
             name="model"
             type="by.off.photomap.presentation.ui.timeline.TimelineViewModel" />
@@ -35,8 +37,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textAppearance="@style/ChipTextStyle"
-                    app:closeIconVisible="true"
                     app:closeIconTint="#ccffffff"
+                    app:closeIconVisible="true"
                     tools:text="@string/fish_text_short" />
             </FrameLayout>
 
@@ -52,8 +54,28 @@
                     android:id="@+id/recyclerTimeline"
                     items="@{model.listData}"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent" />
+                    android:layout_height="match_parent"
+                    android:visibility="@{model.isShowList}" />
+
             </android.support.v4.widget.SwipeRefreshLayout>
+
+            <android.support.constraint.ConstraintLayout
+                android:id="@+id/blockEmptyList"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:visibility="@{model.isShowEmptyView}">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/no_data_found"
+                    android:textSize="16sp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+            </android.support.constraint.ConstraintLayout>
         </android.support.constraint.ConstraintLayout>
     </android.support.design.widget.CoordinatorLayout>
 </layout>

@@ -131,10 +131,13 @@ class SearchTagsDialogFragment : DialogFragment(), ViewTreeObserver.OnPreDrawLis
         liveQuerySubject.onNext(inputSearch.text.toString().trim())
     }
 
-    private fun onLiveSearchResult(list: List<TagInfo>) { // todo hide "No results" or "Hint" on live search
+    private fun onLiveSearchResult(list: List<TagInfo>) {
         adapter.searchText = inputSearch.text.toString()
         resultList.clear()
         resultList.addAll(list)
+
+        blockEmptyResults.hide()
+        blockHint.hide()
         if (resultList.isEmpty()) listSearchResults.hide() else if (!listSearchResults.isVisible()) listSearchResults.fadeIn()
         adapter.notifyDataSetChanged()
     }

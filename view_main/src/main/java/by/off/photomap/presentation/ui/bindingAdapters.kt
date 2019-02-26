@@ -10,7 +10,6 @@ import android.support.v7.widget.RecyclerView
 import android.text.Spannable
 import android.text.SpannableStringBuilder
 import android.text.style.StyleSpan
-import android.util.AttributeSet
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -32,6 +31,11 @@ import kotlinx.coroutines.withContext
 import java.io.File
 import java.util.*
 import kotlin.math.absoluteValue
+
+@BindingAdapter("android:visibility")
+fun setViewVisibility(view: View, visible: Boolean) {
+    view.visibility = if (visible) View.VISIBLE else View.GONE
+}
 
 @BindingAdapter("enabled")
 fun setSpinnerEnabled(spinner: Spinner, enabledFlag: Boolean) {
@@ -68,13 +72,13 @@ private var tagColors = listOf(
 fun setChipTagText(chip: Chip, tag: String) {
     chip.text = tag
 
-    val colorIndex = tag.hashCode().absoluteValue % tagColors.size
+    val colorIndex = tag.toLowerCase().hashCode().absoluteValue % tagColors.size
     chip.setChipBackgroundColorResource(tagColors[colorIndex])
 }
 
-@BindingAdapter("searchText")
-fun setSearchTextHighlight(textView: TextView, searchText: String) {
-    textView.text = decorateTextWithSearch(textView.text.toString(), searchText.trim())
+@BindingAdapter("searchText", "android:text")
+fun setSearchTextHighlight(textView: TextView, searchText: String, text: String) {
+    textView.text = decorateTextWithSearch(/*textView.text.toString()*/text, searchText.trim())
 }
 
 @BindingAdapter("searchText")
@@ -93,7 +97,7 @@ private fun decorateTextWithSearch(text: String, search: String) =
             lastIndex += txt.length
         }
         ssb
-    } else search
+    } else text
 
 @BindingAdapter("filePath")
 fun setImageFile(imageView: ImageView, filePath: String?) {
@@ -133,8 +137,7 @@ fun setThumbPhotoId(imageView: ImageView, photoId: String) {
 
 @BindingAdapter("items")
 fun setTimelineList(rv: RecyclerView, list: List<PhotoInfo>?) {
-    Log.i(LOGCAT, "Updating Recycler View, size: ${list?.size}")
-    list?.let { (rv.adapter as TimelineAdapter).update(it) }
+    list?.let { (rv.adapter as? TimelineAdapter)?.update(it) }
 }
 
 @BindingAdapter("category")
