@@ -1,17 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Фота Мапа</string>
-    <string name="btn_login">Вайсьцi</string>
-    <string name="btn_register">Рэгiстрацыя</string>
-    <string name="hint_user_name">Iмя</string>
-    <string name="hint_password">Пароль</string>
-    <string name="hint_reg_email">Увядзiце Пошту</string>
-    <string name="hint_reg_pwd">Стварыце пароль</string>
-    <string name="hint_reg_user_name">Увядзiце Iмя</string>
-    <string name="hint_reg_pwd_check">Пацьвярдзiце пароль</string>
-    <string name="pattern_username_error">Iмя павiннае быць ад %1$d да %2$d сiмбалаў</string>
-    <string name="pattern_email_error">Калi ласка, увядзiце валiдную пошту</string>
-    <string name="pattern_pwd_error">Пароль павiнны быць ад %1$d да %2$d сiмбалаў</string>
-    <string name="pattern_pwd_not_match">Паролi розныя!</string>
-    <string name="btn_dialog_register">Рэгiстрацыя</string>
 </resources>

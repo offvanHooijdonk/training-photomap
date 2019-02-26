@@ -10,7 +10,6 @@ import android.support.v7.widget.RecyclerView
 import android.text.Spannable
 import android.text.SpannableStringBuilder
 import android.text.style.StyleSpan
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.ImageView
@@ -18,7 +17,6 @@ import android.widget.Spinner
 import android.widget.TextView
 import by.off.photomap.core.ui.*
 import by.off.photomap.core.ui.dto.CategoryInfo
-import by.off.photomap.core.utils.LOGCAT
 import by.off.photomap.core.utils.findHashTags
 import by.off.photomap.model.PhotoInfo
 import by.off.photomap.presentation.ui.timeline.TimelineAdapter
@@ -79,11 +77,6 @@ fun setChipTagText(chip: Chip, tag: String) {
 @BindingAdapter("searchText", "android:text")
 fun setSearchTextHighlight(textView: TextView, searchText: String, text: String) {
     textView.text = decorateTextWithSearch(/*textView.text.toString()*/text, searchText.trim())
-}
-
-@BindingAdapter("searchText")
-fun setSearchTextHighlightChip(chip: Chip, searchText: String) {
-    chip.text = decorateTextWithSearch(chip.text.toString(), searchText.trim())
 }
 
 private fun decorateTextWithSearch(text: String, search: String) =

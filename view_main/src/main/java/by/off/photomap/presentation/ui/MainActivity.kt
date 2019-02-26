@@ -1,6 +1,7 @@
 package by.off.photomap.presentation.ui
 
 import android.arch.lifecycle.Observer
+import android.content.Intent
 import android.content.res.ColorStateList
 import android.os.Bundle
 import android.support.design.widget.Snackbar
@@ -20,6 +21,7 @@ import by.off.photomap.core.ui.dto.CategoryInfo
 import by.off.photomap.core.ui.getColorVal
 import by.off.photomap.core.utils.di.ViewModelFactory
 import by.off.photomap.di.MainScreenComponent
+import by.off.photomap.presentation.ui.login.SplashActivity
 import by.off.photomap.presentation.ui.map.MapFragment
 import by.off.photomap.presentation.ui.timeline.TimelineFragment
 import kotlinx.android.synthetic.main.act_main.*
@@ -98,7 +100,8 @@ class MainActivity : BaseActivity() {
         viewModel = getViewModel(MainScreenViewModel::class.java)
         viewModel.liveData.observe(this, Observer { response ->
             if (response?.data != null) {
-                finish() // TODO place SplashActivity to this module and navigate to it here
+                startActivity(Intent(this, SplashActivity::class.java)
+                    .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK))
             } else if (response?.error != null) {
                 Snackbar.make(mainRoot, response.error?.message ?: getString(R.string.error_unknown), Snackbar.LENGTH_LONG).show()
             }

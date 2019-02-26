@@ -11,9 +11,9 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
 import android.widget.EditText
-import by.off.photomap.R
 import by.off.photomap.core.ui.colorError
 import by.off.photomap.model.UserInfo
+import by.off.photomap.presentation.ui.R
 import kotlinx.android.synthetic.main.dialog_register.*
 
 class RegisterDialogFragment : DialogFragment() {

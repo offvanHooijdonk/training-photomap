@@ -1,7 +1,6 @@
 package by.off.photomap.di
 
 import android.content.Context
-import by.off.photomap.app.App
 import by.off.photomap.core.utils.di.scopes.PerScreen
 import by.off.photomap.presentation.ui.login.SplashActivity
 import by.off.photomap.storage.parse.UserService
@@ -13,7 +12,7 @@ interface LoginScreenComponent {
     companion object {
         fun get(ctx: Context): LoginScreenComponent =
             DaggerLoginScreenComponent.builder()
-                .dependencies((ctx.applicationContext as App).provideLoginScreenDependencies())
+                .dependencies((ctx.applicationContext as LoginScreenComponent.DependenciesProvider).provideLoginScreenDependencies())
                 .build()
     }
 

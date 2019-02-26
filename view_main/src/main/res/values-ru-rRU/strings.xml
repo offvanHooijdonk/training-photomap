@@ -1,6 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="main_title">Фото Карта</string>
+
+    <string name="btn_login">Войти</string>
+    <string name="btn_register">Регистрация</string>
+    <string name="hint_user_name">Имя</string>
+    <string name="hint_password">Пароль</string>
+    <string name="hint_reg_user_name">Введите имя</string>
+    <string name="hint_reg_email">Введите почту</string>
+    <string name="hint_reg_pwd">Создайте пароль</string>
+    <string name="hint_reg_pwd_check">Подтвердите пароль</string>
+    <string name="pattern_pwd_not_match">Пароли разные!</string>
+    <string name="btn_dialog_register">Регистрация</string>
+    <string name="pattern_username_error">Имя должно быть от %1$d до %2$d символов</string>
+    <string name="pattern_email_error">Пожалуйста, введите валидную почту</string>
+    <string name="pattern_pwd_error">Пароль должен быть от %1$d до %2$d символов</string>
+
     <string name="tab_map">Карта</string>
     <string name="tab_timeline">Лента</string>
     <string name="log_out">Выйти</string>

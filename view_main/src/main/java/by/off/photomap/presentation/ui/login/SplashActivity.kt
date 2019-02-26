@@ -9,14 +9,14 @@ import android.support.v7.app.AlertDialog
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.TextView
-import by.off.photomap.R
 import by.off.photomap.core.ui.BaseActivity
 import by.off.photomap.core.ui.ErrorDescriptions
 import by.off.photomap.core.utils.di.ViewModelFactory
-import by.off.photomap.databinding.ScreenSplashBinding
 import by.off.photomap.di.LoginScreenComponent
 import by.off.photomap.model.UserInfo
 import by.off.photomap.presentation.ui.MainActivity
+import by.off.photomap.presentation.ui.R
+import by.off.photomap.presentation.ui.databinding.ScreenSplashBinding
 import kotlinx.android.synthetic.main.dialog_login.view.*
 import javax.inject.Inject
 

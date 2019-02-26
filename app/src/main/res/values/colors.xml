@@ -1,7 +1,3 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="splashBackground">@color/colorAccent</color>
-    <!--<color name="splashBackground">@color/colorPrimaryLight</color>-->
-    <color name="splash_logo">#FFFFFFFF</color>
-    <color name="splashLayoutAccent">#FFFFFF</color>
 </resources>
