@@ -14,7 +14,11 @@
     <dimen name="add_photo_btn_image">40dp</dimen>
     <dimen name="bottom_sheet_corner">8dp</dimen>
     <dimen name="search_bar_corner">4dp</dimen>
+    <dimen name="photo_form_corner">16dp</dimen>
+    <dimen name="photo_form_padding_h">16dp</dimen>
+    <dimen name="photo_form_padding_v">16dp</dimen>
     <dimen name="search_popup_margin">6dp</dimen>
     <dimen name="tag_row_margin_end">8dp</dimen>
     <dimen name="tag_row_margin_bottom">8dp</dimen>
+    <dimen name="photo_form_attrs_margin_start">56dp</dimen>
 </resources>

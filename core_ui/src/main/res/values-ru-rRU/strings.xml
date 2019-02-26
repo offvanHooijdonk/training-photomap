@@ -35,4 +35,8 @@
         <item>Ноябрь</item>
         <item>Декабрь</item>
     </string-array>
+    <string name="lat_north">с. ш.</string>
+    <string name="lat_south">ю. ш.</string>
+    <string name="long_east">в. д.</string>
+    <string name="long_west">з. д.</string>
 </resources>

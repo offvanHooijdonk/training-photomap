@@ -25,7 +25,8 @@ import by.off.photomap.presentation.ui.databinding.PhotoEditBinding
 import by.off.photomap.presentation.ui.photo.PhotoViewModel.MODE
 import com.google.android.gms.maps.model.LatLng
 import kotlinx.android.synthetic.main.act_photo_view_edit.*
-import kotlinx.android.synthetic.main.include_collapsible_toolbar.*
+import kotlinx.android.synthetic.main.layout_toolbar_photo_edit.*
+import kotlinx.android.synthetic.main.layout_photo_form.*
 import javax.inject.Inject
 
 class PhotoViewEditActivity : BaseActivity() {

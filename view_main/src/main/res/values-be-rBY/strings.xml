@@ -23,4 +23,20 @@
     <string name="option_take_photo">Зрабiць здымак</string>
     <string name="photo_save">Захаваць</string>
     <string name="dialog_progress_processing">Апрацоўваецца…</string>
+    <string name="fish_lat">17˚26.53´у. д.</string>
+    <string name="fish_long">108˚35.92´пн. ш.</string>
+    <string name="btn_from_gallery">Галерэя</string>
+    <string name="btn_from_camera">Камера</string>
+    <string name="permission_explanation">Калi ласка, дазвольце вызнчаць вашае знаходжаньне</string>
+    <string name="location_unknown_try_manual">Знаходжаньне невядомае, паспрабуйце абраць ўручную</string>
+    <string name="menu_item_filter">Фiльтар</string>
+    <string name="search_by_hash_tags">Шакуць па тэгах</string>
+    <string name="search_input_hint">#тэгi</string>
+    <string name="search_sample">Выходныя</string>
+    <string name="search_sample_hint">Пачнiце пошук, напрыклад</string>
+    <string name="logoff_progress_msg">Калi ласка, пачакайце аканчання выхаду</string>
+    <string name="pick_category_least_one">Абярыце хаця б адну катэгорыю</string>
+    <string name="intent_start_no_data">Дадзеныя не прадастаўленыя</string>
+    <string name="no_tags_found_for">Не знойдзены тэгаў па \'%1$s\'</string>
+    <string name="no_data_found">Няма дадзеных па вашых крытэрыях</string>
 </resources>

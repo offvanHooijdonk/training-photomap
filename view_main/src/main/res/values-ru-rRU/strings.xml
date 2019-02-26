@@ -23,4 +23,20 @@
     <string name="option_take_photo">Сделать снимок</string>
     <string name="photo_save">Сохранить</string>
     <string name="dialog_progress_processing">Обрабатывается…</string>
+    <string name="fish_long">108˚35.92´с. ш.</string>
+    <string name="fish_lat">17˚26.53´в. д.</string>
+    <string name="btn_from_gallery">Галерея</string>
+    <string name="btn_from_camera">Камера</string>
+    <string name="permission_explanation">Пожалуста, разрешите определять ваше местоположение</string>
+    <string name="location_unknown_try_manual">Местоположение неизвестно, попробуйте выбрать вручную</string>
+    <string name="menu_item_filter">Фильтр</string>
+    <string name="search_by_hash_tags">Поиск по тегам</string>
+    <string name="search_input_hint">#теги</string>
+    <string name="search_sample">Выходные</string>
+    <string name="search_sample_hint">Поищите что-нибудь, например</string>
+    <string name="logoff_progress_msg">Пожалуста, дождитесь выхода</string>
+    <string name="pick_category_least_one">Выберите как минимум одну категорию</string>
+    <string name="intent_start_no_data">Данные не предоставлены</string>
+    <string name="no_tags_found_for">Не найдено тегов по \'%1$s\'</string>
+    <string name="no_data_found">Нет данных по вашим критериям</string>
 </resources>

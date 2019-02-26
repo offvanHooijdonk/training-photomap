@@ -35,4 +35,8 @@
         <item>Лiстапад</item>
         <item>Сьнежань</item>
     </string-array>
+    <string name="lat_north">пн.ш.</string>
+    <string name="lat_south">пд.ш.</string>
+    <string name="long_east">у. д.</string>
+    <string name="long_west">з. д.</string>
 </resources>

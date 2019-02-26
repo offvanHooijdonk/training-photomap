@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <import type="android.view.View" />
+
+        <import type="java.util.Date" />
+
+        <import type="by.off.photomap.model.PhotoInfo" />
+
+        <variable
+            name="model"
+            type="by.off.photomap.presentation.ui.photo.PhotoViewModel" />
+    </data>
+
+    <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:clipToPadding="false"
+        android:paddingStart="@dimen/photo_form_padding_h"
+        android:paddingTop="@dimen/photo_form_padding_v"
+        android:paddingEnd="@dimen/photo_form_padding_h"
+        android:paddingBottom="@dimen/photo_form_padding_v"
+        android:visibility="@{model.photoInfo != null ? View.VISIBLE : View.GONE}">
+
+        <android.support.constraint.Guideline
+            android:id="@+id/guideIcons"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_begin="0dp" />
+
+        <android.support.constraint.Guideline
+            android:id="@+id/guideParameters"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_begin="@dimen/photo_form_attrs_margin_start" />
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:alpha="0.8"
+            android:src="@drawable/ic_time_24"
+            android:tint="@color/colorAccent"
+            app:layout_constraintStart_toStartOf="@id/guideIcons"
+            app:layout_constraintTop_toTopOf="@id/txtPhotoTimestamp" />
+
+        <TextView
+            android:id="@+id/txtPhotoTimestamp"
+            style="@style/TextPhotoAttributes"
+            timestamp="@{model.photoInfo.shotTimestamp}"
+            android:layout_marginTop="8dp"
+            app:layout_constraintStart_toStartOf="@id/guideParameters"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="@string/fish_date_full" />
+
+        <View
+            style="@style/DividerHorizontal"
+            android:layout_marginTop="@dimen/photo_attr_divider_margin_top"
+            app:layout_constraintStart_toStartOf="@id/txtPhotoTimestamp"
+            app:layout_constraintTop_toBottomOf="@id/txtPhotoTimestamp" />
+
+        <ImageView
+            android:id="@+id/imgCategoryLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:alpha="0.8"
+            android:src="@drawable/ic_category_24"
+            android:tint="@color/colorAccent"
+            app:layout_constraintBottom_toBottomOf="@id/chipPhotoCategory"
+            app:layout_constraintStart_toStartOf="@id/guideIcons"
+            app:layout_constraintTop_toTopOf="@id/chipPhotoCategory" />
+
+        <ImageView
+            android:id="@+id/imgCategorySpinner"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:alpha="0.8"
+            android:src="@drawable/ic_category_24"
+            android:tint="@color/colorAccent"
+            app:layout_constraintBottom_toBottomOf="@id/spinnerCategories"
+            app:layout_constraintStart_toStartOf="@id/guideIcons"
+            app:layout_constraintTop_toTopOf="@id/spinnerCategories" />
+
+        <Spinner
+            android:id="@+id/spinnerCategories"
+            style="@style/TextPhotoAttributes"
+            enabled="@{!model.inProgress}"
+            android:selectedItemPosition="@={model.photoInfo.category}"
+            app:layout_constraintStart_toStartOf="@id/guideParameters"
+            app:layout_constraintTop_toBottomOf="@id/txtPhotoTimestamp"
+            tools:entries="@array/categories" />
+
+        <android.support.design.chip.Chip
+            android:id="@+id/chipPhotoCategory"
+            style="@style/TextPhotoAttributes"
+            category="@{model.photoInfo.category}"
+            android:layout_width="wrap_content"
+            android:textAppearance="@style/ChipTextStyle"
+            app:layout_constraintEnd_toEndOf="@null"
+            app:layout_constraintStart_toStartOf="@id/guideParameters"
+            app:layout_constraintTop_toBottomOf="@id/txtPhotoTimestamp"
+            tools:text="@string/fish_text_short" />
+
+        <android.support.constraint.Barrier
+            android:id="@+id/barrierCategory"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:barrierDirection="bottom"
+            app:constraint_referenced_ids="chipPhotoCategory,spinnerCategories" />
+
+        <View
+            style="@style/DividerHorizontal"
+            android:layout_marginTop="@dimen/photo_attr_divider_margin_top"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@id/guideParameters"
+            app:layout_constraintTop_toBottomOf="@id/barrierCategory" />
+
+        <ImageView
+            android:id="@+id/imgDescriptionLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:alpha="0.8"
+            android:src="@drawable/ic_description_24"
+            android:tint="@color/colorAccent"
+            app:layout_constraintStart_toStartOf="@id/guideIcons"
+            app:layout_constraintTop_toTopOf="@id/txtPhotoDescription" />
+
+        <ImageView
+            android:id="@+id/imgDescriptionEdit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:alpha="0.8"
+            android:src="@drawable/ic_description_24"
+            android:tint="@color/colorAccent"
+            app:layout_constraintStart_toStartOf="@id/guideIcons"
+            app:layout_constraintTop_toTopOf="@id/tilPhotoDescription" />
+
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/tilPhotoDescription"
+            style="@style/TextPhotoAttributes"
+            error="@{model.descriptionError}"
+            app:layout_constraintStart_toStartOf="@id/guideParameters"
+            app:layout_constraintTop_toBottomOf="@id/barrierCategory">
+
+            <EditText
+                android:id="@+id/inputPhotoDescription"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:enabled="@{!model.inProgress}"
+                android:hint="@string/photo_desc_hint"
+                android:inputType="text|textMultiLine"
+                android:text="@={model.photoInfo.description}"
+                tools:text="@string/fish_text" />
+        </android.support.design.widget.TextInputLayout>
+
+        <TextView
+            android:id="@+id/txtPhotoDescription"
+            style="@style/TextPhotoAttributes"
+            android:text="@{model.photoInfo.description}"
+            app:layout_constraintStart_toStartOf="@id/guideParameters"
+            app:layout_constraintTop_toBottomOf="@id/barrierCategory"
+            tools:text="@string/fish_text" />
+
+        <android.support.constraint.Barrier
+            android:id="@+id/barrierDescription"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:barrierDirection="bottom"
+            app:constraint_referenced_ids="txtPhotoDescription,tilPhotoDescription" />
+
+        <View
+            android:id="@+id/dividerDescription"
+            style="@style/DividerHorizontal"
+            android:layout_marginTop="@dimen/photo_attr_divider_margin_top"
+            app:layout_constraintStart_toStartOf="@id/guideParameters"
+            app:layout_constraintTop_toBottomOf="@id/barrierDescription" />
+
+        <com.google.android.flexbox.FlexboxLayout
+            tagsContent="@{model.photoInfo.description}"
+            android:layout_width="wrap_content"
+            android:layout_height="200dp"
+            android:layout_marginTop="@dimen/photo_attr_margin_top"
+            app:flexWrap="wrap"
+            app:layout_constraintStart_toStartOf="@id/guideParameters"
+            app:layout_constraintTop_toBottomOf="@id/dividerDescription"
+            app:layout_goneMarginTop="20dp" />
+
+        <android.support.constraint.Group
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="@{model.editMode ? View.VISIBLE : View.GONE}"
+            app:constraint_referenced_ids="tilPhotoDescription, spinnerCategories, imgCategorySpinner, imgDescriptionEdit" />
+
+        <android.support.constraint.Group
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="@{model.editMode ? View.GONE : View.VISIBLE}"
+            app:constraint_referenced_ids="txtPhotoDescription, chipPhotoCategory, imgCategoryLabel, dividerDescription, imgDescriptionLabel" />
+
+    </android.support.constraint.ConstraintLayout>
+</layout>

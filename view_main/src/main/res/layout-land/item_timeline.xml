@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout>
+
+    <data>
+
+        <import type="by.off.photomap.model.PhotoInfo" />
+
+        <import type="android.view.View" />
+
+        <variable
+            name="model"
+            type="by.off.photomap.presentation.ui.timeline.ItemViewModel" />
+    </data>
+
+    <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/txtPeriod"
+            period="@{model.photo.shotTimestamp}"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/item_margin_horizontal"
+            android:layout_marginTop="8dp"
+            android:textAllCaps="true"
+            android:visibility="@{model.showMonth ? View.VISIBLE : View.GONE}"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="@string/fish_text_short"
+            tools:visibility="visible" />
+
+        <android.support.constraint.ConstraintLayout
+            android:id="@+id/itemRoot"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="0dp"
+            android:background="?selectableItemBackground"
+            android:paddingStart="@dimen/item_margin_horizontal"
+            android:paddingTop="@dimen/item_margin_vertical_dense"
+            android:paddingEnd="@dimen/item_margin_horizontal"
+            android:paddingBottom="@dimen/item_margin_vertical_dense"
+            app:layout_constraintTop_toBottomOf="@id/txtPeriod"
+            app:layout_goneMarginTop="0dp">
+
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/imgThumb"
+                thumbPhotoId="@{model.photo.id}"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:src="@drawable/ic_photo_placeholder_24"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/txtPhotoDescription"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/item_icon_margin_end"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:text="@{model.photo.description}"
+                android:textColor="@color/item_primary_text"
+                android:textSize="16sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/imgThumb"
+                app:layout_constraintTop_toTopOf="@id/imgThumb"
+                tools:text="@string/fish_text" />
+
+            <TextView
+                android:id="@+id/txtPhotoTimestamp"
+                timestampShort="@{model.photo.shotTimestamp}"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                app:layout_constraintBottom_toBottomOf="@id/imgThumb"
+                app:layout_constraintStart_toStartOf="@id/txtPhotoDescription"
+                tools:text="@string/fish_date_short" />
+
+            <TextView
+                android:id="@+id/txtPhotoCategory"
+                category="@{model.photo.category}"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/item_margin_horizontal"
+                app:layout_constraintStart_toEndOf="@id/txtPhotoTimestamp"
+                app:layout_constraintTop_toTopOf="@id/txtPhotoTimestamp"
+                tools:text="@string/fish_text_short" />
+        </android.support.constraint.ConstraintLayout>
+
+        <View
+            style="@style/DividerHorizontal"
+            android:layout_marginStart="@dimen/item_bottom_divider_margin_start"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+    </android.support.constraint.ConstraintLayout>
+</layout>
