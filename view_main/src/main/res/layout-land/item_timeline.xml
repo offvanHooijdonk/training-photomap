@@ -24,7 +24,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/item_margin_horizontal"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="@dimen/item_margin_vertical_dense"
             android:textAllCaps="true"
             android:visibility="@{model.showMonth ? View.VISIBLE : View.GONE}"
             app:layout_constraintStart_toStartOf="parent"
@@ -48,8 +48,8 @@
             <de.hdodenhof.circleimageview.CircleImageView
                 android:id="@+id/imgThumb"
                 thumbPhotoId="@{model.photo.id}"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
+                android:layout_width="@dimen/item_icon_size"
+                android:layout_height="@dimen/item_icon_size"
                 android:src="@drawable/ic_photo_placeholder_24"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -63,7 +63,7 @@
                 android:maxLines="1"
                 android:text="@{model.photo.description}"
                 android:textColor="@color/item_primary_text"
-                android:textSize="16sp"
+                android:textSize="@dimen/text_size_m"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@id/imgThumb"
                 app:layout_constraintTop_toTopOf="@id/imgThumb"
@@ -74,7 +74,7 @@
                 timestampShort="@{model.photo.shotTimestamp}"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
+                android:layout_marginTop="@dimen/secondary_text_margin_minor_top"
                 app:layout_constraintBottom_toBottomOf="@id/imgThumb"
                 app:layout_constraintStart_toStartOf="@id/txtPhotoDescription"
                 tools:text="@string/fish_date_short" />
@@ -84,7 +84,7 @@
                 category="@{model.photo.category}"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/item_margin_horizontal"
+                android:layout_marginStart="@dimen/widget_margin_h_l"
                 app:layout_constraintStart_toEndOf="@id/txtPhotoTimestamp"
                 app:layout_constraintTop_toTopOf="@id/txtPhotoTimestamp"
                 tools:text="@string/fish_text_short" />

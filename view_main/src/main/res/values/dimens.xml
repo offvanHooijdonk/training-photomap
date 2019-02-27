@@ -13,13 +13,39 @@
     <dimen name="marker_thumb_max">100dp</dimen>
     <dimen name="add_photo_btn_image">40dp</dimen>
     <dimen name="bottom_sheet_corner">8dp</dimen>
-    <dimen name="search_bar_corner">4dp</dimen>
+
     <dimen name="photo_form_corner">16dp</dimen>
     <dimen name="photo_form_padding_h">16dp</dimen>
     <dimen name="photo_form_padding_v">16dp</dimen>
+    <dimen name="photo_form_attrs_margin_start">56dp</dimen>
+    <dimen name="close_image_size">32dp</dimen>
+    <dimen name="close_image_padding">4dp</dimen>
+    <dimen name="close_image_margin">12dp</dimen>
+
+    <dimen name="search_bar_corner">4dp</dimen>
     <dimen name="search_popup_margin">6dp</dimen>
+    <dimen name="search_elevation">6dp</dimen>
+    <dimen name="search_padding">8dp</dimen>
+    <dimen name="search_controls_margin">8dp</dimen>
+    <dimen name="search_progress_padding">2dp</dimen>
+    <dimen name="search_control_size">24dp</dimen>
+    <dimen name="search_input_margin">4dp</dimen>
+    <dimen name="search_hint_padding">16dp</dimen>
+
     <dimen name="tag_row_margin_end">8dp</dimen>
     <dimen name="tag_row_margin_bottom">8dp</dimen>
-    <dimen name="photo_form_attrs_margin_start">56dp</dimen>
     <dimen name="login_buttons_bottom_margin">156dp</dimen>
+    <dimen name="fab_second_margin_bottom">88dp</dimen>
+    <dimen name="secondary_text_margin_top">8dp</dimen>
+    <dimen name="secondary_text_margin_minor_top">4dp</dimen>
+    <dimen name="btn_photo_inner_padding">4dp</dimen>
+    <dimen name="widget_margin_h_m">8dp</dimen>
+    <dimen name="widget_margin_h_l">16dp</dimen>
+    <dimen name="text_size_m">16sp</dimen>
+    <dimen name="chip_text_size">@dimen/text_size_m</dimen>
+    <dimen name="item_icon_size">40dp</dimen>
+
+    <dimen name="recycler_padding">8dp</dimen>
+
+    <item name="search_control_alpha" format="float" type="dimen">0.4</item>
 </resources>

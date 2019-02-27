@@ -29,7 +29,7 @@
             android:maxLines="1"
             android:text="@{model.valueText}"
             android:textAppearance="@style/ChipTextStyle"
-            android:textSize="16sp"
+            android:textSize="@dimen/text_size_m"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             tools:text="@string/fish_text" />

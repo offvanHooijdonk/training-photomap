@@ -48,7 +48,7 @@
             place="@{model.placeDescription}"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="@dimen/secondary_text_margin_top"
             android:textColor="@color/item_primary_text"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toStartOf="@id/guideCenterVertical"
@@ -61,15 +61,8 @@
             android:visibility="@{model.placeProgress ? View.VISIBLE : View.GONE}"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="@id/txtPlaceInfo"
-            app:layout_goneMarginTop="8dp"
+            app:layout_goneMarginTop="@dimen/secondary_text_margin_top"
             tools:visibility="visible" />
-
-        <!--<android.support.constraint.Barrier
-            android:id="@+id/barrierDescription"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:barrierDirection="bottom"
-            app:constraint_referenced_ids="txtPlaceInfo, progressPlaceLoad" />-->
 
         <android.support.constraint.Guideline
             android:id="@+id/guideCenterVertical"
@@ -79,31 +72,20 @@
             app:layout_constraintGuide_percent="0.5"/>
 
         <TextView
+            style="@style/BtnPhotoTextView"
             android:id="@+id/txtFromGallery"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="?selectableItemBackgroundBorderless"
             android:drawableTop="@drawable/ic_from_gallery"
-            android:drawablePadding="4dp"
-            android:padding="4dp"
             android:text="@string/btn_from_gallery"
-            android:textAllCaps="true"
-            android:textColor="@color/colorAccent"
             app:layout_constraintEnd_toStartOf="@id/txtFromCamera"
             app:layout_constraintStart_toStartOf="@id/guideCenterVertical"
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
+            style="@style/BtnPhotoTextView"
             android:id="@+id/txtFromCamera"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
             android:background="?selectableItemBackgroundBorderless"
             android:drawableTop="@drawable/ic_from_camera"
-            android:drawablePadding="4dp"
-            android:padding="4dp"
             android:text="@string/btn_from_camera"
-            android:textAllCaps="true"
-            android:textColor="@color/colorAccent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/txtFromGallery"
             app:layout_constraintTop_toTopOf="@id/txtFromGallery" />

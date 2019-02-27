@@ -23,15 +23,6 @@
             android:layout_height="match_parent"
             android:background="@color/colorPrimaryLight">
 
-            <!--<View
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:background="@color/colorAccentLight"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@id/guidePhoto"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />-->
-
             <ImageView
                 android:id="@+id/imgPhoto"
                 filePath="@{model.filePath}"
@@ -53,13 +44,6 @@
                 android:layout_marginStart="@dimen/photo_form_corner"
                 app:layout_constraintStart_toStartOf="@id/guideForm"
                 app:layout_constraintTop_toTopOf="parent" />
-            <!--<android.support.constraint.Guideline
-                android:id="@+id/guidePhoto"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:layout_marginStart="@dimen/photo_form_corner"
-                app:layout_constraintGuide_percent="0.5" />-->
 
             <android.support.constraint.Guideline
                 android:id="@+id/guideForm"
@@ -118,11 +102,11 @@
 
             <ImageView
                 android:id="@+id/imgClose"
-                android:layout_width="32dp"
-                android:layout_height="32dp"
-                android:layout_margin="12dp"
+                android:layout_width="@dimen/close_image_size"
+                android:layout_height="@dimen/close_image_size"
+                android:layout_margin="@dimen/close_image_margin"
                 android:background="?selectableItemBackgroundBorderless"
-                android:padding="4dp"
+                android:padding="@dimen/close_image_padding"
                 android:src="@drawable/ic_close_24"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -139,7 +123,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal|bottom"
-            android:layout_marginBottom="16dp"
+            android:layout_marginBottom="@dimen/fab_margin"
             android:src="@drawable/ic_check_24" />
 
         <ProgressBar
@@ -147,7 +131,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal|bottom"
-            android:layout_marginBottom="16dp"
+            android:layout_marginBottom="@dimen/fab_margin"
             android:visibility="@{model.progressIndeterminate &amp;&amp; model.inProgress ? View.VISIBLE : View.GONE}"
             tools:progress="25"
             tools:visibility="visible" />

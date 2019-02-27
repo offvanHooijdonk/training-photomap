@@ -5,4 +5,4 @@
     android:layout_marginEnd="@dimen/tag_row_margin_end"
     android:layout_marginBottom="@dimen/tag_row_margin_end"
     android:textAppearance="@style/ChipTextStyle"
-    android:textSize="16sp" />
+    android:textSize="@dimen/chip_text_size" />

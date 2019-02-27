@@ -45,4 +45,6 @@
     <color name="tag_23">#68C5DB</color>
     <color name="tag_24">#7EA16B</color>
     <color name="tag_25">#F98948</color>
+    <color name="close_background">#33000000</color>
+    <color name="map_back">#664cb5a6</color>
 </resources>

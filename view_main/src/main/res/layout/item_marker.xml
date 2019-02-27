@@ -25,7 +25,7 @@
         android:ellipsize="end"
         android:maxWidth="@dimen/marker_popup_text_width"
         android:maxLines="3"
-        android:textSize="16sp"
+        android:textSize="@dimen/text_size_m"
         app:layout_constraintStart_toEndOf="@id/imgThumb"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="@string/fish_text_short" />
