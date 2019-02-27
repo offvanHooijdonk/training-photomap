@@ -24,24 +24,6 @@
             android:background="@color/colorPrimaryLight"
             app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-            <FrameLayout
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/progress_linear_height"
-                app:layout_constraintTop_toTopOf="parent">
-
-                <ProgressBar
-                    android:id="@+id/progressSaving"
-                    style="?android:attr/progressBarStyleHorizontal"
-                    android:layout_width="match_parent"
-                    android:layout_height="@dimen/progress_linear_height"
-                    android:layout_gravity="center_vertical"
-                    android:indeterminate="@{model.progressIndeterminate}"
-                    android:progress="@{model.progressPerCent}"
-                    android:visibility="@{model.inProgress || model.downloadInProgress ? View.VISIBLE : View.GONE}"
-                    tools:progress="25"
-                    tools:visibility="visible" />
-            </FrameLayout>
-
             <!--<View
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
@@ -54,22 +36,31 @@
             <ImageView
                 android:id="@+id/imgPhoto"
                 filePath="@{model.filePath}"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
                 android:adjustViewBounds="true"
-                android:scaleType="fitCenter"
+                android:scaleType="centerCrop"
                 android:src="@{model.imageUri}"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="@id/viewPhotoEndPlaceholder"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 tools:src="@drawable/ic_time_24" />
 
-
-            <android.support.constraint.Guideline
+            <View
+                android:id="@+id/viewPhotoEndPlaceholder"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_marginStart="@dimen/photo_form_corner"
+                app:layout_constraintStart_toStartOf="@id/guideForm"
+                app:layout_constraintTop_toTopOf="parent" />
+            <!--<android.support.constraint.Guideline
                 android:id="@+id/guidePhoto"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                app:layout_constraintGuide_percent="0.7" />
+                android:layout_marginStart="@dimen/photo_form_corner"
+                app:layout_constraintGuide_percent="0.5" />-->
 
             <android.support.constraint.Guideline
                 android:id="@+id/guideForm"
@@ -80,8 +71,7 @@
 
             <FrameLayout
                 android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:layout_marginBottom="32dp"
+                android:layout_height="match_parent"
                 android:background="@drawable/photo_form_back"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -99,11 +89,48 @@
                         app:model="@{model}" />
                 </ScrollView>
             </FrameLayout>
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/progress_linear_height"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <ProgressBar
+                    android:id="@+id/progressSaving"
+                    style="?android:attr/progressBarStyleHorizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/progress_linear_height"
+                    android:layout_gravity="center_vertical"
+                    android:indeterminate="@{model.progressIndeterminate}"
+                    android:progress="@{model.progressPerCent}"
+                    android:visibility="@{model.inProgress || model.downloadInProgress ? View.VISIBLE : View.GONE}"
+                    tools:progress="25"
+                    tools:visibility="visible" />
+            </FrameLayout>
         </android.support.constraint.ConstraintLayout>
 
         <View
             snackbar="@{model.errorMessage}"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
+
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/fabSave"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            fabVisibility="@{model.editMode &amp;&amp; !model.inProgress}"
+            android:src="@drawable/ic_check_24"
+            android:layout_marginBottom="16dp"
+            android:layout_gravity="center_horizontal|bottom"/>
+
+        <ProgressBar
+            android:id="@+id/progressSavingCircle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="@{model.progressIndeterminate &amp;&amp; model.inProgress ? View.VISIBLE : View.GONE}"
+            android:layout_gravity="center_horizontal|bottom"
+            android:layout_marginBottom="16dp"
+            tools:progress="25"
+            tools:visibility="visible" />
     </android.support.design.widget.CoordinatorLayout>
 </layout>

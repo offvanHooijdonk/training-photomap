@@ -73,15 +73,16 @@ class PhotoViewModel @Inject constructor(private val photoService: PhotoService)
     fun save() { // TODO refactor
         if (validate()) {
             saveInProgress = true
-            progressIndeterminate.set(false)
             inProgress.set(true)
             saveEnableLiveData.postValue(false)
 
             val photo = photoInfo.get()
             if (photo != null) {
                 if (modeLiveData.value == MODE.EDIT) {
+                    progressIndeterminate.set(true)
                     photoService.update(photo)
                 } else {
+                    progressIndeterminate.set(false)
                     val uri = imageUri.get()
                     val filePath = this.filePath.get()
                     latLong?.let { photo.latitude = it.first; photo.longitude = it.second }

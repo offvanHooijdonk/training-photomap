@@ -13,9 +13,7 @@ import android.view.Menu
 import android.view.MenuItem
 import android.widget.ArrayAdapter
 import android.widget.Toast
-import by.off.photomap.core.ui.BaseActivity
-import by.off.photomap.core.ui.colorError
-import by.off.photomap.core.ui.ctx
+import by.off.photomap.core.ui.*
 import by.off.photomap.core.ui.dto.CategoryInfo
 import by.off.photomap.core.utils.LOGCAT
 import by.off.photomap.core.utils.di.ViewModelFactory
@@ -193,10 +191,17 @@ class PhotoViewEditActivity : BaseActivity() {
     }
 
     private fun initToolbar() {
-        setSupportActionBar(toolbar)
-        title = null
-        supportActionBar?.setHomeButtonEnabled(true)
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        when {
+            isPortrait() -> {
+                setSupportActionBar(toolbar)
+                title = null
+                supportActionBar?.setHomeButtonEnabled(true)
+                supportActionBar?.setDisplayHomeAsUpEnabled(true)
+            }
+            isLandscape() -> {
+                fabSave?.setOnClickListener { viewModel.save() }
+            }
+        }
     }
 
     class IntentBuilder(private val ctx: Context) {
