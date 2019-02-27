@@ -3,4 +3,9 @@
     <dimen name="photo_attr_margin_top">16dp</dimen>
     <dimen name="photo_form_attrs_margin_start">40dp</dimen>
     <dimen name="photo_attr_divider_margin_top">0dp</dimen>
+
+    <dimen name="splash_logo_size">256dp</dimen>
+    <dimen name="splash_logo_bottom_margin">64dp</dimen>
+    <dimen name="progress_login_bottom_margin">8dp</dimen>
+    <dimen name="login_buttons_bottom_margin">36dp</dimen>
 </resources>

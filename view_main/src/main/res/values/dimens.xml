@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <dimen name="progress_login_bottom_margin">48dp</dimen>
+    <dimen name="progress_login_bottom_margin">64dp</dimen>
     <dimen name="splash_logo_bottom_margin">112dp</dimen>
     <dimen name="splash_logo_size">180dp</dimen>
     <dimen name="login_btn_margin">8dp</dimen>
@@ -21,4 +21,5 @@
     <dimen name="tag_row_margin_end">8dp</dimen>
     <dimen name="tag_row_margin_bottom">8dp</dimen>
     <dimen name="photo_form_attrs_margin_start">56dp</dimen>
+    <dimen name="login_buttons_bottom_margin">156dp</dimen>
 </resources>
