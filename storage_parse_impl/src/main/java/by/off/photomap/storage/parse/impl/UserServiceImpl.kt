@@ -17,7 +17,6 @@ import com.parse.ParseQuery
 import com.parse.ParseUser
 import javax.inject.Inject
 
-// TODO log errors before returning response
 @PerFeature
 class UserServiceImpl @Inject constructor() : UserService {
     override val serviceLiveData: LiveData<Response<UserInfo>>
@@ -89,7 +88,6 @@ class UserServiceImpl @Inject constructor() : UserService {
         }
     }
 
-    // TODO move to a separate UserParseService ?
     private fun authSync(userName: String, pwd: String): Response<UserInfo> =
         try {
             val parseUser = ParseUser.logIn(userName, pwd)

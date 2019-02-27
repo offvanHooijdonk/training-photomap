@@ -59,7 +59,7 @@ class SplashActivity : BaseActivity() {
         viewModel.authenticate(userName, pwd)
     }
 
-    private fun registerUser(user: UserInfo, pwd: String) { // TODO enable to edit previous input if registration failed
+    private fun registerUser(user: UserInfo, pwd: String) {
         viewModel.registerAndLogin(user, pwd)
     }
 

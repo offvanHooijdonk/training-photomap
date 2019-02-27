@@ -79,7 +79,7 @@ class MainActivity : BaseActivity() {
         super.onOptionsItemSelected(item)
         when (item?.itemId) {
             R.id.item_log_out -> {
-                Snackbar.make(mainRoot, R.string.logoff_progress_msg, Snackbar.LENGTH_INDEFINITE).show() // todo implement some dialog here
+                Snackbar.make(mainRoot, R.string.logoff_progress_msg, Snackbar.LENGTH_INDEFINITE).show()
                 viewModel.logOut()
                 return true
             }
@@ -91,7 +91,7 @@ class MainActivity : BaseActivity() {
         return false
     }
 
-    fun setNavigationButtonMode(isOn: Boolean) { // todo implement with ViewModels
+    fun setNavigationButtonMode(isOn: Boolean) {
         val colorRes = if (isOn) R.color.navigation_btn_mode_on else R.color.navigation_btn_mode_off
         fabLocation.backgroundTintList = ColorStateList.valueOf(ctx.getColorVal(colorRes))
     }

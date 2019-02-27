@@ -40,7 +40,7 @@ class SearchTagViewModel @Inject constructor(private val searchTagService: Searc
         return list
     }
 
-    private fun onSearchResponse(list: List<String>?): List<String>? { // todo make search also return TagInfo?
+    private fun onSearchResponse(list: List<String>?): List<String>? {
         searchProgress.set(false)
         list?.let { searchTagService.addSearchResults(list) }
         return list

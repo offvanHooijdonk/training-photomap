@@ -56,7 +56,6 @@ class AddPhotoBottomSheet : BottomSheetDialogFragment() {
         super.onViewCreated(view, savedInstanceState)
 
         if (latLong == null) {
-            // todo show something?
             dismiss()
             return
         }

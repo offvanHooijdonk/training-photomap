@@ -78,10 +78,9 @@ class ImageService @Inject constructor(private val ctx: Context) {
         return if (inputStream != null) readBytes(inputStream) else null
     }
 
-    fun readBytes(inputStream: InputStream): ByteArray {
+    private fun readBytes(inputStream: InputStream): ByteArray {
         val byteBuffer = ByteArrayOutputStream()
         inputStream.use {
-            // TODO handle null
             val bufferSize = 1024
             val buffer = ByteArray(bufferSize)
 

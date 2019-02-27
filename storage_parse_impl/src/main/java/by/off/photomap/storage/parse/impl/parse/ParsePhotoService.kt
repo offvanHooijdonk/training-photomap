@@ -61,7 +61,7 @@ class ParsePhotoService @Inject constructor(private val ctx: Context, private va
     /**
      * Works synchronously
      */
-    fun saveObject(photoInfo: PhotoInfo, file: ParseFile?, thumbFile: ParseFile?) { // todo move to separate class
+    fun saveObject(photoInfo: PhotoInfo, file: ParseFile?, thumbFile: ParseFile?) {
         val parse = ParseObject(PhotoInfo.TABLE)
         photoInfo.takeUnless { it.id.isEmpty() }?.let { parse.objectId = it.id }
         file?.let { parse.put(PhotoInfo.BIN_DATA, file) }
@@ -130,7 +130,7 @@ class ParsePhotoService @Inject constructor(private val ctx: Context, private va
         }
     }
 
-    private fun saveHashTags(description: String, photoId: String) { // TODO before save - delete old ones associated
+    private fun saveHashTags(description: String, photoId: String) {
         val photoObject = ParseObject(PhotoInfo.TABLE).apply { objectId = photoId }
 
         ParseQuery.getQuery<ParseObject>(TagInfo.TABLE).whereEqualTo(TagInfo.PHOTO_ID, photoObject).find()

@@ -43,7 +43,7 @@ class PhotoViewModel @Inject constructor(private val photoService: PhotoService)
 
     fun setupWithPhotoById(id: String) {
         modeLiveData.value = MODE.VIEW
-        editMode.set(false)// todo check if this is author
+        editMode.set(false)
         inProgress.set(true)
         downloadInProgress.set(true)
         progressIndeterminate.set(true)
@@ -70,29 +70,20 @@ class PhotoViewModel @Inject constructor(private val photoService: PhotoService)
         this.latLong = latLong
     }
 
-    fun save() { // TODO refactor
+    fun save() {
         if (validate()) {
-            saveInProgress = true
-            inProgress.set(true)
-            saveEnableLiveData.postValue(false)
+            photoInfo.get()?.let { photo ->
+                saveInProgress = true
+                inProgress.set(true)
+                saveEnableLiveData.postValue(false)
 
-            val photo = photoInfo.get()
-            if (photo != null) {
                 if (modeLiveData.value == MODE.EDIT) {
                     progressIndeterminate.set(true)
-                    photoService.update(photo)
+                    startUpdate(photo)
                 } else {
                     progressIndeterminate.set(false)
-                    val uri = imageUri.get()
-                    val filePath = this.filePath.get()
-                    latLong?.let { photo.latitude = it.first; photo.longitude = it.second }
-                    when {
-                        uri != null -> photoService.save(photo, uri)
-                        filePath != null -> photoService.save(photo, filePath)
-                    }
+                    startSave(photo)
                 }
-            } else {
-                errorMessage.set("No data provide") // todo need some exception here?
             }
         }
     }
@@ -153,6 +144,21 @@ class PhotoViewModel @Inject constructor(private val photoService: PhotoService)
             descriptionError.set("The field is mandatory, please fill in")
             false
         }
+    }
+
+    private fun startSave(photo: PhotoInfo) {
+        val uri = imageUri.get()
+        val filePath = this.filePath.get()
+        latLong?.let { photo.latitude = it.first; photo.longitude = it.second }
+
+        when {
+            uri != null -> photoService.save(photo, uri)
+            filePath != null -> photoService.save(photo, filePath)
+        }
+    }
+
+    private fun startUpdate(photo: PhotoInfo) {
+        photoService.update(photo)
     }
 
     enum class MODE {

@@ -4,8 +4,6 @@ import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.MutableLiveData
 import android.content.Context
 import android.location.Geocoder
-import android.util.Log
-import by.off.photomap.core.utils.LOGCAT
 import by.off.photomap.core.utils.di.scopes.PerFeature
 import by.off.photomap.core.utils.launchScopeIO
 import by.off.photomap.storage.parse.GeoPointService
@@ -27,7 +25,6 @@ class GeoPointServiceImpl @Inject constructor(ctx: Context) : GeoPointService {
                     placeInfo = adr.getAddressLine(0)
                 }
             } catch (e: Exception) {
-                // todo create Response object?
             }
             placeLD.postValue(placeInfo)
         }

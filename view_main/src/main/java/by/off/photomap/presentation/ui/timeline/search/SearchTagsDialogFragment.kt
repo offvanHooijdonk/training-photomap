@@ -200,7 +200,7 @@ class SearchTagsDialogFragment : DialogFragment(), ViewTreeObserver.OnPreDrawLis
             }
         }
         inputSearch.addTextChangedListener(object : TextWatcher {
-            override fun afterTextChanged(s: Editable?) { // todo validate for spaces?
+            override fun afterTextChanged(s: Editable?) {
                 if (!fullSearchGoing) {
                     searchLive()
                 }

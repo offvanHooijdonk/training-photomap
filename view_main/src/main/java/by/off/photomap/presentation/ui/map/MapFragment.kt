@@ -255,7 +255,7 @@ class MapFragment : BaseFragment(), MainActivity.ButtonPhotoListener, MainActivi
     // region Camera/Gallery callbacks
     private fun onCameraImageSaved(filePath: String?) {
         filePath?.let {
-            progressDialog?.dismiss() // todo to method
+            progressDialog?.dismiss()
             PhotoViewEditActivity.IntentBuilder(ctx)
                 .withFile(filePath)
                 .withGeoPoint(workingLocation)
