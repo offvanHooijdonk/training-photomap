@@ -72,23 +72,22 @@ class MainActivity : BaseActivity() {
         menuInflater.inflate(R.menu.main, menu)
         super.onCreateOptionsMenu(menu)
         return true
-
     }
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         super.onOptionsItemSelected(item)
-        when (item?.itemId) {
+        return when (item?.itemId) {
             R.id.item_log_out -> {
                 Snackbar.make(mainRoot, R.string.logoff_progress_msg, Snackbar.LENGTH_INDEFINITE).show()
                 viewModel.logOut()
-                return true
+                true
             }
             R.id.item_filter_categories -> {
                 startCategoryFilterDialog()
-                return true
+                true
             }
+            else -> false
         }
-        return false
     }
 
     fun setNavigationButtonMode(isOn: Boolean) {
@@ -100,8 +99,10 @@ class MainActivity : BaseActivity() {
         viewModel = getViewModel(MainScreenViewModel::class.java)
         viewModel.liveData.observe(this, Observer { response ->
             if (response?.data != null) {
-                startActivity(Intent(this, SplashActivity::class.java)
-                    .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK))
+                startActivity(
+                    Intent(this, SplashActivity::class.java)
+                        .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                )
             } else if (response?.error != null) {
                 Snackbar.make(mainRoot, response.error?.message ?: getString(R.string.error_unknown), Snackbar.LENGTH_LONG).show()
             }
