@@ -148,7 +148,7 @@ fun setTimelineStampShort(textView: TextView, timestamp: Date) {
 
 @BindingAdapter("period")
 fun setTimelinePeriod(textView: TextView, timestamp: Date) {
-    textView.text = DateHelper.formatTimelineDate(timestamp, textView.context)
+    textView.text = DateHelper.formatTimelineDate(timestamp, textView.context.resources.getStringArray(by.off.photomap.core.ui.R.array.months_full))
 }
 
 @BindingAdapter("latitude")

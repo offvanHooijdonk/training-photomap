@@ -20,7 +20,7 @@
     <color name="search_controls">#000000</color>
     <color name="search_text">#cc000000</color>
 
-    <color name="tag_1">@color/colorAccentDark</color>
+    <color name="tag_1">#c63d37</color>
     <color name="tag_2">#00BFA5</color>
     <color name="tag_3">#651FFF</color>
     <color name="tag_4">#D500F9</color>

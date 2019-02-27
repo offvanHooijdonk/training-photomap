@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout>
 
-    <data><!-- TODO can this be removed? -->
+    <data>
 
         <variable
             name="model"
             type="by.off.photomap.presentation.ui.photo.PhotoViewModel" />
     </data>
+
     <View xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="0dp"
         android:layout_height="0dp" />
