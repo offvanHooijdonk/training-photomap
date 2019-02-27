@@ -6,7 +6,7 @@
         android:title="@string/menu_item_filter"
         android:icon="@drawable/ic_filter_24"
         android:orderInCategory="10"
-        app:showAsAction="ifRoom"/>
+        app:showAsAction="ifRoom|withText"/>
 
     <item
         android:id="@+id/item_log_out"

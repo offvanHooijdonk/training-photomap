@@ -21,8 +21,7 @@
         <android.support.constraint.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@color/colorPrimaryLight"
-            app:layout_behavior="@string/appbar_scrolling_view_behavior">
+            android:background="@color/colorPrimaryLight">
 
             <!--<View
                 android:layout_width="0dp"
@@ -107,6 +106,26 @@
                     tools:progress="25"
                     tools:visibility="visible" />
             </FrameLayout>
+
+            <ImageView
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:src="@drawable/circle_close_back"
+                app:layout_constraintBottom_toBottomOf="@id/imgClose"
+                app:layout_constraintEnd_toEndOf="@id/imgClose"
+                app:layout_constraintStart_toStartOf="@id/imgClose"
+                app:layout_constraintTop_toTopOf="@id/imgClose" />
+
+            <ImageView
+                android:id="@+id/imgClose"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_margin="12dp"
+                android:background="?selectableItemBackgroundBorderless"
+                android:padding="4dp"
+                android:src="@drawable/ic_close_24"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
         </android.support.constraint.ConstraintLayout>
 
         <View
@@ -116,20 +135,20 @@
 
         <android.support.design.widget.FloatingActionButton
             android:id="@+id/fabSave"
+            fabVisibility="@{model.editMode &amp;&amp; !model.inProgress}"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            fabVisibility="@{model.editMode &amp;&amp; !model.inProgress}"
-            android:src="@drawable/ic_check_24"
+            android:layout_gravity="center_horizontal|bottom"
             android:layout_marginBottom="16dp"
-            android:layout_gravity="center_horizontal|bottom"/>
+            android:src="@drawable/ic_check_24" />
 
         <ProgressBar
             android:id="@+id/progressSavingCircle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:visibility="@{model.progressIndeterminate &amp;&amp; model.inProgress ? View.VISIBLE : View.GONE}"
             android:layout_gravity="center_horizontal|bottom"
             android:layout_marginBottom="16dp"
+            android:visibility="@{model.progressIndeterminate &amp;&amp; model.inProgress ? View.VISIBLE : View.GONE}"
             tools:progress="25"
             tools:visibility="visible" />
     </android.support.design.widget.CoordinatorLayout>

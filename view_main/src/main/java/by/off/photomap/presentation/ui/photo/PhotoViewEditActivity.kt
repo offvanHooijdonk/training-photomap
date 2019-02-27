@@ -200,6 +200,7 @@ class PhotoViewEditActivity : BaseActivity() {
             }
             isLandscape() -> {
                 fabSave?.setOnClickListener { viewModel.save() }
+                imgClose?.setOnClickListener { handleBack() }
             }
         }
     }
