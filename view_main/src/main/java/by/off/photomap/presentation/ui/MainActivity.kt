@@ -31,8 +31,6 @@ class MainActivity : BaseActivity() {
     companion object {
         const val TAB_INDEX_MAP = 0
         const val TAB_INDEX_TIMELINE = 1
-        const val FLAG_PHOTO_LISTENER = 0b1
-        const val FLAG_LOCATION_LISTENER = 0b10
     }
 
     @Inject
@@ -44,8 +42,6 @@ class MainActivity : BaseActivity() {
     private lateinit var viewModel: MainScreenViewModel
     private val filteredCategories = BooleanArray(CategoryInfo.getTitlesOrdered().size) { true }
     private var liveCatFilter = BooleanArray(3)
-
-    val registeredFlags = mutableMapOf<Int, Int>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -120,16 +116,16 @@ class MainActivity : BaseActivity() {
             override fun onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int) {}
 
             override fun onPageSelected(position: Int) {
-                val flag = registeredFlags[position] ?: 0
-                if (flag and FLAG_PHOTO_LISTENER != 0) fabAddPhoto.show() else fabAddPhoto.hide()
-                if (flag and FLAG_LOCATION_LISTENER != 0) fabLocation.show() else fabLocation.hide()
+                if (position == TAB_INDEX_MAP) {
+                    fabAddPhoto.show()
+                    fabLocation.show()
+                } else {
+                    fabAddPhoto.hide()
+                    fabLocation.hide()
+                }
             }
         })
     }
-
-    private fun getFragmentFlag(f: Fragment) =
-        (if (f is ButtonPhotoListener) FLAG_PHOTO_LISTENER else 0) or
-                (if (f is ButtonLocationListener) FLAG_LOCATION_LISTENER else 0)
 
     private fun getCurrentFragment(): Fragment? {
         for (fr in supportFragmentManager.fragments) {
@@ -168,13 +164,14 @@ class MainActivity : BaseActivity() {
 
     private inner class MainPagerAdapter(fm: FragmentManager) : FragmentPagerAdapter(fm) {
 
-        override fun getItem(position: Int): Fragment = when (position) {
-            TAB_INDEX_MAP -> MapFragment()
-            TAB_INDEX_TIMELINE -> TimelineFragment()
-            else -> {
-                Fragment()
+        override fun getItem(position: Int): Fragment =
+            when (position) {
+                TAB_INDEX_MAP -> MapFragment()
+                TAB_INDEX_TIMELINE -> TimelineFragment()
+                else -> {
+                    Fragment()
+                }
             }
-        }.also { registeredFlags[position] = getFragmentFlag(it) }
 
         override fun getCount(): Int = tabs.tabCount
     }
