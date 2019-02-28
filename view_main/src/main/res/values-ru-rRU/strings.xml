@@ -40,4 +40,5 @@
     <string name="no_tags_found_for">Не найдено тегов по \'%1$s\'</string>
     <string name="no_data_found">Нет данных по вашим критериям</string>
     <string name="photo_desc_hint">Напишите свои эмоции</string>
+    <string name="grant_permission_cta">Разрешить</string>
 </resources>

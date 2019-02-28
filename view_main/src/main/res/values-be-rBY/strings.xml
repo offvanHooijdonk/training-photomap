@@ -40,4 +40,5 @@
     <string name="no_tags_found_for">Не знойдзены тэгаў па \'%1$s\'</string>
     <string name="no_data_found">Няма дадзеных па вашых крытэрыях</string>
     <string name="photo_desc_hint">Напiшыце свае эмоцыi</string>
+    <string name="grant_permission_cta">Дазволіць</string>
 </resources>

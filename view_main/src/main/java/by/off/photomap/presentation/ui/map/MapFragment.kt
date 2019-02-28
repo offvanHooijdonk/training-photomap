@@ -105,19 +105,17 @@ class MapFragment : BaseFragment(), MainActivity.ButtonPhotoListener, MainActivi
         gMap?.also {
             googleMap = gMap
             viewModel.listLiveData.value?.let { updateMarkers(it.list) }
+
             gMap.setInfoWindowAdapter(MarkerAdapter(ctx))
+            gMap.uiSettings?.isMapToolbarEnabled = false
 
             markers.firstOrNull { marker -> markerIdPicked == (marker.tag as PhotoInfo).id }?.showInfoWindow()
             markers.clear()
-
-            gMap.setOnInfoWindowClickListener(::onMarkerPopupClick)
-            gMap.setOnMapLongClickListener {
-                workingLocation = it
-                startPhotoOnLocationDialog(it)
+            gMap.setOnMarkerClickListener { marker ->
+                markerIdPicked = (marker.tag as PhotoInfo?)?.id
+                false
             }
-            gMap.uiSettings?.isMapToolbarEnabled = false
 
-            checkAndRequestLocationPermission(false)
             gMap.setOnCameraMoveStartedListener { reason ->
                 if (reason == GoogleMap.OnCameraMoveStartedListener.REASON_GESTURE) {
                     (activity as MainActivity).setNavigationButtonMode(false)
@@ -125,10 +123,13 @@ class MapFragment : BaseFragment(), MainActivity.ButtonPhotoListener, MainActivi
                     isCurrentLocationMode = false
                 }
             }
-            gMap.setOnMarkerClickListener { marker ->
-                markerIdPicked = (marker.tag as PhotoInfo?)?.id
-                false
+            gMap.setOnInfoWindowClickListener(::onMarkerPopupClick)
+            gMap.setOnMapLongClickListener {
+                workingLocation = it
+                startPhotoOnLocationDialog(it)
             }
+
+            checkAndRequestLocationPermission(false)
         }
     }
 
@@ -171,11 +172,8 @@ class MapFragment : BaseFragment(), MainActivity.ButtonPhotoListener, MainActivi
     }
 
     private fun startPhotoOnLocationDialog(geoPoint: LatLng) {
-        workingLocation?.let {
-            dialogAddPhoto = AddPhotoBottomSheet.createNewDialog(it).also { dialog ->
-                //dialog.onAddClicked = ::onOptionPicked
-                dialog.show(childFragmentManager, TAG_DIALOG_ADD_PHOTO)
-            }
+        dialogAddPhoto = AddPhotoBottomSheet.createNewDialog(geoPoint).also { dialog ->
+            dialog.show(childFragmentManager, TAG_DIALOG_ADD_PHOTO)
         }
     }
 
@@ -331,7 +329,7 @@ class MapFragment : BaseFragment(), MainActivity.ButtonPhotoListener, MainActivi
 
     private fun showPermissionExplanation() {
         Snackbar.make((activity as MainActivity).snackbarRoot, R.string.permission_explanation, Snackbar.LENGTH_LONG)
-            .setAction("Grant") { checkAndRequestLocationPermission(true) }
+            .setAction(R.string.grant_permission_cta) { checkAndRequestLocationPermission(true) }
             .show()
     }
 

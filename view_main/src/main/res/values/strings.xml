@@ -51,4 +51,6 @@
     <string name="no_tags_found_for">No tags found for \'%1$s\'</string>
     <string name="no_data_found">No data found matching your criteria</string>
     <string name="photo_desc_hint">Share your emotions</string>
+
+    <string name="grant_permission_cta">Grant</string>
 </resources>
