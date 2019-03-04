@@ -93,8 +93,8 @@ fun Context.getColorVal(@ColorRes colorRes: Int) =
     }
 
 fun hue(@ColorInt color: Int): Float {
-    val r = (color / 0xFFFF).let { if (it < 0) 255 + it else it }
-    val g = color / 0xFF and 0xFF
+    val r = (color shr 16).let { if (it < 0) 255 + it else it }
+    val g = (color and 0xff00) shr 8
     val b = color and 0xFF
     val max = Math.max(r, Math.max(g, b))
     val min = Math.min(r, Math.min(g, b))
