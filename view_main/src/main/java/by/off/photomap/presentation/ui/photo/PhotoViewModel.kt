@@ -66,7 +66,7 @@ class PhotoViewModel @Inject constructor(private val photoService: PhotoService)
         modeLiveData.postValue(MODE.CREATE)
         editMode.set(true)
         this.filePath.set(filePath)
-        photoInfo.set(PhotoInfo("", null, "", Date(), CategoryInfo.getDeafault()))
+        photoInfo.set(PhotoInfo("", null, "", Date(), CategoryInfo.getDefault()))
         this.latLong = latLong
     }
 

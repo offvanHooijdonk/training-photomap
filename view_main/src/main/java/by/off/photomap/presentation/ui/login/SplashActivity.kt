@@ -88,7 +88,7 @@ class SplashActivity : BaseActivity() {
 @BindingAdapter("exception")
 fun setErrorMessage(textView: TextView, e: Exception?) {
     val ctx = textView.context
-    val errorMsg = e?.let { ErrorDescriptions.getDescripitionRes(ctx, e) }
+    val errorMsg = e?.let { ErrorDescriptions.getDescriptionRes(ctx, e) }
 
     textView.text = errorMsg
 }

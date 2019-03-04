@@ -120,7 +120,8 @@ fun formatLongitude(value: Double, ctx: Context) =
         if (value >= 0) ctx.getString(R.string.long_west) else ctx.getString(R.string.long_east)
     ).toString()
 
-
+internal const val DEGREE = "˚"
+internal const val MINUTE = "´"
 private fun formatGeoCoordinate(value: Double): String {
     val coordString = Location.convert(Math.abs(value), Location.FORMAT_MINUTES)
     return try {
@@ -128,7 +129,7 @@ private fun formatGeoCoordinate(value: Double): String {
             val degree = it[0]
             val dotIndex = it[1].indexOfFirst { c -> c == '.' }
             val minutes = it[1].subSequence(0, dotIndex + 3)
-            "$degree˚ $minutes´"
+            "$degree$DEGREE $minutes$MINUTE"
         }
     } catch (e: Exception) {
         coordString

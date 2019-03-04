@@ -26,7 +26,7 @@ data class CategoryInfo(val id: Int, @StringRes val labelRes: Int, @ColorRes val
             )
         }
 
-        fun getDeafault() = ID_DEFAULT
+        fun getDefault() = ID_DEFAULT
 
         fun getAllIds() = listOf(ID_DEFAULT, ID_FRIENDS, ID_NATURE)
 

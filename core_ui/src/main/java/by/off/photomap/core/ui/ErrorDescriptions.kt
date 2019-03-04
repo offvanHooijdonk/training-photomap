@@ -6,7 +6,7 @@ import by.off.photomap.storage.parse.exception.RegistrationFailedException
 import by.off.photomap.storage.parse.exception.UserNotFoundException
 
 object ErrorDescriptions {
-    fun getDescripitionRes(ctx: Context, e: Exception): String =
+    fun getDescriptionRes(ctx: Context, e: Exception): String =
         when (e) {
             is AuthenticationFailedException -> ctx.getString(by.off.photomap.core.ui.R.string.error_auth_failed, e.userName)
             is UserNotFoundException -> ctx.getString(by.off.photomap.core.ui.R.string.error_user_not_found, e.id)
