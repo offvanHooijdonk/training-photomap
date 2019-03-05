@@ -12,7 +12,6 @@
     <dimen name="marker_popup_text_width">180dp</dimen>
     <dimen name="marker_thumb_max">100dp</dimen>
     <dimen name="add_photo_btn_image">40dp</dimen>
-    <dimen name="bottom_sheet_corner">8dp</dimen>
 
     <dimen name="photo_form_corner">16dp</dimen>
     <dimen name="photo_form_padding_h">16dp</dimen>

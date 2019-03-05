@@ -38,8 +38,6 @@ class TimelineViewModel @Inject constructor(private val photoService: PhotoServi
     }
 
     private fun onData(response: ListResponse<PhotoInfo>): ListResponse<PhotoInfo> {
-        Log.i(LOGCAT, "Photos loaded, size: ${response.list.size}")
-
         isRefreshing.set(false)
         listData.clear()
         listData.addAll(response.list)

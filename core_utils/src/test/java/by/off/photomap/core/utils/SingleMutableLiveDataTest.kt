@@ -29,7 +29,7 @@ class SingleMutableLiveDataTest {
         assertNull("Expecting read value to be null",ld.value)
     }
 }
-
+// todo move to separate place
 class StubLifecycleOwner : LifecycleOwner {
     private val lifecycleRegistry = LifecycleRegistry(this).apply { markState(Lifecycle.State.STARTED) }
 

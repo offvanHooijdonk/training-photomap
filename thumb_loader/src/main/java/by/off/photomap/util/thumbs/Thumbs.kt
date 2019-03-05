@@ -10,7 +10,7 @@ object Thumbs : ThumbnailLoader {
         if (loader == null) loader = ThumbnailLoaderImpl(context)
     }
 
-    override fun loadById(photoId: String, imageView: ImageView/*, callback: () -> Unit*/) {
-        loader?.loadById(photoId, imageView/*, callback*/)
+    override fun loadById(photoId: String, imageView: ImageView) {
+        loader?.loadById(photoId, imageView)
     }
 }

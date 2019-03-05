@@ -18,6 +18,7 @@ import android.support.v7.app.AppCompatActivity
 import android.view.View
 import android.widget.TextView
 import by.off.photomap.core.utils.di.ViewModelFactory
+import java.text.DecimalFormat
 
 // region VISIBILITY
 fun View.show() {
@@ -117,7 +118,7 @@ fun formatLatitude(value: Double, ctx: Context) =
 
 fun formatLongitude(value: Double, ctx: Context) =
     StringBuilder().append(formatGeoCoordinate(value)).append(" ").append(
-        if (value >= 0) ctx.getString(R.string.long_west) else ctx.getString(R.string.long_east)
+        if (value >= 0) ctx.getString(R.string.long_east) else ctx.getString(R.string.long_west)
     ).toString()
 
 internal const val DEGREE = "˚"
@@ -127,8 +128,8 @@ private fun formatGeoCoordinate(value: Double): String {
     return try {
         coordString.split(":").let {
             val degree = it[0]
-            val dotIndex = it[1].indexOfFirst { c -> c == '.' }
-            val minutes = it[1].subSequence(0, dotIndex + 3)
+            val minutesFloat = it[1].trim().toFloat()
+            val minutes = DecimalFormat("00.###").format(minutesFloat)
             "$degree$DEGREE $minutes$MINUTE"
         }
     } catch (e: Exception) {
