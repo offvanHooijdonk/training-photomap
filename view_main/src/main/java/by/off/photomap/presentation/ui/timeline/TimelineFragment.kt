@@ -1,5 +1,6 @@
 package by.off.photomap.presentation.ui.timeline
 
+import android.arch.lifecycle.Observer
 import android.databinding.DataBindingUtil
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
@@ -7,10 +8,12 @@ import android.view.*
 import by.off.photomap.core.ui.*
 import by.off.photomap.core.utils.di.ViewModelFactory
 import by.off.photomap.di.PhotoScreenComponent
+import by.off.photomap.model.PhotoInfo
 import by.off.photomap.presentation.ui.R
 import by.off.photomap.presentation.ui.databinding.ScreenTimelineBinding
 import by.off.photomap.presentation.ui.photo.PhotoViewEditActivity
 import by.off.photomap.presentation.ui.timeline.search.SearchTagsDialogFragment
+import by.off.photomap.storage.parse.ListResponse
 import kotlinx.android.synthetic.main.screen_timeline.*
 import javax.inject.Inject
 
@@ -47,7 +50,7 @@ class TimelineFragment : BaseFragment(), SearchTagsDialogFragment.OnTagPickedLis
             this.adapter = timelineAdapter
         }
 
-        viewModel.liveData.observe({ this.lifecycle }, {})
+        viewModel.liveData.observe(this, EmptyObserver())
 
         refreshLayout.setOnRefreshListener { viewModel.loadData() }
         refreshLayout.setupDefaults()

@@ -123,7 +123,7 @@ class PhotoViewEditActivity : BaseActivity() {
     }
 
     private fun initModelsObserve() {
-        viewModel.liveData.observe(this, Observer { })
+        viewModel.liveData.observe(this, EmptyObserver())
         viewModel.modeLiveData.observe(this, Observer { leaveScreen ->
             leaveScreen?.let {
                 when (it) {
@@ -140,12 +140,12 @@ class PhotoViewEditActivity : BaseActivity() {
                 }
             }
         })
-        viewModel.loadImageLiveData.observe(this, Observer { })
+        viewModel.loadImageLiveData.observe(this, EmptyObserver())
         viewModel.saveEnableLiveData.observe(this, Observer { enable ->
             enableSave = enable ?: true
             invalidateOptionsMenu()
         })
-        viewModel.fileLiveData.observe(this, Observer { })
+        viewModel.fileLiveData.observe(this, EmptyObserver())
         viewModel.handleBackLiveData.observe(this, Observer { isHandle ->
             isHandle?.let {
                 if (isHandle) {
