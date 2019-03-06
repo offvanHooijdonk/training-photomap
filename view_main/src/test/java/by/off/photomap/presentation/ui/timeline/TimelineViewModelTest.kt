@@ -4,6 +4,7 @@ import android.arch.core.executor.testing.InstantTaskExecutorRule
 import android.arch.lifecycle.*
 import android.arch.lifecycle.Observer
 import by.off.photomap.model.PhotoInfo
+import by.off.photomap.presentation.ui.StubLifecycleOwner
 import by.off.photomap.storage.parse.ListResponse
 import by.off.photomap.storage.parse.PhotoService
 import org.junit.Assert.*
@@ -66,10 +67,4 @@ class TimelineViewModelTest {
     }
 
     private fun samplePhotoInfo() = PhotoInfo(id = "", description = "", shotTimestamp = Date(), category = 0)
-}
-
-class StubLifecycleOwner : LifecycleOwner {
-    private val lifecycleRegistry = LifecycleRegistry(this).apply { markState(Lifecycle.State.STARTED) }
-
-    override fun getLifecycle(): Lifecycle = lifecycleRegistry
 }
