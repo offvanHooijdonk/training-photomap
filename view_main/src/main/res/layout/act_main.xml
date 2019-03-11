@@ -1,67 +1,78 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/mainRoot"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
+<layout>
 
-    <android.support.design.widget.AppBarLayout
-        android:id="@+id/appbar"
+    <data>
+
+        <variable
+            name="model"
+            type="by.off.photomap.presentation.ui.MainScreenViewModel" />
+    </data>
+
+    <android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/mainRoot"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:theme="@style/AppTheme.AppBarOverlay">
+        android:layout_height="match_parent">
 
-        <android.support.v7.widget.Toolbar
-            android:id="@+id/toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="?actionBarSize"
-            android:layout_weight="1"
-            android:background="@color/colorPrimary"
-            app:popupTheme="@style/AppTheme.PopupOverlay"
-            app:title="@string/main_title">
-
-        </android.support.v7.widget.Toolbar>
-
-        <android.support.design.widget.TabLayout
-            android:id="@+id/tabs"
+        <android.support.design.widget.AppBarLayout
+            android:id="@+id/appbar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/tabs_back"
-            app:tabIndicatorColor="@color/tabs_indicator"
-            app:tabSelectedTextColor="@color/tabs_text"
-            app:tabTextColor="@color/tabs_selected_text">
+            android:theme="@style/AppTheme.AppBarOverlay">
 
-            <android.support.design.widget.TabItem
-                android:id="@+id/tabMap"
-                android:layout_width="wrap_content"
+            <android.support.v7.widget.Toolbar
+                android:id="@+id/toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="?actionBarSize"
+                android:layout_weight="1"
+                android:background="@color/colorPrimary"
+                app:popupTheme="@style/AppTheme.PopupOverlay"
+                app:title="@string/main_title">
+
+            </android.support.v7.widget.Toolbar>
+
+            <android.support.design.widget.TabLayout
+                android:id="@+id/tabs"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/tab_map" />
+                android:background="@color/tabs_back"
+                app:tabIndicatorColor="@color/tabs_indicator"
+                app:tabSelectedTextColor="@color/tabs_text"
+                app:tabTextColor="@color/tabs_selected_text">
 
-            <android.support.design.widget.TabItem
-                android:id="@+id/tabTimeline"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/tab_timeline" />
+                <android.support.design.widget.TabItem
+                    android:id="@+id/tabMap"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/tab_map" />
 
-        </android.support.design.widget.TabLayout>
-    </android.support.design.widget.AppBarLayout>
+                <android.support.design.widget.TabItem
+                    android:id="@+id/tabTimeline"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/tab_timeline" />
 
-    <android.support.v4.view.ViewPager
-        android:id="@+id/container"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+            </android.support.design.widget.TabLayout>
+        </android.support.design.widget.AppBarLayout>
 
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/fabAddPhoto"
-        style="@style/FABInverse"
-        android:layout_marginBottom="@dimen/fab_second_margin_bottom"
-        android:src="@drawable/ic_camera_24" />
+        <android.support.v4.view.ViewPager
+            android:id="@+id/container"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/fabLocation"
-        style="@style/FABBasic"
-        android:src="@drawable/ic_near_me_24dp"
-        app:backgroundTint="@color/navigation_btn_mode_off" />
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/fabAddPhoto"
+            style="@style/FABInverse"
+            android:layout_marginBottom="@dimen/fab_second_margin_bottom"
+            android:src="@drawable/ic_camera_24" />
 
-</android.support.design.widget.CoordinatorLayout>
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/fabLocation"
+            style="@style/FABBasic"
+            onStatus="@{model.btnLocationStatus}"
+            android:src="@drawable/ic_near_me_24dp"
+            app:backgroundTint="@color/navigation_btn_mode_off" />
+
+    </android.support.design.widget.CoordinatorLayout>
+</layout>

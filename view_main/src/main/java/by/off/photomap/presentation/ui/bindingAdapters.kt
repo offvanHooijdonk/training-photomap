@@ -1,5 +1,6 @@
 package by.off.photomap.presentation.ui
 
+import android.content.res.ColorStateList
 import android.databinding.BindingAdapter
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -23,6 +24,7 @@ import by.off.photomap.model.PhotoInfo
 import by.off.photomap.presentation.ui.timeline.TimelineAdapter
 import by.off.photomap.util.thumbs.Thumbs
 import com.google.android.flexbox.FlexboxLayout
+import kotlinx.android.synthetic.main.act_main.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -179,4 +181,12 @@ fun setErrorToSnackbar(view: View, msg: String?) {
 @BindingAdapter("fabVisibility")
 fun setFABVisibility(fab: FloatingActionButton, visible: Boolean) {
     if (visible) fab.show() else fab.hide()
+}
+
+@BindingAdapter("onStatus")
+fun setFABOnOff(fab: FloatingActionButton, isOn: Boolean?) {
+    isOn?.let {
+        val colorRes = if (isOn) R.color.navigation_btn_mode_on else R.color.navigation_btn_mode_off
+        fab.backgroundTintList = ColorStateList.valueOf(fab.context.getColorVal(colorRes))
+    }
 }

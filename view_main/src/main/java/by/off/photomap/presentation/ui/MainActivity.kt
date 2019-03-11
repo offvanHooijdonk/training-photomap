@@ -3,6 +3,7 @@ package by.off.photomap.presentation.ui
 import android.arch.lifecycle.Observer
 import android.content.Intent
 import android.content.res.ColorStateList
+import android.databinding.DataBindingUtil
 import android.os.Bundle
 import android.support.design.widget.Snackbar
 import android.support.design.widget.TabLayout
@@ -21,6 +22,7 @@ import by.off.photomap.core.ui.dto.CategoryInfo
 import by.off.photomap.core.ui.getColorVal
 import by.off.photomap.core.utils.di.ViewModelFactory
 import by.off.photomap.di.MainScreenComponent
+import by.off.photomap.presentation.ui.databinding.ActMainBinding
 import by.off.photomap.presentation.ui.login.SplashActivity
 import by.off.photomap.presentation.ui.map.MapFragment
 import by.off.photomap.presentation.ui.timeline.TimelineFragment
@@ -45,12 +47,14 @@ class MainActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.act_main)
+        val binding = DataBindingUtil.setContentView<ActMainBinding>(this, R.layout.act_main)
+        //setContentView(R.layout.act_main)
         MainScreenComponent.get(this).inject(this)
 
         setSupportActionBar(toolbar)
 
         initModelObserve()
+        binding.model = viewModel
 
         initTabLayout()
 
@@ -86,9 +90,10 @@ class MainActivity : BaseActivity() {
         }
     }
 
-    fun setNavigationButtonMode(isOn: Boolean) {
-        val colorRes = if (isOn) R.color.navigation_btn_mode_on else R.color.navigation_btn_mode_off
-        fabLocation.backgroundTintList = ColorStateList.valueOf(ctx.getColorVal(colorRes))
+    fun setNavigationButtonMode(isOn: Boolean) { // todo to viewModel for testing
+        /*val colorRes = if (isOn) R.color.navigation_btn_mode_on else R.color.navigation_btn_mode_off
+        fabLocation.backgroundTintList = ColorStateList.valueOf(ctx.getColorVal(colorRes))*/
+        viewModel.setLocationButtonStatus(isOn)
     }
 
     private fun initModelObserve() {

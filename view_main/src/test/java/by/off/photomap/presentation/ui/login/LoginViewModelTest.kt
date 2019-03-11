@@ -66,10 +66,19 @@ class LoginViewModelTest {
     @Test
     fun test_authSuccess() {
         testLiveData.postValue(Response(data = emptyUser))
-        assertFalse("Is Error must be 'true' on error", viewModel.isError.get())
-        assertNull("Error value must be not null on error", viewModel.errorObject.get())
-        assertFalse("Show Login Buttons must be 'true' on error", viewModel.showLoginButtons.get())
-        assertFalse("In Progress must be 'false' on error", viewModel.isInProgress.get())
+        assertFalse("Is Error must be 'false' on success", viewModel.isError.get())
+        assertNull("Error value must be null on success", viewModel.errorObject.get())
+        assertFalse("Show Login Buttons must be 'false' on success", viewModel.showLoginButtons.get())
+        assertFalse("In Progress must be 'false' on success", viewModel.isInProgress.get())
+    }
+
+    @Test
+    fun test_authFail() {
+        testLiveData.postValue(Response())
+        assertFalse("Is Error must be 'false' on login fail", viewModel.isError.get())
+        assertNull("Error value must be null on login fail", viewModel.errorObject.get())
+        assertTrue("Show Login Buttons must be 'false' on login fail", viewModel.showLoginButtons.get())
+        assertFalse("In Progress must be 'false' on login fail", viewModel.isInProgress.get())
     }
 
     private fun assertProgressStatuses() {
