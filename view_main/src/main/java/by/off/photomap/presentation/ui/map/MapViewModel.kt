@@ -17,7 +17,7 @@ class MapViewModel @Inject constructor(private val photoService: PhotoService) :
         photoService.saveToTempFile(bitmap)
     }
 
-    private fun onListResponse(listResponse: ListResponse<PhotoInfo>): ListResponse<PhotoInfo> {
+    private fun onListResponse(listResponse: ListResponse<PhotoInfo>?): ListResponse<PhotoInfo>? {
         return listResponse
     }
 }

@@ -24,7 +24,7 @@ class MainScreenViewModel @Inject constructor(private val userService: UserServi
 
     fun setLocationButtonStatus(isStatusOn: Boolean) = btnLocationStatus.set(isStatusOn)
 
-    private fun onResponse(response: Response<UserInfo>): Response<UserInfo> {
+    private fun onResponse(response: Response<UserInfo>?): Response<UserInfo>? {
         return response
     }
 

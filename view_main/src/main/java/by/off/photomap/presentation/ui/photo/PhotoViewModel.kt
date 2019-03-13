@@ -94,8 +94,10 @@ class PhotoViewModel @Inject constructor(private val photoService: PhotoService)
             modeLiveData.value == MODE.CREATE || modeLiveData.value == MODE.EDIT && originalPhotoInfo?.hashCode() != photoInfo.get()?.hashCode()
     }
 
-    private fun onLoadStatus(perCent: Int) {
-        progressPerCent.set(perCent)
+    private fun onLoadStatus(perCent: Int?) {
+        perCent?.let {
+            progressPerCent.set(perCent)
+        }
     }
 
     private fun onResponse(response: Response<PhotoInfo>?) {
@@ -123,7 +125,7 @@ class PhotoViewModel @Inject constructor(private val photoService: PhotoService)
         }
     }
 
-    private fun onImageFile(filePath: String) {
+    private fun onImageFile(filePath: String?) {
         this.filePath.set(filePath)
         downloadInProgress.set(false)
     }

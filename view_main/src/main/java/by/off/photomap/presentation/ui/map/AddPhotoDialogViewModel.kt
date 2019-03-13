@@ -27,8 +27,8 @@ class AddPhotoDialogViewModel @Inject constructor(private val geoPointService: G
 
     private fun switchToGeoResponse(place: String) = switchPlaceLD.apply { value = GeoResponse(place) }
 
-    private fun onPlaceData(response: GeoResponse) {
-        if (!response.read) {
+    private fun onPlaceData(response: GeoResponse?) {
+        if (response != null && !response.read) {
             placeDescription.set(response.info)
             placeProgress.set(false)
             response.read = true

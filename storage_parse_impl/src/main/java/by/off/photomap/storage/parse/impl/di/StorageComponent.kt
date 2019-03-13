@@ -6,7 +6,6 @@ import by.off.photomap.storage.parse.di.StorageApi
 import dagger.Component
 import off.photomap.dao.di.DaoComponent
 import off.photomap.dao.di.DaoProvider
-import javax.inject.Singleton
 
 @Component(modules = [StorageModule::class], dependencies = [ToolsProvider::class, DaoProvider::class])
 @PerFeature

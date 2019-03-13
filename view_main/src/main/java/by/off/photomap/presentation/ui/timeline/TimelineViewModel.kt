@@ -35,17 +35,19 @@ class TimelineViewModel @Inject constructor(private val photoService: PhotoServi
         photoService.listOrderTime()
     }
 
-    private fun onData(response: ListResponse<PhotoInfo>): ListResponse<PhotoInfo> {
+    private fun onData(response: ListResponse<PhotoInfo>?): ListResponse<PhotoInfo>? {
         isRefreshing.set(false)
-        listData.clear()
-        listData.addAll(response.list)
+        response?.let {
+            listData.clear()
+            listData.addAll(response.list)
 
-        if (listData.isEmpty()) {
-            isShowList.set(false)
-            isShowEmptyView.set(true)
-        } else {
-            isShowEmptyView.set(false)
-            isShowList.set(true)
+            if (listData.isEmpty()) {
+                isShowList.set(false)
+                isShowEmptyView.set(true)
+            } else {
+                isShowEmptyView.set(false)
+                isShowList.set(true)
+            }
         }
 
         return response
