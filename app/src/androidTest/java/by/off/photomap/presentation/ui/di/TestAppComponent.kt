@@ -1,13 +1,16 @@
 package by.off.photomap.presentation.ui.di
 
 import by.off.photomap.di.LoginScreenComponent
+import by.off.photomap.di.MainScreenComponent
+import by.off.photomap.di.PhotoScreenComponent
 import by.off.photomap.storage.parse.di.StorageApi
 import dagger.Component
 import javax.inject.Singleton
 
 @Component(dependencies = [StorageApi::class])
 @Singleton
-interface TestAppComponent : LoginScreenComponent.Dependencies {
+interface TestAppComponent :
+    LoginScreenComponent.Dependencies, MainScreenComponent.Dependencies, PhotoScreenComponent.Dependencies {
     companion object {
         val component: TestAppComponent by lazy { create() }
         private fun create(): TestAppComponent = DaggerTestAppComponent.builder().storageApi(

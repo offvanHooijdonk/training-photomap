@@ -29,7 +29,8 @@ class SplashActivity : BaseActivity() {
     @Inject
     override lateinit var viewModelFactory: ViewModelFactory
 
-    private lateinit var viewModel: LoginViewModel
+    @VisibleForTesting
+    lateinit var viewModel: LoginViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

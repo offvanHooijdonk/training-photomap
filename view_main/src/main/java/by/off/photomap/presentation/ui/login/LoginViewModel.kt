@@ -1,6 +1,5 @@
 package by.off.photomap.presentation.ui.login
 
-import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.ViewModel
 import android.databinding.ObservableBoolean
 import android.databinding.ObservableField

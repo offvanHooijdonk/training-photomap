@@ -210,7 +210,7 @@ class MapFragment : BaseFragment(), MainActivity.ButtonPhotoListener, MainActivi
         locationClient.lastLocation.addOnCompleteListener { task ->
             val loc = task.result
             if (task.isSuccessful && loc != null) {
-                (activity as MainActivity).setNavigationButtonMode(true)
+                (activity as? MainActivity)?.setNavigationButtonMode(true)
                 googleMap?.run {
                     isMyLocationEnabled = true
                     uiSettings?.isMyLocationButtonEnabled = false

@@ -229,6 +229,7 @@ class SearchTagsDialogFragment : DialogFragment(), ViewTreeObserver.OnPreDrawLis
 
     private fun closeDialog() {
         val fadeAwayDuration = 100L
+        liveQuerySubject.onComplete()
         listSearchResults.takeIf { isVisible }?.fadeAway(fadeAwayDuration)
         blockHint.takeIf { isVisible }?.fadeAway(fadeAwayDuration)
         blockEmptyResults.takeIf { isVisible }?.fadeAway(fadeAwayDuration)
