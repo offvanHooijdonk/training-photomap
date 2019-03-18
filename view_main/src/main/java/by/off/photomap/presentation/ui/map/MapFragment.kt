@@ -106,6 +106,7 @@ class MapFragment : BaseFragment(), MainActivity.ButtonPhotoListener, MainActivi
             googleMap = gMap
             viewModel.listLiveData.value?.let { updateMarkers(it.list) }
 
+
             gMap.setInfoWindowAdapter(MarkerAdapter(ctx))
             gMap.uiSettings?.isMapToolbarEnabled = false
 

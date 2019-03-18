@@ -5,6 +5,7 @@ import android.content.Intent
 import android.content.res.ColorStateList
 import android.databinding.DataBindingUtil
 import android.os.Bundle
+import android.support.annotation.VisibleForTesting
 import android.support.design.widget.Snackbar
 import android.support.design.widget.TabLayout
 import android.support.v4.app.Fragment
@@ -41,7 +42,8 @@ class MainActivity : BaseActivity() {
     val snackbarRoot: View
         get() = mainRoot
 
-    private lateinit var viewModel: MainScreenViewModel
+    @VisibleForTesting
+    lateinit var viewModel: MainScreenViewModel
     private val filteredCategories = BooleanArray(CategoryInfo.getTitlesOrdered().size) { true }
     private var liveCatFilter = BooleanArray(3)
 
