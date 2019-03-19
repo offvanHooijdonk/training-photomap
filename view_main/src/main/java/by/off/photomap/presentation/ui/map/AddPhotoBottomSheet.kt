@@ -3,6 +3,7 @@ package by.off.photomap.presentation.ui.map
 import android.arch.lifecycle.Observer
 import android.databinding.DataBindingUtil
 import android.os.Bundle
+import android.support.annotation.VisibleForTesting
 import android.support.design.widget.BottomSheetBehavior
 import android.support.design.widget.BottomSheetDialogFragment
 import android.view.LayoutInflater
@@ -26,7 +27,8 @@ class AddPhotoBottomSheet : BottomSheetDialogFragment() {
     @Inject
     lateinit var viewModelFactory: ViewModelFactory
 
-    private lateinit var viewModel: AddPhotoDialogViewModel
+    @VisibleForTesting
+    lateinit var viewModel: AddPhotoDialogViewModel
     private val latLong: LatLng? by lazy { arguments?.getParcelable<LatLng>(ARG_GEO_POINT) }
 
     companion object {

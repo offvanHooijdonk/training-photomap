@@ -8,6 +8,7 @@ import android.content.Intent
 import android.graphics.Bitmap
 import android.os.Bundle
 import android.provider.MediaStore
+import android.support.annotation.VisibleForTesting
 import android.support.design.widget.Snackbar
 import android.support.v7.app.AppCompatActivity
 import android.view.LayoutInflater
@@ -48,7 +49,8 @@ class MapFragment : BaseFragment(), MainActivity.ButtonPhotoListener, MainActivi
         private const val DEFAULT_ZOOM = 15.0f
         private const val CAMERA_ANIM_DURATION = 650
         private const val LOCATION_REQUEST_INTERVAL = 2000L
-        private const val TAG_DIALOG_ADD_PHOTO = "DIALOG_ADD_PHOTO"
+        @VisibleForTesting
+        const val TAG_DIALOG_ADD_PHOTO = "DIALOG_ADD_PHOTO"
     }
 
     @Inject
@@ -66,7 +68,8 @@ class MapFragment : BaseFragment(), MainActivity.ButtonPhotoListener, MainActivi
     }
     private val locationRequest = LocationRequest.create().setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY).setInterval(LOCATION_REQUEST_INTERVAL)
     // map
-    private var googleMap: GoogleMap? = null
+    @VisibleForTesting
+    var googleMap: GoogleMap? = null
     private var markerIdPicked: String? = null
     private var latLongCurrent: LatLng? = null
     private var workingLocation: LatLng? = null

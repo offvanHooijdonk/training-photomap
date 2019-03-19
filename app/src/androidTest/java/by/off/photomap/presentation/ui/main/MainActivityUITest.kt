@@ -1,6 +1,7 @@
 package by.off.photomap.presentation.ui.main
 
 import android.arch.lifecycle.MutableLiveData
+import android.graphics.Point
 import android.support.test.espresso.Espresso.onView
 import android.support.test.espresso.action.*
 import android.support.test.espresso.assertion.ViewAssertions
@@ -14,11 +15,15 @@ import by.off.photomap.model.UserInfo
 import by.off.photomap.presentation.ui.*
 import by.off.photomap.presentation.ui.di.ServiceMocks
 import by.off.photomap.presentation.ui.di.TestStorageComponent
+import by.off.photomap.presentation.ui.map.AddPhotoBottomSheet
+import by.off.photomap.presentation.ui.map.MapFragment
 import by.off.photomap.presentation.ui.viewactions.checkFABColor
 import by.off.photomap.presentation.ui.viewactions.checkTabSelected
+import by.off.photomap.presentation.ui.viewactions.longClickAt
 import by.off.photomap.storage.parse.ListResponse
 import by.off.photomap.storage.parse.Response
-import junit.framework.Assert.assertFalse
+import com.google.android.gms.maps.model.LatLng
+import junit.framework.Assert.*
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -28,6 +33,10 @@ import org.mockito.MockitoAnnotations
 
 @RunWith(AndroidJUnit4::class)
 class MainActivityUITest : AbstractActivityUITest<MainActivity>() {
+    companion object {
+        const val MAP_X = 255
+        const val MAP_Y = 500
+    }
 
     @get:Rule
     override val activityScenarioRule: ActivityTestRule<MainActivity> = ActivityTestRule(MainActivity::class.java, false, false)
@@ -35,6 +44,7 @@ class MainActivityUITest : AbstractActivityUITest<MainActivity>() {
     private val stubLogoutLiveData = MutableLiveData<Response<UserInfo>>()
     private val stubFilePathLiveData = MutableLiveData<String>()
     private val stubListLiveData = MutableLiveData<ListResponse<PhotoInfo>>()
+    private val stubGeoInfoLiveData = MutableLiveData<String>()
 
     @Before
     fun init() {
@@ -43,6 +53,7 @@ class MainActivityUITest : AbstractActivityUITest<MainActivity>() {
             Mockito.`when`(ServiceMocks.userServiceMock.logoutLiveData).thenReturn(stubLogoutLiveData)
             Mockito.`when`(ServiceMocks.photoServiceMock.serviceListLiveData).thenReturn(stubListLiveData)
             Mockito.`when`(ServiceMocks.photoServiceMock.tempFileLiveData).thenReturn(stubFilePathLiveData)
+            Mockito.`when`(ServiceMocks.geoPointServiceMock.placeLiveData).thenReturn(stubGeoInfoLiveData)
         }
     }
 
@@ -79,8 +90,34 @@ class MainActivityUITest : AbstractActivityUITest<MainActivity>() {
         val model = activityScenarioRule.activity.viewModel
         model.btnLocationStatus.set(true)
 
-        Thread.sleep(2500)
+        waitMap()
         onView(withId(R.id.map)).perform(GeneralSwipeAction(Swipe.FAST, GeneralLocation.CENTER, GeneralLocation.CENTER_LEFT, Press.FINGER))
         assertFalse("Location Button status must be 'false' after map motion", model.btnLocationStatus.get())
+    }
+
+    @Test
+    fun test_longClickMap() {
+        startActivityAndWait()
+        waitMap()
+
+        val mapFragment = activityScenarioRule.activity.supportFragmentManager.fragments[0] as? MapFragment
+        val map = (mapFragment)?.googleMap
+        assertNotNull("Expected to receive Google Map view object.", map)
+        var latLng: LatLng? = null
+        activityScenarioRule.runOnUiThread {
+            val projection = map!!.projection
+            latLng = projection.fromScreenLocation(Point(MAP_X, MAP_Y))
+            assertNotNull("Expect to receive a non-null Lat Long coordinates from Google Map")
+        }
+
+        onView(withId(R.id.map)).perform(longClickAt(MAP_X, MAP_Y))
+        waitBottomDialog()
+
+        val dialogViewModel = (mapFragment?.childFragmentManager?.findFragmentByTag(MapFragment.TAG_DIALOG_ADD_PHOTO) as? AddPhotoBottomSheet)?.viewModel
+        assertNotNull("Expecting to get View Model from Add Photo dialog", dialogViewModel)
+        assertEquals("Expecting Latitude in Add Photo dialog to be the same that clicked on the Google Map",
+            latLng!!.latitude, dialogViewModel!!.placeGeoPoint.get()!!.latitude, 0.01)
+        assertEquals("Expecting Longitude in Add Photo dialog to be the same that clicked on the Google Map",
+            latLng!!.longitude, dialogViewModel.placeGeoPoint.get()!!.longitude, 0.01)
     }
 }
