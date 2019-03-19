@@ -1,6 +1,7 @@
 package by.off.photomap.presentation.ui.main
 
 import android.arch.lifecycle.MutableLiveData
+import android.content.pm.ActivityInfo
 import android.graphics.Point
 import android.support.test.espresso.Espresso.onView
 import android.support.test.espresso.action.*
@@ -20,6 +21,7 @@ import by.off.photomap.presentation.ui.map.MapFragment
 import by.off.photomap.presentation.ui.viewactions.checkFABColor
 import by.off.photomap.presentation.ui.viewactions.checkTabSelected
 import by.off.photomap.presentation.ui.viewactions.longClickAt
+import by.off.photomap.presentation.ui.viewactions.selectTabAt
 import by.off.photomap.storage.parse.ListResponse
 import by.off.photomap.storage.parse.Response
 import com.google.android.gms.maps.model.LatLng
@@ -115,9 +117,71 @@ class MainActivityUITest : AbstractActivityUITest<MainActivity>() {
 
         val dialogViewModel = (mapFragment?.childFragmentManager?.findFragmentByTag(MapFragment.TAG_DIALOG_ADD_PHOTO) as? AddPhotoBottomSheet)?.viewModel
         assertNotNull("Expecting to get View Model from Add Photo dialog", dialogViewModel)
-        assertEquals("Expecting Latitude in Add Photo dialog to be the same that clicked on the Google Map",
-            latLng!!.latitude, dialogViewModel!!.placeGeoPoint.get()!!.latitude, 0.01)
-        assertEquals("Expecting Longitude in Add Photo dialog to be the same that clicked on the Google Map",
-            latLng!!.longitude, dialogViewModel.placeGeoPoint.get()!!.longitude, 0.01)
+        assertEquals(
+            "Expecting Latitude in Add Photo dialog to be the same that clicked on the Google Map",
+            latLng!!.latitude, dialogViewModel!!.placeGeoPoint.get()!!.latitude, 0.01
+        )
+        assertEquals(
+            "Expecting Longitude in Add Photo dialog to be the same that clicked on the Google Map",
+            latLng!!.longitude, dialogViewModel.placeGeoPoint.get()!!.longitude, 0.01
+        )
     }
+
+    @Test
+    fun test_FABVisibility() {
+        startActivityAndWait()
+        val tabCount = 2
+        var tabIndex = 0
+
+        checkFABsForTab(tabIndex)
+
+        for (i in 1..(tabCount + 1)) {
+            tabIndex = chooseAnotherTab(tabIndex)
+            selectTabAndCheckFABs(tabIndex)
+        }
+
+        activityScenarioRule.activity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+        waitAnim()
+
+        checkFABsForTab(tabIndex)
+
+        for (i in 1..(tabCount + 1)) {
+            tabIndex = chooseAnotherTab(tabIndex)
+            selectTabAndCheckFABs(tabIndex)
+        }
+
+        activityScenarioRule.activity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+        waitAnim()
+
+        checkFABsForTab(tabIndex)
+
+        for (i in 1..tabCount) {
+            tabIndex = chooseAnotherTab(tabIndex)
+            selectTabAndCheckFABs(tabIndex)
+        }
+    }
+
+    private fun selectTabAndCheckFABs(i: Int) {
+        onView(withId(R.id.tabs)).perform(selectTabAt(i))
+        checkFABsForTab(i)
+    }
+
+    private fun checkFABsForTab(i: Int) {
+        when (i) {
+            0 -> checkFABsVisible()
+            1 -> checkFABsGone()
+        }
+    }
+
+    private fun checkFABsVisible() {
+        onView(withId(R.id.fabAddPhoto)).checkVisible()
+        onView(withId(R.id.fabLocation)).checkVisible()
+    }
+
+    private fun checkFABsGone() {
+        onView(withId(R.id.fabAddPhoto)).checkGone()
+        onView(withId(R.id.fabLocation)).checkGone()
+    }
+
+    private fun chooseAnotherTab(i: Int) = if (i == 0) 1 else 0
 }
