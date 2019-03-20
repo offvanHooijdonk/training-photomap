@@ -1,12 +1,12 @@
 package by.off.photomap.presentation.ui.main
 
 import android.arch.lifecycle.MutableLiveData
-import android.content.pm.ActivityInfo
 import android.graphics.Point
 import android.support.test.espresso.Espresso.onView
-import android.support.test.espresso.action.*
-import android.support.test.espresso.assertion.ViewAssertions
-import android.support.test.espresso.matcher.ViewMatchers
+import android.support.test.espresso.action.GeneralLocation
+import android.support.test.espresso.action.GeneralSwipeAction
+import android.support.test.espresso.action.Press
+import android.support.test.espresso.action.Swipe
 import android.support.test.espresso.matcher.ViewMatchers.withId
 import android.support.test.rule.ActivityTestRule
 import android.support.test.runner.AndroidJUnit4
@@ -16,16 +16,16 @@ import by.off.photomap.model.UserInfo
 import by.off.photomap.presentation.ui.*
 import by.off.photomap.presentation.ui.di.ServiceMocks
 import by.off.photomap.presentation.ui.di.TestStorageComponent
+import by.off.photomap.presentation.ui.main.MainActivityRobot.Companion.TABS_COUNT
 import by.off.photomap.presentation.ui.map.AddPhotoBottomSheet
 import by.off.photomap.presentation.ui.map.MapFragment
 import by.off.photomap.presentation.ui.viewactions.checkFABColor
 import by.off.photomap.presentation.ui.viewactions.checkTabSelected
 import by.off.photomap.presentation.ui.viewactions.longClickAt
-import by.off.photomap.presentation.ui.viewactions.selectTabAt
 import by.off.photomap.storage.parse.ListResponse
 import by.off.photomap.storage.parse.Response
 import com.google.android.gms.maps.model.LatLng
-import junit.framework.Assert.*
+import  org.junit.Assert.*
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -130,58 +130,22 @@ class MainActivityUITest : AbstractActivityUITest<MainActivity>() {
     @Test
     fun test_FABVisibility() {
         startActivityAndWait()
-        val tabCount = 2
-        var tabIndex = 0
 
-        checkFABsForTab(tabIndex)
+        mainActivity {
+            tabIndex = 0
+            checkFABsVisibility()
 
-        for (i in 1..(tabCount + 1)) {
-            tabIndex = chooseAnotherTab(tabIndex)
-            selectTabAndCheckFABs(tabIndex)
-        }
+            testFABsOnTabsSwitch(TABS_COUNT + 1)
 
-        activityScenarioRule.activity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
-        waitAnim()
+            requestLandscapeOrientation(activityScenarioRule.activity)
+            checkFABsVisibility()
 
-        checkFABsForTab(tabIndex)
+            testFABsOnTabsSwitch(TABS_COUNT + 1)
 
-        for (i in 1..(tabCount + 1)) {
-            tabIndex = chooseAnotherTab(tabIndex)
-            selectTabAndCheckFABs(tabIndex)
-        }
+            requestPortraintOrientation(activityScenarioRule.activity)
+            checkFABsVisibility()
 
-        activityScenarioRule.activity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
-        waitAnim()
-
-        checkFABsForTab(tabIndex)
-
-        for (i in 1..tabCount) {
-            tabIndex = chooseAnotherTab(tabIndex)
-            selectTabAndCheckFABs(tabIndex)
+            testFABsOnTabsSwitch(TABS_COUNT)
         }
     }
-
-    private fun selectTabAndCheckFABs(i: Int) {
-        onView(withId(R.id.tabs)).perform(selectTabAt(i))
-        checkFABsForTab(i)
-    }
-
-    private fun checkFABsForTab(i: Int) {
-        when (i) {
-            0 -> checkFABsVisible()
-            1 -> checkFABsGone()
-        }
-    }
-
-    private fun checkFABsVisible() {
-        onView(withId(R.id.fabAddPhoto)).checkVisible()
-        onView(withId(R.id.fabLocation)).checkVisible()
-    }
-
-    private fun checkFABsGone() {
-        onView(withId(R.id.fabAddPhoto)).checkGone()
-        onView(withId(R.id.fabLocation)).checkGone()
-    }
-
-    private fun chooseAnotherTab(i: Int) = if (i == 0) 1 else 0
 }
